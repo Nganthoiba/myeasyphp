@@ -1,0 +1,19 @@
+<IfModule mod_headers.c>
+    RequestHeader unset Proxy
+</IfModule>
+<ifModule mod_rewrite.c>
+    RewriteEngine on
+    RewriteCond %{REQUEST_URI} !\.(?:css|js|jp?g|gif|png)$ [NC]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-l
+
+    RewriteRule ^(.*)$ index.php?uri=$1 [QSA,L]
+    
+</IfModule>
+<IfModule mod_php5.c>
+    php_value max_execution_time 45
+    #Session timeout
+    php_value session.cookie_lifetime 1440
+    php_value session.gc_maxlifetime 1440
+</IfModule>

@@ -1,0 +1,17 @@
+{
+    "name": "nganthoiba/myeasyphp",
+    "description": "A simple framework for php web application",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Nganthoiba",
+            "email": "leecba@gmail.com"
+        }
+    ],
+    "require": {},
+	"autoload": {
+        "psr-4": {
+            "MyEasyPHP\\": "src/"
+        }
+    }
+}
