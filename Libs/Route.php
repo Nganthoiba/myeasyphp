@@ -17,7 +17,7 @@ class Route {
     private $path;//the request url
     private $controller;//what controller will be executed
     private $action;//what action to be invoked for the request url
-    private $method;//the types of method allowed for the request url
+    private $methods;//the types of method allowed for the request url
     private $isFunction;//whether the route has executable function
     private $function;
     
@@ -34,10 +34,14 @@ class Route {
             $this->action = $params['Action']??"";            
         }
         if(is_string($methods)){
-            $this->method = explode("|", $methods);
+            $this->methods = explode("|", $methods);
         }
         else if(is_array($methods)){
-            $this->method = sizeof($methods)==0?['GET']:$methods;//by default set to GET method
+            $this->methods = sizeof($methods)==0?['GET']:$methods;//by default set to GET method
+        }
+        //convert every methods in uppercase
+        for($i = 0; $i < sizeof($this->methods); $i++){
+            $this->methods[$i] = strtoupper($this->methods[$i]);
         }
     }
     
@@ -50,8 +54,8 @@ class Route {
     public function getAction(){
         return $this->action;
     }
-    public function getMethod(){
-        return $this->method;
+    public function getMethods(){
+        return $this->methods;
     }
     
     public function isFunction(){

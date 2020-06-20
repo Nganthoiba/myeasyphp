@@ -25,7 +25,7 @@ use MyEasyPHP\Libs\Route;
 use Exception;
 class Router {
     protected $uri;
-    protected $routes = []; //set of URIs(route) defined by user
+    protected $routes = []; //set or collection of URIs(routes) defined by user
     
     ////////////ROUTE COMPONENTS///////////
     protected $controller;  // Name of the controller
@@ -45,7 +45,7 @@ class Router {
         //Setting default values
         $this->routes = [];
         $this->params = [];
-        $this->method = ['GET']; //by default
+        $this->methods = ['GET']; //by default
         $this->is_only_function = false;
         $this->function_name = "";
     }
@@ -74,8 +74,8 @@ class Router {
     public function getAction(){
         return $this->action;
     }
-    public function getMethod(){
-        return $this->method;
+    public function getMethods(){
+        return $this->methods;
     }
     public function getParams(){
         return $this->params;
@@ -119,7 +119,7 @@ class Router {
             else{
                 $this->controller = $route->getController();
                 $this->action = $route->getAction();
-                $this->method = $route->getMethod();   
+                $this->methods = $route->getMethods();   
             }
         }
         else{

@@ -50,7 +50,7 @@ class Dispatcher {
             if(is_null($action)){
                 $action = Config::get('default_action');
             }
-            $methods = self::$router->getMethod();//HTTP verbs
+            $methods = self::$router->getMethods();//HTTP verbs
             
             
             if(!in_array(self::$request->getMethod(), $methods)){

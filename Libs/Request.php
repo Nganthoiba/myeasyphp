@@ -17,7 +17,7 @@ class Request {
     private $content_type; //Content type
     private $source; //source of the request(client IP)
     public function __construct() {
-        $this->method = $_SERVER['REQUEST_METHOD'];//getting HTTP Verb
+        $this->method = strtoupper($_SERVER['REQUEST_METHOD']);//getting HTTP Verb
         if ($this->method == 'POST' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
             if ($_SERVER['HTTP_X_HTTP_METHOD'] == 'DELETE') {
                 $this->method = 'DELETE';
