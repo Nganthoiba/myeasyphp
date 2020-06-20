@@ -39,7 +39,7 @@ $router->addRoute("/api/contacts", [
 $router->addRoute("/api/hello/{fname}/{lname}", [
     "Controller" => "Default",
     "Action" => "hello"
-],"POST");
+],"GET");
 
 
 $router->addRoute("/Gentelella", [

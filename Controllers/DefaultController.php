@@ -16,15 +16,17 @@ namespace MyEasyPHP\Controllers;
 use MyEasyPHP\Libs\Controller;
 class DefaultController extends Controller{
     public function index(){
-        return $this->view();
+        return $this->view();//returning view
     }
+    
+    //as an api end point
     public function about(){
         $this->response->set([
             "status"=>true,
             "status_code"=>200,
             "msg"=>"Wow! wonderful"
         ]);
-        return $this->sendResponse($this->response);
+        return $this->sendResponse($this->response);//result is in json format
     }
     public function contact(){
         return "This is my contact";
