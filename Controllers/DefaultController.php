@@ -29,9 +29,9 @@ class DefaultController extends Controller{
         return $this->sendResponse($this->response);//result is in json format
     }
     public function contact(){
-        return "This is my contact";
+        return "This is my contact";//returning a string
     }
-    
+    //en example of how to handle parameters
     public function hello($params){
         return "Hello! ".$params['fname']." ".$params['lname'];
     }
