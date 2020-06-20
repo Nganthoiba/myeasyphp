@@ -52,66 +52,48 @@ class Router {
     
     /* The methods adds each route defined to the $routes array */
     //callable: means $parameters can be just a function
-    public function addRoute($url, /*callable*/ $parameters, $methods=[]/*HTTP Verbs in array*/) {
+    public function addRoute($url, /*callable*/ $parameters, $methods=[]/*HTTP Verbs in array*/) : void{
         $this->routes[] = new Route($url, $parameters, $methods);
     }
     /* method to get all routes */
-    public function getRoutes(){
+    public function getRoutes():array{
         return $this->routes;
     }
     /* method to get uri */
-    public function getUri(){
+    public function getUri():string{
         return $this->uri;
     }
     /* method to set uri */
-    public function setUri($uri){
+    public function setUri($uri):void{
         $this->uri = (is_null($uri) || trim($uri)=="")?(filter_input(INPUT_GET, "uri", FILTER_SANITIZE_SPECIAL_CHARS)):trim($uri);
         //$this->uri = rtrim($this->uri,'/');        
     }
-    public function getController(){
+    public function getController():string{
         return $this->controller;
     }
-    public function getAction(){
+    public function getAction():string{
         return $this->action;
     }
-    public function getMethods(){
+    public function getMethods():array{
         return $this->methods;
     }
-    public function getParams(){
+    public function getParams():array{
         return $this->params;
     }
-    public function getFunction(){
+    public function getFunction(): callable{
         return $this->function_name;
     }
     
     //This method will break down a uri into three components: Controller, Action and Parameters
     public function extractComponents() : void{
-        //By default if there is no route set for the particular URI specifically
-        $uri = urldecode(trim("/".$this->uri,'/'));
-        $uri_parts = explode('?',$uri);
-        $paths =$uri_parts[0];
-        $path_parts = explode('/', $paths);
-
-        if(count($path_parts)){
-            if(current($path_parts)){
-                //First part is considered as controller name
-                $this->controller = current($path_parts); 
-                array_shift($path_parts);
-            }
-            if(current($path_parts)){
-                //Second part is considered as the action name
-                $this->action = current($path_parts); 
-                array_shift($path_parts);
-            }
-            $this->params = $path_parts;
-        }
-        $temp_params = $this->params;
+        
         /* Check if the given route path for the URI is already defined, then fetch the route object to find out 
          * controller name and action name
          **/
         $path = "/".$this->uri;
         $route = $this->findRoute($path);
         if($route!=null){
+            //if route is an executable function
             if($route->isFunction()){
                 $this->is_only_function = true;
                 $this->function_name = $route->getFunction();
@@ -123,19 +105,36 @@ class Router {
             }
         }
         else{
-            $this->params = $temp_params;
-            unset($temp_params);
+            //By default if there is no route set for the particular URI specifically
+            $uri = urldecode(trim("/".$this->uri,'/'));
+            $uri_parts = explode('?',$uri);
+            $paths =$uri_parts[0];
+            $path_parts = explode('/', $paths);
+
+            if(count($path_parts)){
+                if(current($path_parts)){
+                    //First part is considered as controller name
+                    $this->controller = current($path_parts); 
+                    array_shift($path_parts);
+                }
+                if(current($path_parts)){
+                    //Second part is considered as the action name
+                    $this->action = current($path_parts); 
+                    array_shift($path_parts);
+                }
+                $this->params = $path_parts;
+            } 
         }
         
     }// end of extractComponents
     
     //method return whether route has an executable function
-    public function isOnlyFunction(){
+    public function isOnlyFunction():bool{
         return $this->is_only_function;
     }
     
     //compare two urls, to decide whether they are equal or not
-    private function areEqualURLs($first_url, $second_url){
+    private function areEqualURLs($first_url, $second_url): bool{
         $this->params = [];//reseting parameters
         
         $first_url_parts = explode('/',$first_url);
@@ -160,7 +159,8 @@ class Router {
         return true;
     }
     
-    //method to check whether a url segment indicates a parameter or not
+    //method to check whether a url segment indicates a parameter or not, anything(segment) in the route url enclosed 
+    //by curly braces is to be recognised as a parameter
     private function isParameter($url_segment){
         return preg_match('/{(.*?)}/', $url_segment);
     }

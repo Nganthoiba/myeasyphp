@@ -33,7 +33,9 @@ class Dispatcher {
         }
         self::$router = $router;
         self::$router->setUri($uri);
-        self::$router->extractComponents();
+        self::$router->extractComponents();//extract Controller and action wrt the request uri from the routes
+        
+        
         $params = self::$request->senitizeInputs(self::$router->getParams());
         //If router is only a function
         if(self::$router->isOnlyFunction()){
@@ -50,9 +52,9 @@ class Dispatcher {
             if(is_null($action)){
                 $action = Config::get('default_action');
             }
+            
             $methods = self::$router->getMethods();//HTTP verbs
-            
-            
+            //checking whether the request method is allowed for routing URI
             if(!in_array(self::$request->getMethod(), $methods)){
                 throw new Exception("Method not allowed",403);//forbidden
             }
