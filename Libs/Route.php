@@ -33,14 +33,18 @@ class Route {
             $this->controller = $params['Controller']??"";
             $this->action = $params['Action']??"";            
         }
-        if(is_string($methods)){
+        if(is_string($methods) && trim($methods) !== ""){
             $this->methods = explode("|", $methods);
         }
         else if(is_array($methods)){
             $this->methods = sizeof($methods)==0?['GET']:$methods;//by default set to GET method
         }
         //convert every methods in uppercase
-        for($i = 0; $i < sizeof($this->methods); $i++){
+        for($i = 0; $i < sizeof($this->methods); $i++){            
+            if(trim($this->methods[$i]) === ""){
+                //discarding blank spaces
+                continue;
+            }
             $this->methods[$i] = strtoupper($this->methods[$i]);
         }
     }
