@@ -42,9 +42,9 @@ $router->addRoute("/api/hello/{fname}/{lname}", [
 ],"GET");
 
 
-$router->addRoute("/Gentelella", [
-    "Controller" => "Gentelella",
-    "Action" => "index"
+$router->addRoute("/Default/{script}", [
+    "Controller" => "Default",
+    "Action" => "test"
 ],"GET");
 
 

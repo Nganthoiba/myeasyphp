@@ -1,7 +1,7 @@
 <?php
 use MyEasyPHP\Libs\Config;
 //Configuration set up file
-Config::set("app_name", "EasyPHP");/*Name of the application*/
+Config::set("app_name", "MyEasyPHP");/*Name of the application*/
 Config::set("site_name", "Welcome to MyEasyPHP");
 Config::set("default_time_zone", "Asia/Kolkata");
 

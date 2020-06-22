@@ -10,12 +10,14 @@ declare(strict_types=1);
  *                      get_client_ip()
  */
 namespace MyEasyPHP\Libs;
+use Exception;
 class Request {
     //put your code here
     private $method; //HTTP methods (verbs): GET, POST, PUT, DELETE
     private $header; //HTTP request header
     private $content_type; //Content type
     private $source; //source of the request(client IP)
+    private $device;
     public function __construct() {
         $this->method = strtoupper($_SERVER['REQUEST_METHOD']);//getting HTTP Verb
         if ($this->method == 'POST' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
@@ -30,6 +32,7 @@ class Request {
         $this->header = apache_request_headers();
         $this->content_type = get_data_from_array("Content-Type",$this->header);
         $this->source = get_client_ip();
+        $this->device = filter_input(INPUT_SERVER,'HTTP_USER_AGENT');
     }
     //method to get data sent from client
     public function getData(){
@@ -82,6 +85,10 @@ class Request {
     
     public function getRequestHeaders(){
         return apache_request_headers();
+    }
+    
+    public function getDevice(){
+        return $this->device;
     }
     
     public function senitizeInputs($data) {

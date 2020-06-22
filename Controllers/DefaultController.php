@@ -35,4 +35,9 @@ class DefaultController extends Controller{
     public function hello($params){
         return "Hello! ".$params['fname']." ".$params['lname'];
     }
+    
+    public function test($args){
+        $this->viewData->script = $args['script'];
+        return $this->view();//->withViewData($args);
+    }
 }

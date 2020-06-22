@@ -68,8 +68,8 @@ class Html {
     }
     
     //to get image full url
-    public static function getImage($img){
-        return Config::get('host')."/webroot/Assets/images/".$img;
+    public static function getImage($img_path/*Image path*/){
+        return Config::get('host')."/webroot/Assets/".$img_path;
     }
     //function to include partial view files 
     public static function include($filepath = ""){

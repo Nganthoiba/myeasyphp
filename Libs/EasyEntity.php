@@ -79,6 +79,14 @@ class EasyEntity {
         return true;//entity is valid
     }
     
+    /*** method to set data to an entity ***/
+    public function setEntityData(array $data){
+        $obj_data = $this->toArray();
+        foreach($obj_data as $key=>$val){
+            $this->{$key} = isset($data[$key])?$data[$key]:null;
+        }
+    }
+    
     /********* START METHODS FOR CRUD OPERATIONS ********/
     //Creat or add a new record in the table
     public function add(): Response{   
@@ -196,12 +204,23 @@ class EasyEntity {
         return $this->response;
     }
     
+    /*** Entity Data Validation ***/
+    //This method needs to be overridden in every extended entity class according to the purpose
+    //otherwise this default validation method will be executed.
+    public function validate(): Response{
+        return $this->response->set([
+                        "msg" => "Validated",
+                        "status"=>true,
+                        "status_code"=>200
+                    ]);
+    }
+    
     
     /*** find an Entity ***/
     public function find($id){
         //If Entity is not valid
         if(!$this->isValidEntity()) {
-            throw new Exception(get_class($entity)." is not a valid entity class, please make sure "
+            throw new Exception(get_class($this)." is not a valid entity class, please make sure "
                     . "that you have set table name and primary key attribute of this entity.",500);
         }
         $stmt = $this->queryBuilder->select()->from($this->table_name)->where([

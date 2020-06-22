@@ -4,8 +4,8 @@
  *  This Database class is to connect database
  * @author Nganthoiba
  */
-namespace Libs;
-use Libs\Config;
+namespace MyEasyPHP\Libs;
+use MyEasyPHP\Libs\Config;
 use PDO;
 use Exception;
 

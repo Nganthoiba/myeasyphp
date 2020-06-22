@@ -17,6 +17,7 @@ use MyEasyPHP\Libs\Router;
 use MyEasyPHP\Libs\Request;
 use MyEasyPHP\Libs\Config;
 use Exception;
+use MyEasyPHP\Libs\MyEasyException;
 class Dispatcher {
     public static $router;
     public static $request;
@@ -56,7 +57,9 @@ class Dispatcher {
             $methods = self::$router->getMethods();//HTTP verbs
             //checking whether the request method is allowed for routing URI
             if(!in_array(self::$request->getMethod(), $methods)){
-                throw new Exception("Method not allowed",403);//forbidden
+                $exc = new MyEasyException("Method not allowed.",403);//forbidden
+                $exc->setDetails("Methods allowed for the route are: ".json_encode($methods).", but your request method is ".self::$request->getMethod());
+                throw $exc;            
             }
             /*** creating Controller Object ***/
             $controller_class = "MyEasyPHP\\Controllers\\".$controller;

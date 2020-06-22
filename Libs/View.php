@@ -2,6 +2,7 @@
 namespace MyEasyPHP\Libs;
 use MyEasyPHP\Libs\Dispatcher;
 use MyEasyPHP\Libs\ViewData;
+use Exception;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates

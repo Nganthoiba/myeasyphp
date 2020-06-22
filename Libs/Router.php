@@ -22,6 +22,7 @@ namespace MyEasyPHP\Libs;
  * 19/06/2020
  */
 use MyEasyPHP\Libs\Route;
+use MyEasyPHP\Libs\Config;
 use Exception;
 class Router {
     protected $uri;
@@ -44,6 +45,8 @@ class Router {
     public function __construct($uri="") {
         //Setting default values
         $this->routes = [];
+        $this->controller = Config::get('default_controller');
+        $this->action = Config::get('default_action');
         $this->params = [];
         $this->methods = ['GET']; //by default
         $this->is_only_function = false;
@@ -97,6 +100,7 @@ class Router {
             if($route->isFunction()){
                 $this->is_only_function = true;
                 $this->function_name = $route->getFunction();
+                $this->methods = $route->getMethods();
             }
             else{
                 $this->controller = $route->getController();
@@ -114,12 +118,14 @@ class Router {
             if(count($path_parts)){
                 if(current($path_parts)){
                     //First part is considered as controller name
-                    $this->controller = current($path_parts); 
+                    $this->controller = trim(htmlspecialchars(strip_tags(current($path_parts))));
+                    //$this->controller = current($path_parts);
                     array_shift($path_parts);
                 }
                 if(current($path_parts)){
                     //Second part is considered as the action name
-                    $this->action = current($path_parts); 
+                    $this->action = trim(htmlspecialchars(strip_tags(current($path_parts))));
+                    //$this->action = current($path_parts);
                     array_shift($path_parts);
                 }
                 $this->params = $path_parts;

@@ -92,7 +92,7 @@ class EasyEntityManager {
         else{
             try{
                 $data = ($entity->toArray());
-                unset($data[$this->key]);//key will not be updated
+                unset($data[$entity->getKey()]);//key will not be updated
                 $cond = [
                     //primary key attribute = value
                     $entity->getKey() => ['=',$entity->{$entity->getKey()}]

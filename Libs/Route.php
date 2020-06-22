@@ -34,7 +34,9 @@ class Route {
             $this->action = $params['Action']??"";            
         }
         if(is_string($methods) && trim($methods) !== ""){
-            $this->methods = explode("|", $methods);
+            $exploded_methods = explode("|", $methods);
+            $this->methods = sizeof($exploded_methods)>0?$exploded_methods:$methods;
+            unset($exploded_methods);
         }
         else if(is_array($methods)){
             $this->methods = sizeof($methods)==0?['GET']:$methods;//by default set to GET method
@@ -45,7 +47,7 @@ class Route {
                 //discarding blank spaces
                 continue;
             }
-            $this->methods[$i] = strtoupper($this->methods[$i]);
+            $this->methods[$i] = strtoupper(trim($this->methods[$i]));
         }
     }
     

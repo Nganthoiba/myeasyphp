@@ -7,7 +7,7 @@
 namespace Libs\ext;
 
 use Libs\Database;
-
+use Exception;
 class DataTable {
     private $draw,$row,$length,$orderByColumnIndex,$orderByColumnName,$globalSearchValue;
     private $SearchQuery, $SearchValues;
