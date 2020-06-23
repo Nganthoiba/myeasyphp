@@ -109,9 +109,14 @@ class EasyQueryBuilder {
         $columns = "";//strings of names of the columns
         $param = "";//parameters
         foreach($data as $column => $value){
-            if(trim($value)==="" || $value===NULL || $value==="NULL"){
+            if(is_null($value)){
                 //blank or null values will not be inserted
                 continue;
+            }
+            else if(is_string($value)){
+                if( strlen($value)==0 ||  $value ==="NULL"){
+                    continue;
+                }
             }
             $columns .= $column.",";
             $param .= "?,";
@@ -142,7 +147,7 @@ class EasyQueryBuilder {
         
         try{
             $stmt = $this->execute();
-            if($stmt !== null && $stmt->rowCount()>0){
+            if($stmt !== null /*&& $stmt->rowCount()>0*/){
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);//result
                 if($this->entiy_class_name==""){
                     $temp_obj = new EmptyClass();
@@ -157,7 +162,7 @@ class EasyQueryBuilder {
                 return $temp_obj;
             }
         }catch(Exception $e){
-            //throw $e;
+            throw $e;
         }
         return null;
     }
@@ -167,7 +172,7 @@ class EasyQueryBuilder {
         
         try{
             $stmt = $this->execute();
-            if($stmt !== null && $stmt->rowCount()>0){
+            if($stmt !== null/* && $stmt->rowCount()>0*/){
                 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);//result
                 $row = $rows[$stmt->rowCount()-1];
                 if($this->entiy_class_name==""){

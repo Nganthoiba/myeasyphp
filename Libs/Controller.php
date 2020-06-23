@@ -124,10 +124,7 @@ class Controller {
             }
         }
         
-        header('X-Frame-Options: SAMEORIGIN');//preventing clickjacking as the page can only be displayed in a frame on the same origin as the page itself. 
-        //header('X-Frame-Options: deny');//The page cannot be displayed in a frame, regardless of the site attempting to do so.
         $view_obj = new View($view_path,$this->viewData);
-        //return $view_obj;
         
         $this->viewData->content = $view_obj->render();
         $layout = Config::get('default_view_layout');//$this->router->getRoute();

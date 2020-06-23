@@ -23,9 +23,8 @@ $router->addRoute("/", [
     "Action" => "index"
 ],"GET");
 
-$router->addRoute("/api/sum/{num1}/{num2}", function($arg){
-    $num1 = intval($arg['num1']);
-    $num2 = intval($arg['num2']);
+$router->addRoute("/api/sum/{num1}/{num2}", function($num1,$num2){
+    
     echo "sum is : ".($num1+$num2);
 });
 
@@ -40,8 +39,14 @@ $router->addRoute("/api/hello/{fname}/{lname}", [
     "Controller" => "Default",
     "Action" => "hello"
 ],"GET");
-
-
+$router->addRoute("/Default/sum/{num1}/{num2}", [
+    "Controller" => "Default",
+    "Action" => "sum"
+],"GET");
+$router->addRoute("/Default/product/{num1}/{num2}", [
+    "Controller" => "Default",
+    "Action" => "product"
+]);
 $router->addRoute("/Default/{script}", [
     "Controller" => "Default",
     "Action" => "test"

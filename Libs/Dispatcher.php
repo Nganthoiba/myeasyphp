@@ -42,7 +42,8 @@ class Dispatcher {
         if(self::$router->isOnlyFunction()){
             $function = self::$router->getFunction();
             if(sizeof($params)>0){
-                $function($params);//executing the function
+                //$function($params);//executing the function
+                call_user_func_array($function, array_values($params));
             }else{
                 $function();//executing the function
             }
@@ -74,7 +75,8 @@ class Dispatcher {
             
             ///checking whether parameter exists or not
             if(sizeof($params)>0){
-                $view = $controllerObj->$action($params);
+                //$view = $controllerObj->$action($params);
+                $view = call_user_func_array([$controllerObj,$action], array_values($params));
             }
             else{
                 $view = $controllerObj->$action();
@@ -83,6 +85,8 @@ class Dispatcher {
             //Controller Action may returns view or json data depending upon whether the controller is api controller or just controller, and it is going to be printed
             if(is_object($view) && $view instanceof View){                           
                 //if it is view object then render its contents
+                header('X-Frame-Options: SAMEORIGIN');//preventing clickjacking as the page can only be displayed in a frame on the same origin as the page itself. 
+                //header('X-Frame-Options: deny');//The page cannot be displayed in a frame, regardless of the site attempting to do so.
                 echo $view->render();                
             }
             else{

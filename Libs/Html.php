@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace MyEasyPHP\Libs;
 use MyEasyPHP\Libs\Config;
+use MyEasyPHP\Libs\ViewData;
 
 /**
  * Description of Html:
@@ -72,10 +73,15 @@ class Html {
         return Config::get('host')."/webroot/Assets/".$img_path;
     }
     //function to include partial view files 
-    public static function include($filepath = ""){
+    public static function include($filepath = "", ViewData $view_Data=null){
+        $output = NULL;
         if(trim($filepath)!==""){
+            ob_start();//turns on output buffering
+            $viewData = $view_Data;
             require_once VIEWS_PATH.DS.$filepath.".view.php";
+            $output = ob_get_clean();
         }
+        echo $output;
     }
     
     public static function hyperlink($controller,$action="",$params = ""){

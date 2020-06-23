@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -32,12 +32,19 @@ class DefaultController extends Controller{
         return "This is my contact";//returning a string
     }
     //en example of how to handle parameters
-    public function hello($params){
-        return "Hello! ".$params['fname']." ".$params['lname'];
+    public function hello($fname, $lname){
+        return "Hello! ".$fname." ".$lname;
     }
     
-    public function test($args){
-        $this->viewData->script = $args['script'];
+    public function test($script){
+        $this->viewData->script = $script;
         return $this->view();//->withViewData($args);
+    }
+    
+    public function sum($num1,$num2){
+        return "Num1=$num1 & Num2=$num2, and sum is ".($num1+$num2);
+    }
+    public function product(int $num1,int $num2){
+        return "Num1=$num1 & Num2=$num2, and product is ".($num1*$num2);
     }
 }

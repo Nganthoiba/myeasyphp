@@ -40,7 +40,7 @@ class Router {
     protected $function_name; //by default its value is blank
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    public $test_val;
+    //public $test_val;
     
     public function __construct($uri="") {
         //Setting default values

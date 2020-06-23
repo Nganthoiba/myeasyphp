@@ -4,7 +4,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '../Config/path_config.php';
 require_once VENDOR_PATH. 'autoload.php';
 require_once CONFIG_PATH. 'app_config.php';
-require_once CONFIG_PATH. 'routes.php';
+require_once CONFIG_PATH. 'routes.php';//collection of routes
 
 // object $router is instantiated in the Config/routes.php file
 
@@ -17,7 +17,7 @@ try{
     require_once LIBS_PATH.DS.'special_functions.php';
     startSecureSession();
     date_default_timezone_set(Config::get('default_time_zone'));
-    
+    //variable $router is defined in Config/routes.php
     Dispatcher::dispatch($router);
 }catch(Exception $e){
     $error_code = $e->getCode();
