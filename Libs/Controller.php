@@ -110,17 +110,20 @@ class Controller {
     
     protected function view($view_path=""): View{
         if($view_path !== ""){
-            $controller_name = str_replace("Controller","",get_class($this));
+            $class_name = get_class($this);
+            $parts_class_name = explode("\\",$class_name);
+            $controller_name = $parts_class_name[sizeof($parts_class_name)-1];
+            $controller_name = str_replace("Controller","",$controller_name);
             //all the view pages have file extension ".view.php" as a convension of this framework
             if(trim($controller_name) == "" || file_exists(VIEWS_PATH.DS.$view_path.'.view.php')){
-                $view_path = VIEWS_PATH.DS.$view_path.'.view.php';
+                $view_path = VIEWS_PATH.$view_path.'.view.php';
             }
             //If view file exists in the sharable folder
             else if(file_exists(VIEWS_PATH.DS."Shared".DS.$view_path.'.view.php')){
-                $view_path = VIEWS_PATH.DS."Shared".DS.$view_path.'.view.php';
+                $view_path = VIEWS_PATH."Shared".DS.$view_path.'.view.php';
             }
             else{
-                $view_path = VIEWS_PATH.DS.$controller_name.DS.$view_path.'.view.php';   
+                $view_path = VIEWS_PATH.$controller_name.DS.$view_path.'.view.php';   
             }
         }
         
@@ -137,6 +140,5 @@ class Controller {
     public function error(){
         //$this->viewData->detail = "This is an error page.";
         return $this->view('error');
-    }
-    
+    }    
 }
