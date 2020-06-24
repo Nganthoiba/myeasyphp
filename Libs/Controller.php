@@ -115,7 +115,7 @@ class Controller {
             $controller_name = $parts_class_name[sizeof($parts_class_name)-1];
             $controller_name = str_replace("Controller","",$controller_name);
             //all the view pages have file extension ".view.php" as a convension of this framework
-            if(trim($controller_name) == "" || file_exists(VIEWS_PATH.DS.$view_path.'.view.php')){
+            if(file_exists(VIEWS_PATH.DS.$view_path.'.view.php')){
                 $view_path = VIEWS_PATH.$view_path.'.view.php';
             }
             //If view file exists in the sharable folder
