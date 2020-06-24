@@ -10,7 +10,7 @@ Config::set('default_controller', 'Default');
 Config::set('default_action', 'index');
 
 //Domain configuration
-Config::set('host', 'http://localhost/MyEasyPHP');
+Config::set('host', '/MyEasyPHP');
 
 //css and js configuration
 Config::set('css', Config::get('host')."/webroot/Assets/css");

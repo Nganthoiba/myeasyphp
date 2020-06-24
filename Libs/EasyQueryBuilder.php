@@ -21,7 +21,8 @@ use MyEasyPHP\Libs\EmptyClass;
 use MyEasyPHP\Libs\Config;
 use Exception;
 
-define('ENTITY_NAMESPACE','Models\\Entities\\');
+define('ENTITY_NAMESPACE','MyEasyPHP\\Models\\Entities\\');
+//define('ENTITY_NAMESPACE','');
 class EasyQueryBuilder {
     /** SQL Query String**/
     private $qry;
@@ -147,8 +148,8 @@ class EasyQueryBuilder {
         
         try{
             $stmt = $this->execute();
-            if($stmt !== null /*&& $stmt->rowCount()>0*/){
-                $row = $stmt->fetch(PDO::FETCH_ASSOC);//result
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);//result
+            if($stmt !== null && $row == true){
                 if($this->entiy_class_name==""){
                     $temp_obj = new EmptyClass();
                 }
@@ -172,8 +173,8 @@ class EasyQueryBuilder {
         
         try{
             $stmt = $this->execute();
-            if($stmt !== null/* && $stmt->rowCount()>0*/){
-                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);//result
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);//result
+            if($stmt !== null && sizeof($rows)>0){
                 $row = $rows[$stmt->rowCount()-1];
                 if($this->entiy_class_name==""){
                     $temp_obj = new EmptyClass();

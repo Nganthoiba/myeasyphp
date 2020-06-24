@@ -58,7 +58,7 @@ class Dispatcher {
             $methods = self::$router->getMethods();//HTTP verbs
             //checking whether the request method is allowed for routing URI
             if(!in_array(self::$request->getMethod(), $methods)){
-                $exc = new MyEasyException("Method not allowed.",403);//forbidden
+                $exc = new MyEasyException("Method not allowed.",405);//forbidden
                 $exc->setDetails("Methods allowed for the route are: ".json_encode($methods).", but your request method is ".self::$request->getMethod());
                 throw $exc;            
             }
