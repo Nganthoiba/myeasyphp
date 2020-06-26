@@ -34,10 +34,10 @@ class EasyEntity {
         /* Entity name should be same as the table name that exists in database */
         $class_name = get_class($this);//class name contains namespaces
         $paths = explode("\\", $class_name);
-        $size = count($paths); 
+        $size = sizeof($paths); 
         $this->table_name = $paths[$size-1];//by default, the table name is set same as that of the entity class name
         $this->queryBuilder = new EasyQueryBuilder();
-        $this->queryBuilder->setEntityClassName($class_name);//by default
+        $this->queryBuilder->setEntityClassName($this->table_name);//by default
         $this->response = new Response();
     }
     //method to set table name of the enity
@@ -123,6 +123,7 @@ class EasyEntity {
     }
     //to read record
     public function read($columns = array()): EasyQueryBuilder{
+        $this->queryBuilder->setEntityClassName($this->table_name);
         return $this->queryBuilder->select($columns)->from($this->table_name);
     }
     //to update and save record

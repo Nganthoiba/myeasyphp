@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace MyEasyPHP\Libs;
 use MyEasyPHP\Libs\Dispatcher;
 use MyEasyPHP\Libs\ViewData;
@@ -17,6 +19,7 @@ use Exception;
 class View {
     protected $path; //view path
     protected $viewData; //view data
+    protected $model;//Data Model, or an entity 
     
     protected static function getDefaultViewPath(){
         $router = Dispatcher::getRouter();
@@ -25,7 +28,7 @@ class View {
         }
         $controller = $router->getController();
         $template_name = $router->getAction().'.view.php';
-        return VIEWS_PATH.DS.$controller.DS.$template_name;
+        return VIEWS_PATH.$controller.DS.$template_name;
     }
 
     public function __construct($path = null, ViewData $viewData) {
@@ -42,6 +45,10 @@ class View {
         $this->viewData = $viewData;
     }
     
+    public function setDataModel($model){
+        $this->model = $model;
+    }
+    
     //method for passing view data
     public function withViewData($data = array()){
         //$data must be an array of key and value pairs
@@ -55,6 +62,7 @@ class View {
         ob_start();//turns on output buffering
         
         $viewData = $this->viewData;
+        $model = $this->model;
         if(file_exists($this->path)){
             include_once($this->path);
         }

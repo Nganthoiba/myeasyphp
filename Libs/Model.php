@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -13,6 +13,7 @@ namespace MyEasyPHP\Libs;
  *
  * @author Nganthoiba
  */
+use MyEasyPHP\Libs\Response;
 use Exception;
 class Model {
     /*Convert self object to array*/
@@ -37,12 +38,18 @@ class Model {
             }
         }
         if($flag){
-            throw new Exception("Could not find an element with name '".$form_element."' in your input request form.",
+            throw new Exception("Could not find an element with name '".$form_element."' in your input request form.".json_encode($data),
                     400);            
         }
     }
     
-    public function isValidModel(){
+    public function isValidModel(): Response{
+        $response = new Response();
+        $response->set([
+            "status"=>true,
+            "status_code"=>200,
+            "msg"=>""
+        ]);
         $obj_data = $this->toArray();
         $flag=0;
         $form_element="";
@@ -54,9 +61,16 @@ class Model {
             }
         }
         if($flag){
+            /*
             throw new Exception("Found null for the element with name '".$form_element."' in your input request form.",
-                    400);            
+                    400);  
+                    */
+            $response->msg = "Found null or blank value for the element with name '".$form_element."' in your input request form.";
+            $response->status= false;
+            $response->status_code = 400;          
         }
-        return true;
-    }
+        $response->data = $this;
+        return  $response;
+    }   
+    
 }

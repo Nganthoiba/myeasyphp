@@ -15,6 +15,8 @@ use MyEasyPHP\Libs\Dispatcher;
 use MyEasyPHP\Libs\View;
 use MyEasyPHP\Libs\ViewData;
 use MyEasyPHP\Libs\Config;
+use MyEasyPHP\Libs\Model;
+use MyEasyPHP\Libs\EasyEntity;
 
 class Controller {
     /*Parameters: 
@@ -32,6 +34,7 @@ class Controller {
     /*viewData : an object of ViewData class, 
      * which will be passed over view files for displaying*/
     protected $viewData; 
+    protected $dataModel;//either an entity or simply a model 
     
     /*$response is an object of Response class, a basic structure of how data will be responded. */
     public $response;
@@ -61,6 +64,7 @@ class Controller {
     
     public function __construct(ViewData $viewData = null) {
         $this->viewData = $viewData===null?new ViewData():$viewData;
+        $this->dataModel = null;
         $this->params = Dispatcher::getRouter()->getParams();
         $this->response = new Response();
         // obtaining the Doctrine entity manager
@@ -108,18 +112,28 @@ class Controller {
         return ($status[$code])?$status[$code]:$status[500]; 
     }
     
-    protected function view($view_path=""): View{
+    protected function view($model_or_viewpath = null): View{
+        if($model_or_viewpath instanceof Model or $model_or_viewpath instanceof EasyEntity){
+            $this->dataModel = $model_or_viewpath;
+            $view_path="";
+        }
+        else if(is_null($model_or_viewpath) || !is_string($model_or_viewpath)){
+            $view_path="";
+        }
+        else{
+            $view_path = $model_or_viewpath;
+        }
         if($view_path !== ""){
             $class_name = get_class($this);
             $parts_class_name = explode("\\",$class_name);
             $controller_name = $parts_class_name[sizeof($parts_class_name)-1];
             $controller_name = str_replace("Controller","",$controller_name);
             //all the view pages have file extension ".view.php" as a convension of this framework
-            if(file_exists(VIEWS_PATH.DS.$view_path.'.view.php')){
+            if(file_exists(VIEWS_PATH.$view_path.'.view.php')){
                 $view_path = VIEWS_PATH.$view_path.'.view.php';
             }
             //If view file exists in the sharable folder
-            else if(file_exists(VIEWS_PATH.DS."Shared".DS.$view_path.'.view.php')){
+            else if(file_exists(VIEWS_PATH."Shared".DS.$view_path.'.view.php')){
                 $view_path = VIEWS_PATH."Shared".DS.$view_path.'.view.php';
             }
             else{
@@ -128,17 +142,20 @@ class Controller {
         }
         
         $view_obj = new View($view_path,$this->viewData);
+        if(!is_null($this->dataModel)){
+            $view_obj->setDataModel($this->dataModel);
+        }
         
         $this->viewData->content = $view_obj->render();
         $layout = Config::get('default_view_layout');//$this->router->getRoute();
-        $layout_path = VIEWS_PATH.DS.$layout.'.view.php';
+        $layout_path = VIEWS_PATH.$layout.'.view.php';
         $layout_view_obj = new View($layout_path,$this->viewData);
-        
-        return $layout_view_obj;//->render();
+        return $layout_view_obj;
     }
     //For displaying error informations
     public function error(){
         //$this->viewData->detail = "This is an error page.";
         return $this->view('error');
-    }    
+    }
+    
 }

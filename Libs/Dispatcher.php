@@ -18,6 +18,7 @@ use MyEasyPHP\Libs\Request;
 use MyEasyPHP\Libs\Config;
 use Exception;
 use MyEasyPHP\Libs\MyEasyException;
+use PDO;
 class Dispatcher {
     public static $router;
     public static $request;

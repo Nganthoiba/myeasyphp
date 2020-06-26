@@ -57,6 +57,7 @@ class Html {
             //getting extension to know whether css file or js file 
             $ext = substr(trim($path_to_assets), -3);
             $path = Config::get('host')."/webroot/Assets/".$path_to_assets;
+            //$path = "../Webroot/Assets/".$path_to_assets;
             if($ext == ".js"){
                 //load javascript file
                 echo '<script src="'.$path.'" type="text/javascript"></script>'."\r\n";
@@ -84,6 +85,7 @@ class Html {
         echo $output;
     }
     
+    //method to generate a url
     public static function hyperlink($controller,$action="",$params = ""){
         $link = Config::get('host')."/".$controller."/".$action;
         if((is_string($params) && trim($params) !== "") || is_numeric($params)){

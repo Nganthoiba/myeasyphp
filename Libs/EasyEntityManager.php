@@ -24,7 +24,7 @@ use MyEasyPHP\Libs\EasyEntity;
 use MyEasyPHP\Libs\EasyQueryBuilder;
 use MyEasyPHP\Libs\Response;
 use Exception;
-use PDOStatement;
+use PDO;
 
 class EasyEntityManager {
     private $queryBuilder;
@@ -107,11 +107,7 @@ class EasyEntityManager {
                         "msg" => "Record saved successfully.",
                         "status"=>true,
                         "status_code"=>200,
-                        "data"=>$entity,
-                        "error"=>[
-                            "qry"=>$this->queryBuilder->getQuery(),
-                            "values"=>$this->queryBuilder->getValues()
-                        ]
+                        "data"=>$entity
                     ]);
                 $this->queryBuilder->clear();
             }catch(Exception $e){
@@ -128,7 +124,7 @@ class EasyEntityManager {
     
     //to delete an entity (record)
     public function remove(EasyEntity $entity): Response{
-        $this->queryBuilder->setEntityClassName($entity->getTable());
+        //$this->queryBuilder->setEntityClassName($entity->getTable());
         if(!$entity->isValidEntity()) {
             $this->response->set([
                 "msg" => "Invalid entity: either table name or key is not set.",
@@ -167,8 +163,9 @@ class EasyEntityManager {
     /********** END CRUD OPERATIONS *********/
     
     //Find an entity with primary key attribute
-    public function find(string $entity_class_name,$id): EasyEntity{
-        $entity = new $entity_class_name();
+    public function find(EasyEntity $entity,$id): EasyEntity{
+        //$entity_class_name = ENTITY_NAMESPACE.$entity_class_name;
+        //$entity = new $entity_class_name();
         //If Entity is not valid
         if(!$entity->isValidEntity()) {
             throw new Exception(get_class($entity)." is not a valid entity class, please make sure "

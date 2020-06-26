@@ -98,7 +98,12 @@ class Request {
                 $clean_input[$k] = $this->senitizeInputs($v);
             }
         } else {
-            $clean_input = trim(htmlspecialchars(strip_tags($data)));
+            if(is_null($data)){
+                $clean_input = "";
+            }
+            else{
+                $clean_input = trim(htmlspecialchars(strip_tags($data)));
+            }
         }
         return $clean_input;
     }

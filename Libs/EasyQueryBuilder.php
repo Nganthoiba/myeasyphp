@@ -9,7 +9,7 @@ namespace MyEasyPHP\Libs;
  * Description of EasyQueryBuilder
  *  This class generates SQL (DML). The query is purely based on PDO.
  * #Note: this query builder generates query which can only be executed successfully 
- * on a single table, nested queries are not supported effectively. Sorry for this inconvenience we are still 
+ * on a single table, nested queries are not supported effectively. Sorry for this inconvenience I'm still 
  * working on it to solve SQL complex queries.
  * So, for now you can set your own query using setQuery() method and execute using execute() method
  * @author Nganthoiba
@@ -21,13 +21,11 @@ use MyEasyPHP\Libs\EmptyClass;
 use MyEasyPHP\Libs\Config;
 use Exception;
 
-define('ENTITY_NAMESPACE','MyEasyPHP\\Models\\Entities\\');
-//define('ENTITY_NAMESPACE','');
 class EasyQueryBuilder {
-    /** SQL Query String**/
-    private $qry;
-    /** Array of values for parameterized query execution */
-    private $values;
+    /** SQL Query String **/
+    private $qry,$last_executed_query;
+    /** Array of values for parameterized query execution **/
+    private $values,$last_executed_values;
     /** Error data in query execution **/
     private $errorInfo;
     private $errorCode;
@@ -44,7 +42,11 @@ class EasyQueryBuilder {
     
     public function __construct() {
         $this->qry = "";
+        $this->last_executed_query = "";//This variable stores SQL query statement which was executed last time
+        
         $this->values = [];
+        $this->last_executed_values = [];//This variable stores parameterised values which was executed last time
+        
         $this->db_config = Config::get('DB_CONFIG');
         self::$conn = (self::$conn==null)?Database::connect():self::$conn;//connecting database
         $this->limit_rows = -1;
@@ -85,6 +87,10 @@ class EasyQueryBuilder {
     }
     /** This will clear existing query statement and parameter values ***/
     public function clear(){
+        //temporarily store last executed SQL query and its associated parameterised values
+        $this->last_executed_query = $this->qry;
+        $this->last_executed_values = $this->values;
+        ///////////////////////////////////////////////////////////////////////////////////
         $this->qry = "";
         $this->values = [];
         return $this;
@@ -92,7 +98,8 @@ class EasyQueryBuilder {
     
     /*** Set query and get query ***/
     public function getQuery():string{
-        return $this->qry;
+        //return $this->qry;
+        return $this->last_executed_query;
     }
     /** A method to set programmer's own complex query when 
      * the query building methods defined below cannot fulfill the required output.**/
@@ -144,12 +151,11 @@ class EasyQueryBuilder {
     }
     //method to get/read/load first row or data after executing the query.
     //it returns either null or object of the entity if record is found
-    public function getFirst(){        
-        
+    public function getFirst(){  
         try{
             $stmt = $this->execute();
             $row = $stmt->fetch(PDO::FETCH_ASSOC);//result
-            if($stmt !== null && $row == true){
+            if($stmt !== null && $row == true){   
                 if($this->entiy_class_name==""){
                     $temp_obj = new EmptyClass();
                 }
@@ -173,8 +179,8 @@ class EasyQueryBuilder {
         
         try{
             $stmt = $this->execute();
-            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);//result
-            if($stmt !== null && sizeof($rows)>0){
+            if($stmt !== null/* && $stmt->rowCount()>0*/){
+                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);//result
                 $row = $rows[$stmt->rowCount()-1];
                 if($this->entiy_class_name==""){
                     $temp_obj = new EmptyClass();
@@ -200,11 +206,6 @@ class EasyQueryBuilder {
     public function toList(){
         //If there is no class name specified or if the class is not defined, 
         //then we give default an empty class
-        /*
-        if($this->entiy_class_name==""){
-            $this->entiy_class_name = "EmptyClass";
-        }
-        */
         try{
             $stmt = $this->execute();
             if($stmt !== null){
@@ -561,10 +562,17 @@ class EasyQueryBuilder {
         }
         //otherwise columns are in the form of array
         $column_string = "";
+        /*
         foreach ($columns as $col){
             $column_string .= $col.", ";
         }
         return rtrim($column_string,', ');
+         * 
+         */
+        if(is_array($columns)){
+            $column_string = implode(", ", $columns);
+        }
+        return $column_string;
     }
     private function getStringifiedTables($tables = array()):string{
         //if tables are passed as array, then we stringify the tables separated by commas
@@ -573,10 +581,17 @@ class EasyQueryBuilder {
         }
         //otherwise tables are in the form of array
         $tables_string = "";
+        /*
         foreach ($tables as $table){
             $tables_string .= $table.", ";
         }
         return rtrim($tables_string,', ');
+         * 
+         */
+        if(is_array($tables)){
+            $tables_string = implode(", ", $tables);
+        }
+        return $tables_string;
     }
     /**************** END OF QUERY BUILDING METHODS *****************/    
     

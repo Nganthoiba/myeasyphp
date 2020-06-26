@@ -114,10 +114,10 @@ function getCSRFToken(){
     return csrf::getToken('token');
 }
 //function to verify csrf token
-function verifyCSRFToken(){
+function verifyCSRFToken($origin = null): Response{
     $response = new Response();
     try{
-        $origin = $_REQUEST;
+        $origin = is_null($origin)?$_REQUEST:$origin;
         // Run CSRF check, on REQUEST(whether POST or GET) data, in exception mode, for 10 minutes, in one-time mode.
         if(csrf::check('token', $origin, true,60*10, true)){
             $response->set(array(

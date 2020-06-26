@@ -95,6 +95,7 @@ class Router {
          **/
         $path = "/".$this->uri;
         $route = $this->findRoute($path);
+        //if route is found...
         if($route!=null){
             //if route is an executable function
             if($route->isFunction()){

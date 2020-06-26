@@ -4,7 +4,7 @@
  *
  * @author Nganthoiba
  */
-namespace Libs\ext;
+namespace MyEasyPHP\Libs\ext;
 use Exception;
 class csrf
 {
@@ -37,7 +37,7 @@ class csrf
         
         if ( !isset( $origin[ 'csrf_'.$key ] ) ){
             if($throwException){
-                throw new Exception( 'CSRF token is not passed in the form.' );	//Missing CSRF form token.
+                throw new Exception( 'CSRF token is not passed in the form. ' );	//Missing CSRF form token.
             }else{
                 return false;
             }
@@ -98,7 +98,7 @@ class csrf
         $token = base64_encode( time() . $extra . self::randomString( 32 ) );
         // store the one-time token in session
         $_SESSION[ 'csrf_' . $key ] = $token;
-        session_regenerate_id();
+        //session_regenerate_id();
         return $token;
     }
 
@@ -119,7 +119,5 @@ class csrf
         }
         return $string;
     }
-
 }
 ?>
-

@@ -12,9 +12,6 @@ Config::set('default_action', 'index');
 //Domain configuration
 Config::set('host', '/MyEasyPHP');
 
-//css and js configuration
-Config::set('css', Config::get('host')."/webroot/Assets/css");
-Config::set('js', Config::get('host')."/webroot/Assets/js");
 
 
 /*** Database Configuration ***/
