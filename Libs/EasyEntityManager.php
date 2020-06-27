@@ -36,9 +36,19 @@ class EasyEntityManager {
     
     /********* START METHODS FOR CRUD OPERATIONS ********/
     //Read records from a table
-    public function read($table_name): EasyQueryBuilder{
-        $this->queryBuilder->setEntityClassName($table_name); 
-        return $this->queryBuilder->select()->from($table_name);        
+    public function read($table_name_or_entity) : EasyQueryBuilder{
+        if($table_name_or_entity instanceof EasyEntity){
+            return $this->readEntity($table_name_or_entity);
+        }
+        $this->queryBuilder->setEntityClassName($table_name_or_entity); 
+        return $this->queryBuilder->select()->from($table_name_or_entity);        
+    }
+
+    //Read records by passing entity object
+    public function readEntity(EasyEntity $entity) : EasyQueryBuilder{
+        $class_name = str_replace(ENTITY_NAMESPACE,"",get_class($entity));
+        $this->queryBuilder->setEntityClassName($class_name); 
+        return $this->queryBuilder->select()->from($entity->getTable());
     }
     
     //Create or add a new (entity)record in the table
@@ -164,8 +174,9 @@ class EasyEntityManager {
     
     //Find an entity with primary key attribute
     public function find(EasyEntity $entity,$id): EasyEntity{
-        //$entity_class_name = ENTITY_NAMESPACE.$entity_class_name;
-        //$entity = new $entity_class_name();
+//        string $entity_class_name
+//        $entity_class_name = ENTITY_NAMESPACE.$entity_class_name;
+//        $entity = new $entity_class_name();
         //If Entity is not valid
         if(!$entity->isValidEntity()) {
             throw new Exception(get_class($entity)." is not a valid entity class, please make sure "

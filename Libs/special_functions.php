@@ -18,7 +18,7 @@ function randId($length=32){
     $id = (uniqid(). rand().time(). generateRandomString($length));
     $char = str_shuffle($id);
     for($i = 0, $rand = '', $l = strlen($char) - 1; $i < $length; $i++) {
-        $rand .= $char{mt_rand(0, $l)};
+        $rand .= $char[mt_rand(0, $l)];
     }
     return $rand;
 }

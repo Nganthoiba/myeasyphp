@@ -5,13 +5,14 @@ Config::set("app_name", "MyEasyPHP");/*Name of the application*/
 Config::set("site_name", "Welcome to MyEasyPHP");
 Config::set("default_time_zone", "Asia/Kolkata");
 
-Config::set('default_view_layout', 'default');
+Config::set('default_view_container', 'default');
 Config::set('default_controller', 'Default');
 Config::set('default_action', 'index');
 
 //Domain configuration
 Config::set('host', '/MyEasyPHP');
-
+//Assets Configuration
+Config::set('Assets', Config::get('host').'/Webroot/Assets');
 
 
 /*** Database Configuration ***/

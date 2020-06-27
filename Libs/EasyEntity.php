@@ -23,6 +23,7 @@ namespace MyEasyPHP\Libs;
 
 use MyEasyPHP\Libs\EasyQueryBuilder;
 use MyEasyPHP\Libs\Response;
+use PDO;
 use Exception;
 
 class EasyEntity {

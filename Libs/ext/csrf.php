@@ -115,7 +115,7 @@ class csrf
 
         $string = '';
         for ( $i = 0; $i < $length; ++$i ){
-            $string .= $seed{intval( mt_rand( 0.0, $max ) )};
+            $string .= $seed[intval( mt_rand( 0.0, $max ) )];
         }
         return $string;
     }

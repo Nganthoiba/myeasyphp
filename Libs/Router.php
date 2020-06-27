@@ -25,7 +25,7 @@ use MyEasyPHP\Libs\Route;
 use MyEasyPHP\Libs\Config;
 use Exception;
 class Router {
-    protected $uri;
+    protected $uri; //request uri
     protected $routes = []; //set or collection of URIs(routes) defined by user
     
     ////////////ROUTE COMPONENTS///////////
@@ -33,6 +33,7 @@ class Router {
     protected $action;      //action method
     protected $params;      //Parameters passed in url
     protected $method;      //HTTP Verbs GET, POST, PUT, DELETE etc which are allowed for accessing the cuttent url
+    protected $routeUrl;    //Url for the route
     ///////////////////////////////////////    
     
     ////////////////////////IF ROUTE CONTAINS EXECUTABLE FUNCTION INSTEAD OF CONTROLLER AND ACTION///////////
@@ -80,6 +81,10 @@ class Router {
     public function getMethods():array{
         return $this->methods;
     }
+    public function getRouteUrl():string{
+        return $this->routeUrl;
+    }
+    
     public function getParams():array{
         return $this->params;
     }
@@ -96,7 +101,8 @@ class Router {
         $path = "/".$this->uri;
         $route = $this->findRoute($path);
         //if route is found...
-        if($route!=null){
+        if(!is_null($route)){
+            $this->routeUrl = $route->getPath();
             //if route is an executable function
             if($route->isFunction()){
                 $this->is_only_function = true;
@@ -110,8 +116,11 @@ class Router {
             }
         }
         else{
-            //By default if there is no route set for the particular URI specifically
+            //If there is no route set for the particular URI specifically, then by default break down the request url into 3 main segments
+            //which means the first is the Controller, the second one is the action and the remainings are the parameters
+            
             $uri = urldecode(trim("/".$this->uri,'/'));
+            $this->routeUrl = $uri;
             $uri_parts = explode('?',$uri);
             $paths =$uri_parts[0];
             $path_parts = explode('/', $paths);
@@ -131,6 +140,7 @@ class Router {
                 }
                 $this->params = $path_parts;
             } 
+            
         }
         
     }// end of extractComponents

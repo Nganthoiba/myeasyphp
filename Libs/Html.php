@@ -27,7 +27,7 @@ class Html {
             }
         }
         else if(is_string($path_to_css) && trim($path_to_css)!==""){
-            $path = Config::get('host')."/webroot/Assets/css/".$path_to_css;
+            $path =  Config::get('Assets')."/css/".$path_to_css;
             echo '<link rel="stylesheet" href="'.$path.'" type="text/css" />'."\r\n";
         }
         
@@ -39,7 +39,7 @@ class Html {
             }
         }
         else if(is_string($path_to_js) && trim($path_to_js)!==""){
-            $path = Config::get('host')."/webroot/Assets/js/".$path_to_js;
+            $path =  Config::get('Assets')."/js/".$path_to_js;
             echo '<script src="'.$path.'" type="text/javascript"></script>'."\r\n";
         }
     }
@@ -56,7 +56,7 @@ class Html {
         else if(is_string($path_to_assets) && trim($path_to_assets)!==""){
             //getting extension to know whether css file or js file 
             $ext = substr(trim($path_to_assets), -3);
-            $path = Config::get('host')."/webroot/Assets/".$path_to_assets;
+            $path = Config::get('Assets')."/".$path_to_assets;
             //$path = "../Webroot/Assets/".$path_to_assets;
             if($ext == ".js"){
                 //load javascript file
@@ -71,7 +71,7 @@ class Html {
     
     //to get image full url
     public static function getImage($img_path/*Image path*/){
-        return Config::get('host')."/webroot/Assets/".$img_path;
+        return  Config::get('Assets')."/".$img_path;
     }
     //function to include partial view files 
     public static function include($filepath = "", ViewData $view_Data=null){
@@ -87,7 +87,7 @@ class Html {
     
     //method to generate a url
     public static function hyperlink($controller,$action="",$params = ""){
-        $link = Config::get('host')."/".$controller."/".$action;
+        $link = trim($controller)==""?Config::get('host')."/":Config::get('host')."/".$controller."/".$action;
         if((is_string($params) && trim($params) !== "") || is_numeric($params)){
             $link .= "/".$params;
         }
@@ -97,5 +97,11 @@ class Html {
             }
         }
         return $link;
+    }
+    
+    //function to set container view where the view will be loaded
+    public function setContainer($view_container_path){
+        //Note: any view file must be inside the Views directory or within its sub directory
+        Config::set('default_view_container',$view_container_path);        
     }
 }

@@ -31,12 +31,11 @@ class Dispatcher {
         //Getting uri requested by user
         $uri = filter_input(INPUT_GET, "uri", FILTER_SANITIZE_SPECIAL_CHARS);
         if(!is_null($uri)){
-            $uri = rtrim($uri,'/');
+            $uri = strtolower(rtrim($uri,'/'));
         }
         self::$router = $router;
         self::$router->setUri($uri);
         self::$router->extractComponents();//extract Controller and action wrt the request uri from the routes
-        
         
         $params = self::$request->senitizeInputs(self::$router->getParams());
         //If router is only a function
@@ -60,7 +59,7 @@ class Dispatcher {
             //checking whether the request method is allowed for routing URI
             if(!in_array(self::$request->getMethod(), $methods)){
                 $exc = new MyEasyException("Method not allowed.",405);//forbidden
-                $exc->setDetails("Methods allowed for the route are: ".json_encode($methods).", but your request method is ".self::$request->getMethod());
+                $exc->setDetails("Methods allowed for the route:- ".self::$router->getRouteUrl()." are: ".json_encode($methods).", but your request method is ".self::$request->getMethod());
                 throw $exc;            
             }
             /*** creating Controller Object ***/

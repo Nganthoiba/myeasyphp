@@ -147,7 +147,7 @@ class Controller {
         }
         
         $this->viewData->content = $view_obj->render();
-        $layout = Config::get('default_view_layout');//$this->router->getRoute();
+        $layout = Config::get('default_view_container');//$this->router->getRoute();
         $layout_path = VIEWS_PATH.$layout.'.view.php';
         $layout_view_obj = new View($layout_path,$this->viewData);
         return $layout_view_obj;
