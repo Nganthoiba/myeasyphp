@@ -1,7 +1,10 @@
 <?php
+declare(strict_types=1);
 use MyEasyPHP\Libs\Config;
 use MyEasyPHP\Libs\Response;
 use MyEasyPHP\Libs\ext\csrf;
+use MyEasyPHP\Libs\View;
+use MyEasyPHP\Libs\HttpStatus;
 
 function generateRandomString($length = 32) {
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -26,11 +29,15 @@ function randId($length=32){
 function filter($key,$method){
     if(trim($method)=="POST"){
         $value = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+        $value = filter_input(INPUT_POST, $key, FILTER_SANITIZE_ENCODED);
     }else{
         $value = filter_input(INPUT_GET, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+        //$value = filter_input(INPUT_GET, $key, FILTER_SANITIZE_ENCODED);
     }
-    //$value = filter_input(INPUT_GET, $key, FILTER_SANITIZE_ENCODED);
-    return trim($value);
+    if(!is_null($value)){
+        $value = trim($value);
+    }
+    return ($value);
 }
 
 
@@ -56,9 +63,9 @@ function get_data_from_array($key_data,$array){
 /*function to start session*/
 function startSecureSession() {
     if (session_status() === PHP_SESSION_NONE){
-        ini_set('session.use_only_cookies', 1); // Forces sessions to only use cookies. 
-        ini_set("session.cookie_httponly", 1);//(No xxs)This will prevent from javascript to display session cookies over browser
-        ini_set('session.httponly',true);/* securing cookies and session*/
+        ini_set('session.use_only_cookies', 'true'); // Forces sessions to only use cookies. 
+        ini_set("session.cookie_httponly", 'true');//(No xxs)This will prevent from javascript to display session cookies over browser
+        ini_set('session.httponly','true');/* securing cookies and session*/
         session_start(); // Start the php session
     }
     session_regenerate_id(true); // regenerated the session, delete the old one.
@@ -91,9 +98,14 @@ function redirect($controller, $action=""){
 }
 
 function isLinkActive($link){
+    $link = (!is_null($link))?strtolower($link):"";
     $link = str_replace(Config::get('host'), "", $link);
-    $current_link = strtolower(filter("uri", "GET"));
-    if(strtolower(trim($link, '/')) == trim($current_link,'/')){
+    
+    $current_link = (filter("uri", "GET"));
+    $current_link = (!is_null($current_link))?strtolower($current_link):"";
+    $current_link = str_replace(Config::get('host'), "", $current_link);
+    
+    if(trim($link, '/') == trim($current_link,'/')){
         return "active";
     }
     else{
@@ -172,6 +184,27 @@ function downloadFile($file_path,$flag=false){
         http_response_code(404);
         die();
     }
+}
+
+function errorView(int $httpCode,$errorDetails,bool $isPartial = false) : View{
     
+    $viewData = new MyEasyPHP\Libs\ViewData();
+    $viewData->httpCode = $httpCode;
+    $viewData->httpStatus = HttpStatus::getStatus($httpCode);
+    $viewData->details = $errorDetails;
+    
+    //path to error page
+    $path = VIEWS_PATH."Shared".DS."error.view.php";
+    $view = new View($path,$viewData);
+    if($isPartial  == true){
+        return $view;
+    }
+    
+    $viewData->content = $view->render();
+    
+    $layout = Config::get('default_view_container');//$this->router->getRoute();
+    $layout_path = VIEWS_PATH.$layout.'.view.php';
+    $layout_view_obj = new View($layout_path,$viewData);
+    return $layout_view_obj;
 }
 

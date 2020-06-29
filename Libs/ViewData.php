@@ -14,8 +14,10 @@ namespace MyEasyPHP\Libs;
 class ViewData {
     public $content;
     public $detail ;
+    public $ErrorMessage ;
     public function __construct($data = array()){
         $this->detail="";
+        $this->ErrorMessage="";
         $this->set($data);
     }
     //method to set view data

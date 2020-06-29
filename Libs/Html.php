@@ -74,11 +74,12 @@ class Html {
         return  Config::get('Assets')."/".$img_path;
     }
     //function to include partial view files 
-    public static function include($filepath = "", ViewData $view_Data=null){
+    public static function include($filepath = "", ViewData $view_Data=null, $modelObj = null){
         $output = NULL;
         if(trim($filepath)!==""){
             ob_start();//turns on output buffering
             $viewData = $view_Data;
+            $model = $modelObj;
             require_once VIEWS_PATH.DS.$filepath.".view.php";
             $output = ob_get_clean();
         }

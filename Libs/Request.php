@@ -55,9 +55,13 @@ class Request {
                 $data = $_GET;
                 break;
             case "PUT":
-                $data = json_decode(file_get_contents("php://input"),true);
+                if($this->content_type === "application/json"){
+                    $data = json_decode(file_get_contents("php://input"),true);
+                }
+                else{
+                    $data = file_get_contents("php://input");
+                }
                 break;
-            
         }
         //filtering and senitizing whatever input data is accepted
         $data = $this->senitizeInputs($data);

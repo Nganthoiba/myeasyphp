@@ -20,6 +20,7 @@ use MyEasyPHP\Libs\Database;
 use MyEasyPHP\Libs\EmptyClass;
 use MyEasyPHP\Libs\Config;
 use Exception;
+use TypeError;
 
 class EasyQueryBuilder {
     /** SQL Query String **/
@@ -55,7 +56,7 @@ class EasyQueryBuilder {
     }
     
     public function setEntityClassName($class_name):void{
-        $this->entiy_class_name = $class_name;
+        $this->entiy_class_name = str_replace(ENTITY_NAMESPACE,"",$class_name);
     }
     
     public function getErrorInfo(){
@@ -72,18 +73,24 @@ class EasyQueryBuilder {
         }
         self::$conn = (self::$conn==null)?Database::connect():self::$conn;//connecting database
         $stmt = self::$conn->prepare($this->qry);
-        $res = $stmt->execute($this->values);
+        try{
+            $res = $stmt->execute($this->values);
 
-        if(!$res){
-            //Throw an exception when error occurs while executing query
-            $this->errorInfo = $stmt->errorInfo();
-            $this->errorCode = $stmt->errorCode();
-            throw new Exception("An error occurs while executing the query. ".$this->errorInfo[2]."\n".$this->getQuery(), 
-                    $this->errorCode);
+            if(!$res){
+                //Throw an exception when error occurs while executing query
+                $this->errorInfo = $stmt->errorInfo();
+                $this->errorCode = $stmt->errorCode();
+                throw new Exception("An error occurs while executing the query. ".$this->errorInfo[2]."\n".$this->getQuery(), 
+                        $this->errorCode);
+            }
+            /* Refresing query and values after query execution */
+            $this->clear();
+            return $stmt;
+        }catch(TypeError $ex){
+            $this->errorInfo = $ex->getMessage();
+            $this->errorCode = $ex->getCode();
+            throw $ex;
         }
-        /* Refresing query and values after query execution */
-        $this->clear();
-        return $stmt;
     }
     /** This will clear existing query statement and parameter values ***/
     public function clear(){
@@ -562,13 +569,7 @@ class EasyQueryBuilder {
         }
         //otherwise columns are in the form of array
         $column_string = "";
-        /*
-        foreach ($columns as $col){
-            $column_string .= $col.", ";
-        }
-        return rtrim($column_string,', ');
-         * 
-         */
+        
         if(is_array($columns)){
             $column_string = implode(", ", $columns);
         }
@@ -581,13 +582,7 @@ class EasyQueryBuilder {
         }
         //otherwise tables are in the form of array
         $tables_string = "";
-        /*
-        foreach ($tables as $table){
-            $tables_string .= $table.", ";
-        }
-        return rtrim($tables_string,', ');
-         * 
-         */
+        
         if(is_array($tables)){
             $tables_string = implode(", ", $tables);
         }

@@ -52,7 +52,8 @@ class Database {
                 self::$conn_error = "Database connection failed.";
                 throw new Exception("Database connection failed.",503);
             }
-            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
+            //$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING, PDO::ERRMODE_EXCEPTION);
+            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             return $conn;
         }catch(Exception $e){
             self::$conn_error = $e->getMessage();

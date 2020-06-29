@@ -38,7 +38,7 @@ class EasyEntity {
         $size = sizeof($paths); 
         $this->table_name = $paths[$size-1];//by default, the table name is set same as that of the entity class name
         $this->queryBuilder = new EasyQueryBuilder();
-        $this->queryBuilder->setEntityClassName($this->table_name);//by default
+        $this->queryBuilder->setEntityClassName($class_name);//by default
         $this->response = new Response();
     }
     //method to set table name of the enity
@@ -84,7 +84,9 @@ class EasyEntity {
     public function setEntityData(array $data){
         $obj_data = $this->toArray();
         foreach($obj_data as $key=>$val){
-            $this->{$key} = isset($data[$key])?$data[$key]:null;
+            if(isset($data[$key])){
+                $this->{$key} = $data[$key];
+            }
         }
     }
     
@@ -124,7 +126,7 @@ class EasyEntity {
     }
     //to read record
     public function read($columns = array()): EasyQueryBuilder{
-        $this->queryBuilder->setEntityClassName($this->table_name);
+        $this->queryBuilder->setEntityClassName(get_class($this));
         return $this->queryBuilder->select($columns)->from($this->table_name);
     }
     //to update and save record
@@ -249,6 +251,6 @@ class EasyEntity {
             return 0;
         }
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row['max_val'] == NULL?0:is_numeric($row['max_val'])?(int)$row['max_val']:$row['max_val'];
+        return $row['max_val'] == NULL?0:(is_numeric($row['max_val'])?(int)$row['max_val']:$row['max_val']);
     }
 }

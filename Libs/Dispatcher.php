@@ -66,8 +66,8 @@ class Dispatcher {
             $controller_class = "MyEasyPHP\\Controllers\\".$controller;
             $controllerObj = new $controller_class();
             if(!method_exists($controllerObj, $action)){
-                throw new Exception("Action '".$action."' of controller class '"
-                        .$controller."' does not exist.",500);
+                throw new Exception("The page you are looking for does not exist. Action '".$action."' of controller class '"
+                        .$controller."' does not exist.",404);
             }
 
             $controllerObj->setRouter(self::$router);//very much necessary
