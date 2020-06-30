@@ -118,7 +118,8 @@ class EasyEntity {
                     "msg" => "Sorry, an error occurs while saving the record. ".$e->getMessage(),
                     "status"=>false,
                     "status_code"=>500,
-                    "error"=>$this->queryBuilder->getErrorInfo()
+                    "error"=>$this->queryBuilder->getErrorInfo(),
+                    "error_code" => $this->queryBuilder->getErrorCode()
                 ]);
             }
         }
@@ -242,9 +243,10 @@ class EasyEntity {
     /********** END CRUD OPERATIONS *********/
     
     //find maximum value of a column, the column should be of integer data type preferrably
-    public function findMaxColumnValue($column/*Column/Attribute name*/){
+    public function findMaxColumnValue($column/*Column/Attribute name*/,$cond=array()){
         $stmt = $this->queryBuilder->select(" max(".$column.") as max_val")
                 ->from($this->getTable())
+                ->where($cond)
                 ->execute();
         //$stmt = $this->read(" max(".$column.") as max_val")->execute();
         if($stmt->rowCount() == 0){

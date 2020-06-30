@@ -126,12 +126,12 @@ class Controller {
     protected function view(): View{
         ///By Default, view path is an empty string, and data model is null
         $view_path="";
-        $this->dataModel = null;
+        //$this->dataModel = null;
         $numargs = func_num_args();
         switch($numargs){
             case 0:
                 $view_path="";
-                $this->dataModel = null;
+                //$this->dataModel = null;
                 break;
             case 1:
                 $arg = func_get_arg(0);
@@ -147,7 +147,7 @@ class Controller {
                 $arg1 = func_get_arg(0);//first argument is assumed to be view path
                 $arg2 = func_get_arg(1);//second argument is assumed to be an object of either Entity or a Model class
                 $view_path = is_null($arg1)?"":$arg1;
-                $this->dataModel = ($arg2 instanceof Model or $arg2 instanceof EasyEntity or is_array($arg2))?$arg2:null;
+                $this->dataModel = ($arg2 instanceof Model or $arg2 instanceof EasyEntity or is_array($arg2))?$arg2:$this->dataModel;
                 break;            
         }
         
@@ -183,13 +183,13 @@ class Controller {
     
     public function partialView(): View{
         ///By Default, view path is an empty string, and data model is null
-        $this->dataModel = null;
+        //$this->dataModel = null;
         $view_path="";
         $numargs = func_num_args();
         switch($numargs){
             case 0:
                 $view_path="";
-                $this->dataModel = null;
+                //$this->dataModel = null;
                 break;
             case 1:
                 $arg = func_get_arg(0);
@@ -205,7 +205,7 @@ class Controller {
                 $arg1 = func_get_arg(0);//first argument is assumed to be view path
                 $arg2 = func_get_arg(1);//second argument is assumed to be an object of either Entity or a Model class
                 $view_path = is_null($arg1)?"":$arg1;
-                $this->dataModel = ($arg2 instanceof Model or $arg2 instanceof EasyEntity or is_array($arg2))?$arg2:null;
+                $this->dataModel = ($arg2 instanceof Model or $arg2 instanceof EasyEntity or is_array($arg2))?$arg2:$this->dataModel;
                 break;            
         }
         

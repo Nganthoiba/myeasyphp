@@ -63,7 +63,7 @@ class EasyQueryBuilder {
         return $this->errorInfo;
     }
     public function getErrorCode(){
-        return $this->errorcode;
+        return $this->errorCode;
     }
     
     /*Method to execute query statement*/

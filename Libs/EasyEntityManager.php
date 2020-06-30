@@ -47,7 +47,6 @@ class EasyEntityManager {
     */
     //Read records by passing entity object
     public function read(EasyEntity $entity) : EasyQueryBuilder{
-        //$class_name = str_replace(ENTITY_NAMESPACE,"",get_class($entity));
         $this->queryBuilder->setEntityClassName(get_class($entity)); 
         return $this->queryBuilder->select()->from($entity->getTable());
     }
@@ -89,10 +88,8 @@ class EasyEntityManager {
         }
         return $this->response;
     }
-    
-    //to update or save record
+    //terminology save will mean both insertion if record does not exist and updation if record already exist
     public function save(EasyEntity $entity): Response{
-        $this->queryBuilder->setEntityClassName($entity->getTable());
         if(!$entity->isValidEntity()) {
             $this->response->set([
                 "msg" => "Invalid entity: either table name or key is not set.",
@@ -101,6 +98,71 @@ class EasyEntityManager {
             ]);          
         }
         else{
+            //check if entity already exist or not
+            $temp_entity = $this->find($entity, $entity->{$entity->getKey()});
+            $data = ($entity->toArray());
+            try{
+                if(is_null($temp_entity)){
+                    //then go for inserting new record
+                    $stmt = $this->queryBuilder->insert($entity->getTable(), $data)->execute();
+
+                    if($entity->{$entity->getKey()}=="" || $entity->{$entity->getKey()}==null){
+                        //$entity->{$entity->getKey()} = $stmt->lastInsertId();
+                        $entity->{$entity->getKey()} = $this->queryBuilder::$conn->lastInsertId();
+                    }
+
+                    $this->response->set([
+                        "msg" => "Record inserted successfully.",
+                        "status"=>true,
+                        "status_code"=>200,
+                        "data"=>$entity
+                    ]);
+                }
+                else{
+                    //otherwise go for updating the entity
+                    unset($data[$entity->getKey()]);//key will not be updated
+                    $cond = [
+                        //primary key attribute = value
+                        $entity->getKey() => ['=',$entity->{$entity->getKey()}]
+                    ];
+                    $stmt = $this->queryBuilder
+                            ->update($entity->getTable())
+                            ->set($data)
+                            ->where($cond)
+                            ->execute();
+
+                    $this->response->set([
+                            "msg" => "Record saved successfully.",
+                            "status"=>true,
+                            "status_code"=>200,
+                            "data"=>$entity
+                        ]);
+                }
+            }
+            catch (Exception $e){
+                $this->response->set([
+                        "msg" => "Sorry, an error occurs while updating the record. ".$e->getMessage(),
+                        "status"=>false,
+                        "status_code"=>500,
+                        "error"=>$this->queryBuilder->getErrorInfo()
+                    ]);
+            }
+            unset($temp_entity);
+        }
+        return $this->response;
+    }
+    
+    //to update or save record
+    public function update(EasyEntity $entity): Response{
+        if(!$entity->isValidEntity()) {
+            $this->response->set([
+                "msg" => "Invalid entity: either table name or key is not set.",
+                "status"=>false,
+                "status_code"=>400
+            ]);          
+        }
+        else{
+            //$this->queryBuilder->setEntityClassName($entity->getTable());
             try{
                 $data = ($entity->toArray());
                 unset($data[$entity->getKey()]);//key will not be updated
@@ -175,9 +237,6 @@ class EasyEntityManager {
     
     //Find an entity with primary key attribute
     public function find(EasyEntity $entity,$id){
-//        string $entity_class_name
-//        $entity_class_name = ENTITY_NAMESPACE.$entity_class_name;
-//        $entity = new $entity_class_name();
         //If Entity is not valid
         if(!$entity->isValidEntity()) {
             throw new Exception(get_class($entity)." is not a valid entity class, please make sure "
@@ -194,6 +253,20 @@ class EasyEntityManager {
             $entity->{$col_name} = $val;
         }
         return $entity;
+    }
+    
+    //find maximum value of a column/field in a table, the column should be of integer data type preferrably
+    public function findMaxColumnValue($table,$column/*Column/Attribute name*/,$cond=array()){
+        $stmt = $this->queryBuilder->select(" max(".$column.") as max_val")
+                ->from($table)
+                ->where($cond)
+                ->execute();
+        //$stmt = $this->read(" max(".$column.") as max_val")->execute();
+        if($stmt->rowCount() == 0){
+            return NULL;
+        }
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['max_val'];
     }
     
     //function to get query builder

@@ -47,6 +47,7 @@ class View {
     
     public function setDataModel($model){
         $this->model = $model;
+        return $this;
     }
     
     //method for passing view data

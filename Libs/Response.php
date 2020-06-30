@@ -15,7 +15,7 @@ declare(strict_types=1);
  */
 namespace MyEasyPHP\Libs;
 class Response {
-    //put your code here
+    //data members compulsory for this response class
     public $data,$error,$status,$status_code,$msg;
     public function __construct() {
         //By default
@@ -26,11 +26,16 @@ class Response {
         $this->msg = "";
     }
     public function set(array $data = []){
+        /*
         $this->data = isset($data['data'])?$data['data']:$this->data;
         $this->error = isset($data['error'])?$data['error']:$this->error;
         $this->status = isset($data['status'])?$data['status']:$this->status;
         $this->status_code = isset($data['status_code'])?$data['status_code']:$this->status_code;
         $this->msg = isset($data['msg'])?$data['msg']:$this->msg;
+        */
+        foreach($data as $key=>$val){
+            $this->{$key} = $val;
+        }
         return $this;
     }
 }
