@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+//declare(strict_types=1);
 use MyEasyPHP\Libs\Config;
 use MyEasyPHP\Libs\Response;
 use MyEasyPHP\Libs\ext\csrf;
@@ -131,7 +131,7 @@ function verifyCSRFToken($origin = null): Response{
     try{
         $origin = is_null($origin)?$_REQUEST:$origin;
         // Run CSRF check, on REQUEST(whether POST or GET) data, in exception mode, for 10 minutes, in one-time mode.
-        if(csrf::check('token', $origin, true,60*10, true)){
+        if(csrf::check('token', $origin, true,60*60*20, true)){
             $response->set(array(
                 "msg"=>"token matched",
                 "status"=>true,
@@ -186,7 +186,8 @@ function downloadFile($file_path,$flag=false){
     }
 }
 
-function errorView(int $httpCode,$errorDetails,bool $isPartial = false) : View{
+//function to return a view that shows error details when any error occurs
+function errorView($httpCode,$errorDetails,bool $isPartial = false) : View{
     
     $viewData = new MyEasyPHP\Libs\ViewData();
     $viewData->httpCode = $httpCode;
@@ -206,5 +207,36 @@ function errorView(int $httpCode,$errorDetails,bool $isPartial = false) : View{
     $layout_path = VIEWS_PATH.$layout.'.view.php';
     $layout_view_obj = new View($layout_path,$viewData);
     return $layout_view_obj;
+}
+
+//Accounts related function
+//function to get roles assigned to a user 
+function getRoles(string $userId):array{
+    $em = new MyEasyPHP\Libs\EasyEntityManager();
+    $list = $em->readTable("UserRoles UR", ["UR.RoleId","R.Name as role_name"])
+                    ->leftJoin("Roles R")->on("UR.RoleId = R.Id")->where([
+                        "UR.UserId"=>$userId
+                    ])->get();
+    $userRoles = [];
+    if(!is_null($list)){
+        foreach ($list as $row){
+            $userRoles[] = strtolower($row['role_name']);
+        }
+    }
+    return $userRoles;
+}
+//function to check whether a user's role is the input user id and role name
+function isRole($userId,$role_name):bool{
+    if(is_null($role_name) || trim($role_name)==""){
+        return false;
+    }
+    $roles = getRoles($userId);
+    if(sizeof($roles)==0){
+        return false;
+    }
+    if(in_array(strtolower($role_name), $roles)){
+        return true;
+    }
+    return false;
 }
 

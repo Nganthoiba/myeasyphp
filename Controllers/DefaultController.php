@@ -21,12 +21,7 @@ class DefaultController extends Controller{
     
     //as an api end point
     public function about(){
-        $this->response->set([
-            "status"=>true,
-            "status_code"=>200,
-            "msg"=>"Wow! wonderful"
-        ]);
-        return $this->sendResponse($this->response);//result is in json format
+        return $this->view();
     }
     public function contact(){
         return "This is my contact";//returning a string
@@ -46,5 +41,9 @@ class DefaultController extends Controller{
     }
     public function product(int $num1,int $num2){
         return "Num1=$num1 & Num2=$num2, and product is ".($num1*$num2);
+    }
+    
+    public function cropImage(){
+        return $this->view();
     }
 }

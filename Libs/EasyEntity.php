@@ -22,11 +22,12 @@ namespace MyEasyPHP\Libs;
  */
 
 use MyEasyPHP\Libs\EasyQueryBuilder;
+use MyEasyPHP\Libs\Model;
 use MyEasyPHP\Libs\Response;
 use PDO;
 use Exception;
 
-class EasyEntity {
+class EasyEntity extends Model{
     private $table_name;//name of the table in the database
     private $key;//primary key
     private $queryBuilder;

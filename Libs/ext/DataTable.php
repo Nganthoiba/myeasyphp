@@ -4,9 +4,9 @@
  * Server side ajax response for DataTable 
  * @author Nganthoiba
  */
-namespace Libs\ext;
+namespace MyEasyPHP\Libs\ext;
 
-use Libs\Database;
+use MyEasyPHP\Libs\Database;
 use Exception;
 class DataTable {
     private $draw,$row,$length,$orderByColumnIndex,$orderByColumnName,$globalSearchValue;

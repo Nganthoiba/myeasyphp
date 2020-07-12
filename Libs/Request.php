@@ -46,7 +46,7 @@ class Request {
                     //$data = $_POST;
                     foreach($_POST as $key => $value)
                     {
-                      $data[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+						$data[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
                     }
                 }
                 break;
@@ -110,5 +110,9 @@ class Request {
             }
         }
         return $clean_input;
+    }
+    
+    public static function getURI(){
+        return filter_input(INPUT_GET, "uri", FILTER_SANITIZE_SPECIAL_CHARS);
     }
 }

@@ -23,7 +23,7 @@ class Route {
     
     
     public function __construct(string $path, $params, $methods) {
-        $this->path = strtolower($path);
+        $this->path = ($path);
         $this->isFunction = is_callable($params);
         if($this->isFunction){
             //$param is an executable function

@@ -10,7 +10,7 @@
  *
  * @author Nganthoiba
  */
-namespace Libs\ext;
+namespace MyEasyPHP\Libs\ext;
 
 class captcha {
     public function phptext($text,$textColor,$backgroundColor='',$fontSize,$imgWidth,$imgHeight,$dir,$fileName)

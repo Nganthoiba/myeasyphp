@@ -50,6 +50,13 @@ class EasyEntityManager {
         $this->queryBuilder->setEntityClassName(get_class($entity)); 
         return $this->queryBuilder->select()->from($entity->getTable());
     }
+    //Entity Manager to read data from a table/relation
+    public function readTable(string $table_name,$fields=[]): EasyQueryBuilder{
+        /**
+         * $table_name : name of the table 
+         * $fields     : An array of columns in the table**/
+        return $this->queryBuilder->select($fields)->from($table_name);
+    }
     
     //Create or add a new (entity)record in the table
     public function add(EasyEntity $entity): Response{
@@ -180,15 +187,18 @@ class EasyEntityManager {
                         "msg" => "Record saved successfully.",
                         "status"=>true,
                         "status_code"=>200,
-                        "data"=>$entity
+                        "data"=>$entity,
+                        "rows_affected"=>$stmt->rowCount()
                     ]);
                 $this->queryBuilder->clear();
             }catch(Exception $e){
                 $this->response->set([
-                        "msg" => "Sorry, an error occurs while updating the record. ".$e->getMessage(),
+                        "msg" => "Sorry, an error occurs while updating the record. ",
                         "status"=>false,
                         "status_code"=>500,
-                        "error"=>$this->queryBuilder->getErrorInfo()
+                        "error"=>[
+                            $e->getMessage(),
+                            $this->queryBuilder->getErrorInfo()]
                     ]);
             }
         }
@@ -256,7 +266,7 @@ class EasyEntityManager {
     }
     
     //find maximum value of a column/field in a table, the column should be of integer data type preferrably
-    public function findMaxColumnValue($table,$column/*Column/Attribute name*/,$cond=array()){
+    public function findMax($table,$column/*Column/Attribute name*/,$cond=array()){
         $stmt = $this->queryBuilder->select(" max(".$column.") as max_val")
                 ->from($table)
                 ->where($cond)

@@ -39,7 +39,7 @@ class HttpStatus {
     public static $Conflict= 408;
     public static $InternalServerError= 500;
     
-    public static function getStatus(int $code){
+    public static function getStatus($code){
         return isset(self::$status[$code])? self::$status[$code]: "Unknown Error"; 
     }
 }

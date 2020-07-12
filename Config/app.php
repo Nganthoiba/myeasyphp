@@ -1,8 +1,13 @@
 <?php
 use MyEasyPHP\Libs\Config;
+
+error_reporting(E_ALL & E_NOTICE);
+
+
 //Configuration set up file
 Config::set("app_name", "MyEasyPHP");/*Name of the application*/
 Config::set("site_name", "Welcome to MyEasyPHP");
+Config::set("site_title", "Page Title");
 Config::set("default_time_zone", "Asia/Kolkata");
 
 Config::set('default_view_container', 'default');
@@ -45,3 +50,6 @@ Config::set('DB_CONFIG', [
     "DB_PASSWORD" => "sa",//postgres
     "PERSISTENT" => false
 ]);
+//error Details display either true or false
+//set it true during development time
+Config::set('error_display',true);

@@ -27,7 +27,7 @@ class Html {
             }
         }
         else if(is_string($path_to_css) && trim($path_to_css)!==""){
-            $path =  Config::get('Assets')."/css/".$path_to_css;
+            $path =  Config::get('Assets')."/css/".$path_to_css.'.css';
             echo '<link rel="stylesheet" href="'.$path.'" type="text/css" />'."\r\n";
         }
         
@@ -39,7 +39,7 @@ class Html {
             }
         }
         else if(is_string($path_to_js) && trim($path_to_js)!==""){
-            $path =  Config::get('Assets')."/js/".$path_to_js;
+            $path =  Config::get('Assets')."/js/".$path_to_js.'.js';
             echo '<script src="'.$path.'" type="text/javascript"></script>'."\r\n";
         }
     }
@@ -80,7 +80,7 @@ class Html {
             ob_start();//turns on output buffering
             $viewData = $view_Data;
             $model = $modelObj;
-            require_once VIEWS_PATH.DS.$filepath.".view.php";
+            require_once VIEWS_PATH.$filepath.".view.php";
             $output = ob_get_clean();
         }
         echo $output;

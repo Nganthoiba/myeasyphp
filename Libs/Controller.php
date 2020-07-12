@@ -45,6 +45,39 @@ class Controller {
     private $router;
     
     protected $entityManager,$easyEntityManager;
+    
+    protected $_annonymousActions;//an array of actions which can be accessed 
+    //annonymously with or without authentication such as login page, registration page, forgot
+    //password page etc
+    
+    protected $_authorizeActions,//this is an array of strings representing actions and roles
+            //concatinated by ':' character and the roles are separated by ,(coma). If this is an
+            //empty array all kinds of authenticated user roles will be allowed to access any action in the 
+            //controller.
+            
+            $_authorize;//It's value is boolean either true or false that represents 
+            //whether the controller has roles specific actions which means the controller
+            //has some actions which can be accessed by only some permitted users roles.
+            //Default value is false, which means the actions in the controller are not protected
+            //from being accessed by any type of user
+    
+    /*
+     * Let'have a look an example:
+     * $this->_authorize = true;
+     * $this->_authorizeActions = [
+     *              'action1:role1,role2,role3'
+     *              'action2:role5,role6',
+     *              'action3'
+     *          ]
+     * In the first statement '$this->_authorize = true;', it says that there are some actions in the controller, which can be 
+     * accessed by some kinds of users roles, and the roles which are allowed to access an action are
+     * defined in the second statement as shown above.
+     * 
+     * action1 can be accessed by  only role1, role2, & role3, action2 by role5 and role6 and latly
+     * there is no role for action 3, this means the particular action3 is granted access for all kinds 
+     * of user. 
+        
+     *      */
 
     public function setRouter(Router $router){
         $this->router = $router;
@@ -67,11 +100,38 @@ class Controller {
         $this->dataModel = null;
         $this->params = Dispatcher::getRouter()->getParams();
         $this->response = new Response();
-        // obtaining the Doctrine entity manager
-        //$this->entityManager = DoctrineEntityManager::getEntityManager();
-        // obtaining Easy Entity Manager
-        //$this->easyEntityManager = new EasyEntityManager();
         
+        $this->_authorize = false;//access granted for all kinds of users
+        $this->_authorizeActions = [];//empty
+        $this->_annonymousActions = [];//
+       
+        
+    }
+    
+    public function isControllerAuthenticationRequired():bool{
+        return $this->_authorize;
+    }
+    
+    public function isActionAuthenticationRequired($action):bool{
+        foreach ($this->_authorizeActions as $row){
+            $actions_n_roles = explode(":",$row);
+            $action_name = $actions_n_roles[0];
+            if(strtolower(trim($action_name)) == strtolower($action)){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public function getAuthorizations():array{
+        return $this->_authorizeActions;
+    }
+    
+    public function getAnnonymousActions():array{
+        for($i=0;$i<sizeof($this->_annonymousActions);$i++){
+            $this->_annonymousActions[$i] = strtolower($this->_annonymousActions[$i]);
+        }
+        return $this->_annonymousActions;
     }
     
     /** For sending response to client **/
@@ -81,8 +141,17 @@ class Controller {
         return json_encode($resp);
     }
     
-    public function redirect($controller, $action){
-        header("Location: ".Config::get('host')."/".$controller."/".$action);
+    public function redirect($controller,$action="",$params = ""){
+        $link = trim($controller)==""?Config::get('host')."/":Config::get('host')."/".$controller."/".$action;
+        if((is_string($params) && trim($params) !== "") || is_numeric($params)){
+            $link .= "/".$params;
+        }
+        else if(is_array($params)){
+            foreach ($params as $param){
+                $link .= "/".$param;
+            }
+        }
+        header("Location: ".$link);
     }
     
     protected function _cleanInputs($data) {

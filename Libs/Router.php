@@ -56,8 +56,9 @@ class Router {
     
     /* The methods adds each route defined to the $routes array */
     //callable: means $parameters can be just a function
-    public function addRoute($url, /*callable*/ $parameters, $methods=[]/*HTTP Verbs in array*/) : void{
+    public function addRoute($url, /*callable*/ $parameters, $methods=[]/*HTTP Verbs in array*/){
         $this->routes[] = new Route($url, $parameters, $methods);
+        return $this;
     }
     /* method to get all routes */
     public function getRoutes():array{
@@ -163,7 +164,7 @@ class Router {
         
         //Further go for checking for every corresponding element
         for($i = 0; $i < sizeof($first_url_parts); $i++){
-            if($first_url_parts[$i] !== $second_url_parts[$i]){
+            if(strtolower($first_url_parts[$i]) !== strtolower($second_url_parts[$i])){
                 if(!$this->isParameter($first_url_parts[$i])){
                     return false;
                 }

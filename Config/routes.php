@@ -47,10 +47,11 @@ $router->addRoute("/Default/product/{num1}/{num2}", [
     "Controller" => "Default",
     "Action" => "product"
 ]);
-$router->addRoute("/Default/{script}", [
+$router->addRoute("/Default/test/{script}", [
     "Controller" => "Default",
     "Action" => "test"
 ],"GET");
+
 
 
 
