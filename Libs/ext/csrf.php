@@ -8,7 +8,6 @@ namespace MyEasyPHP\Libs\ext;
 use Exception;
 class csrf
 {
-
     protected static $doOriginCheck = true;
 
     /**
