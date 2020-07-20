@@ -45,7 +45,7 @@ Config::set('DB_CONFIG', [
     "DB_HOST" => "localhost",
     "DB_PORT" => 1433,
     "DB_DRIVER"=>"sqlsrv", //Database driver
-    "DB_NAME" => "easyphp",
+    "DB_NAME" => "MyEasyPHP",
     "DB_USERNAME" => "sa",
     "DB_PASSWORD" => "sa",//postgres
     "PERSISTENT" => false

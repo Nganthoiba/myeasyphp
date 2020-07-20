@@ -46,4 +46,12 @@ class DefaultController extends Controller{
     public function cropImage(){
         return $this->view();
     }
+    
+    public function headers(){
+        $headers = $this->request->getRequestHeaders();
+
+        foreach ($headers as $header => $value) {
+            echo "$header: $value <br />\n";
+        }
+    }
 }
