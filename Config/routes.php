@@ -4,7 +4,8 @@ declare(strict_types=1);
 use MyEasyPHP\Libs\Router;
 /*
  * Reference: https://www.codediesel.com/php/how-do-mvc-routers-work/
- * 
+ * $router = new Router();
+ * $router->addRoute(param1,param2,param3[optional]);
  * The first parameter is the request uri or url, and the second parameter can be just a function
  * or an associative array indicating which controller and what action to be called.
  * and lastly the third parameter is the methods(http verbs) which is allowed for the request url, its values 
