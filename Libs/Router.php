@@ -188,7 +188,7 @@ class Router {
         if(is_null($url)){
             return null;
         }
-        $routes = $this->routes;
+        $routes = $this->routes;        
         foreach($routes as $route){
             if($url == $route->getPath() || $this->areEqualURLs($route->getPath(), $url)){
                 return $route;
