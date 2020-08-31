@@ -105,8 +105,10 @@ class EasyQueryBuilder {
     
     /*** Set query and get query ***/
     public function getQuery():string{
-        //return $this->qry;
-        return $this->last_executed_query;
+        if(trim($this->qry) == ""){
+            return $this->last_executed_query;
+        }
+        return $this->qry;
     }
     /** A method to set programmer's own complex query when 
      * the query building methods defined below cannot fulfill the required output.**/

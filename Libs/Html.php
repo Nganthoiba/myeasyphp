@@ -27,7 +27,13 @@ class Html {
             }
         }
         else if(is_string($path_to_css) && trim($path_to_css)!==""){
-            $path =  Config::get('Assets')."/css/".$path_to_css.'.css';
+            $ext = substr(trim($path_to_css), -3);
+            if($ext=="css"){
+                $path =  Config::get('Assets')."/css/".$path_to_css;
+            }
+            else{
+                $path =  Config::get('Assets')."/css/".$path_to_css.'.css';
+            }
             echo '<link rel="stylesheet" href="'.$path.'" type="text/css" />'."\r\n";
         }
         
@@ -39,7 +45,13 @@ class Html {
             }
         }
         else if(is_string($path_to_js) && trim($path_to_js)!==""){
-            $path =  Config::get('Assets')."/js/".$path_to_js.'.js';
+            $ext = substr(trim($path_to_js), -3);
+            if($ext==".js"){
+                $path =  Config::get('Assets')."/js/".$path_to_js;
+            }
+            else{
+                $path =  Config::get('Assets')."/js/".$path_to_js.'.js';
+            }
             echo '<script src="'.$path.'" type="text/javascript"></script>'."\r\n";
         }
     }

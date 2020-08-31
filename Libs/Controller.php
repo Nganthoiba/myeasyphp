@@ -245,7 +245,17 @@ class Controller {
         
         $this->viewData->content = $view_obj->render();
         $layout = Config::get('default_view_container');//$this->router->getRoute();
-        $layout_path = VIEWS_PATH.$layout.'.view.php';
+        
+        //Finding container view
+        if(file_exists(VIEWS_PATH.$layout.'.view.php')){
+            $layout_path = VIEWS_PATH.$layout.'.view.php';
+        }
+        else if(file_exists(VIEWS_PATH."Shared".DS.$layout.'.view.php')){
+            $layout_path = VIEWS_PATH."Shared".DS.$layout.'.view.php';
+        }
+        else{
+            $layout_path="";
+        }
         $layout_view_obj = new View($layout_path,$this->viewData);
         return $layout_view_obj; //return the whole view object with view container
     }

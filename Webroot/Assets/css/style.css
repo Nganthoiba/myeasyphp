@@ -1,0 +1,230 @@
+/**custom styles**/
+.but-custom {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 4px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14pt;
+    margin: 2px 2px;
+    cursor: pointer;
+    min-height: 38px;
+    min-width:90px;
+}
+.but-custom:hover {
+    background-color: #329F36;
+    font-size: 12pt;
+}
+.small_font{
+    font-size: 10pt;
+}
+.signup_card{
+    margin-top: 6px;
+    max-width: 650px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.row {
+    margin-top: 10px;
+}
+footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+.nav_heading_text{
+    
+}
+.control-label{
+    vertical-align: middle;
+    float: right;
+    font-weight:normal;
+    padding-top: 5px;
+    cursor: pointer;
+}
+
+.custom_invalid_field{
+    border-color:#dc3545;
+    padding-right: 2.25rem;
+    background-repeat: no-repeat;
+    background-position: center right calc(2.25rem / 4);
+    background-size: calc(2.25rem / 2) calc(2.25rem / 2);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23dc3545' viewBox='-2 -2 7 7'%3e%3cpath stroke='%23d9534f' d='M0 0l3 3m0-3L0 3'/%3e%3ccircle r='.5'/%3e%3ccircle cx='3' r='.5'/%3e%3ccircle cy='3' r='.5'/%3e%3ccircle cx='3' cy='3' r='.5'/%3e%3c/svg%3E");
+}
+
+.date_picker{
+    
+}
+.custom-nav-grey{
+    background-color: #355552 !important;
+    color: #FFFFFF !important;
+}
+.custom-nav-orange{
+    background-color: #f97e12  !important;
+    color: #FFFFFF !important;
+}
+.custom-nav-yellow{
+    background-color: #A67E07  !important;
+    color: #FFFFFF !important;
+}
+.custom-nav-orange ul li .active{
+    background-color: #db930b  !important;
+}
+
+
+/***** Table Styles ***/
+.table_style {
+    width: 100% !important;
+    border-collapse: collapse;
+    border: 1px solid #ddd !important;
+    overflow-x: auto;
+    background-color: #e7eef4;
+}
+
+.table_style, .table_style td {
+    border-bottom: 1px solid #ddd;
+}
+
+.table_style th, .table_style td {
+    padding: 5px;
+}
+
+.table_style-striped tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.table_style-striped tr:hover {
+    background-color: #ddd;
+}
+.table_style tr:checked {
+    background-color: #ddd;
+}
+.table_style th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+}
+
+.yellow_header th{
+    background-color: #f97e12 !important;
+    color: #FFFFFF;
+}
+.blue_header th{
+    background-color: #1a4c6a !important;
+    color: #FFFFFF;
+}
+
+/*Scrollable Table Style*/
+.table-scroll{
+  /*width:100%; */
+  display: block;
+  empty-cells: show;
+  
+  /* Decoration */
+  border-spacing: 0;
+  border: 1px solid;
+}
+
+.table-scroll thead{
+  background-color: #f1f1f1;  
+  position:relative;
+  display: block;
+  width:100%;
+  overflow-y: scroll;
+}
+
+.table-scroll tbody{
+  /* Position */
+  display: block; position:relative;
+  width:100%; 
+  overflow-y:scroll;
+  /* Decoration */
+  border-top: 1px solid rgba(0,0,0,0.2);
+  padding-bottom: 10px;
+  
+}
+.table-scroll .tbody_max_height{
+    max-height: 68vh;
+}
+
+.table-scroll tr{
+  width: 100%;
+  display:flex;
+}
+
+.table-scroll td,.table-scroll th{
+  flex-basis:20%;
+  flex-grow:2;
+  display: block;
+  /*text-align:left;*/
+}
+
+
+/* Other options 
+
+.table-scroll td:first-child,
+.table-scroll th:first-child{
+  flex-basis:100%;
+  flex-grow:2;
+}*/
+/*
+.table-scroll tbody tr:nth-child(2n){
+  background-color: rgba(130,130,170,0.1);
+}
+*/
+
+.body-half-screen{
+  max-height: 50vh !important;
+}
+
+/* Align center vertically */
+.vertical-center {
+    width: 100%;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+/* For navigation bar */
+.user_full_name{
+    font-size: 10pt;
+    color:#FFFFFF;
+}
+
+@media only screen and (max-width: 600px){
+    .nav_heading_text{
+        font-size: 14pt;
+        font-weight: bold;
+    }
+    .control-label{
+        float: left;
+        font-size: 12pt;
+    }
+    .navbar-brand{
+        font-size: 12pt;
+    }
+    .user_full_name{
+        font-size: 10pt;
+    }
+    @media only screen and (max-width: 480px){
+        .nav_heading_text{
+            font-size: 10pt;
+            font-weight: bold;
+        }
+        .control-label{
+            float: left;
+            font-size: 10pt;
+        }
+        .navbar-brand{
+            font-size: 10pt;
+        }
+        .user_full_name{
+            display: none;            
+        }
+    }
+}
+

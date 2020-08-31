@@ -54,4 +54,8 @@ class DefaultController extends Controller{
             echo "$header: $value <br />\n";
         }
     }
+    
+    public function home(){
+        return $this->view();
+    }
 }

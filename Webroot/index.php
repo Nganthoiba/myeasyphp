@@ -4,6 +4,7 @@ require_once dirname(__DIR__) . '../Config/path.php';
 require_once VENDOR_PATH. 'autoload.php';
 require_once CONFIG_PATH. 'app.php';
 require_once CONFIG_PATH. 'routes.php';
+require_once LIBS_PATH. 'special_functions.php';
 // object $router is instantiated in the Config/routes.php file
 
 use MyEasyPHP\Libs\Dispatcher;

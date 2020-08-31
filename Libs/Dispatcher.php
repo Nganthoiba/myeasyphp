@@ -65,15 +65,14 @@ class Dispatcher {
                 throw $exc;            
             }
 			
-			//*** creating Controller Object ***
+            //*** creating Controller Object ***
             $controller_class = "MyEasyPHP\\Controllers\\".$controller;
             $controllerObj = new $controller_class();
             if(!method_exists($controllerObj, $action)){
                 throw new Exception("The page you are looking for does not exist. Action '".$action."' of controller class '"
                         .$controller."' does not exist.",404);
             }
-            
-			
+            			
 			
             if(!Authorization::isAuthorized($controllerObj,$action)){
                 $exc = new Exception("Unauthorize access. You are not allowed to access the page. <a href='".Config::get('host')."/Accounts/login'>Login</a> with "
@@ -98,7 +97,7 @@ class Dispatcher {
                         echo "Null";
                 } 
                 else if(is_object($view) && $view instanceof View){                           
-                        //if it is view object then render its contents
+                    //if it is view object then render its contents
                     //header('X-Frame-Options: SAMEORIGIN');//preventing clickjacking as the page can only be displayed in a frame on the same origin as the page itself. 
                     //header('X-Frame-Options: deny');//The page cannot be displayed in a frame, regardless of the site attempting to do so.
                     echo $view->render(); 
