@@ -21,7 +21,8 @@ $user_info = LoginModel::getLoginInfo();
         Html::loadCss('style');
         ?>
     </head>
-    <body class="container">
+    <body>
+        <!-- Top Navigtion Bar -->
         <nav class="navbar navbar-expand-lg navbar-dark custom-nav-grey fixed-top">
             
             <div class="container-fluid">
@@ -82,6 +83,14 @@ $user_info = LoginModel::getLoginInfo();
         </nav>
         <!--/.Navbar-->      
         
+        <!-- Sidebar -->
+        <div class="wrapper">
+            <?php 
+                if($isAuthenticated){
+                    Html::include("Shared/_side_navbar");
+                }
+            ?>
+        </div>
         
         
         <?php
