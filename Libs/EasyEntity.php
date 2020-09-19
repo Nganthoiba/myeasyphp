@@ -30,7 +30,7 @@ use Exception;
 class EasyEntity extends Model{
     private $table_name;//name of the table in the database
     private $key;//primary key
-    private $queryBuilder;
+    //private $queryBuilder;
     private $response;
     public function __construct() {
         /* Entity name should be same as the table name that exists in database */
@@ -38,8 +38,8 @@ class EasyEntity extends Model{
         $paths = explode("\\", $class_name);
         $size = sizeof($paths); 
         $this->table_name = $paths[$size-1];//by default, the table name is set same as that of the entity class name
-        $this->queryBuilder = new EasyQueryBuilder();
-        $this->queryBuilder->setEntityClassName($class_name);//by default
+//        $this->queryBuilder = new EasyQueryBuilder();
+//        $this->queryBuilder->setEntityClassName($class_name);//by default
         $this->response = new Response();
     }
     //method to set table name of the enity
@@ -63,9 +63,9 @@ class EasyEntity extends Model{
     }
     
     //method to get query builder
-    public function getQueryBuilder():EasyQueryBuilder{
-        return $this->queryBuilder;
-    }
+//    public function getQueryBuilder():EasyQueryBuilder{
+//        return $this->queryBuilder;
+//    }
     
     /*Convert self object to array*/
     public function toArray(){
@@ -91,7 +91,7 @@ class EasyEntity extends Model{
         }
     }
     
-    /********* START METHODS FOR CRUD OPERATIONS ********/
+    /********* START METHODS FOR CRUD OPERATIONS *******/
     //Creat or add a new record in the table
     public function add(): Response{   
         if(!$this->isValidEntity()) {

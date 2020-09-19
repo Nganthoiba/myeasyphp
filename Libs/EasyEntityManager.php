@@ -27,10 +27,10 @@ use Exception;
 use PDO;
 
 class EasyEntityManager {
-    private $queryBuilder;
+    public static $queryBuilder;
     private $response;
     public function __construct() {
-        $this->queryBuilder = new EasyQueryBuilder();
+        self::$queryBuilder = new EasyQueryBuilder();
         $this->response = new Response();
     }
     
@@ -47,15 +47,15 @@ class EasyEntityManager {
     */
     //Read records by passing entity object
     public function read(EasyEntity $entity) : EasyQueryBuilder{
-        $this->queryBuilder->setEntityClassName(get_class($entity)); 
-        return $this->queryBuilder->select()->from($entity->getTable());
+        self::$queryBuilder->setEntityClassName(get_class($entity)); 
+        return self::$queryBuilder->select()->from($entity->getTable());
     }
     //Entity Manager to read data from a table/relation
     public function readTable(string $table_name,$fields=[]): EasyQueryBuilder{
         /**
          * $table_name : name of the table 
          * $fields     : An array of columns in the table**/
-        return $this->queryBuilder->select($fields)->from($table_name);
+        return self::$queryBuilder->select($fields)->from($table_name);
     }
     
     //Create or add a new (entity)record in the table
@@ -71,11 +71,11 @@ class EasyEntityManager {
         else{
             try{
                 $data = ($entity->toArray());
-                $stmt = $this->queryBuilder->insert($entity->getTable(), $data)->execute();
+                $stmt = self::$queryBuilder->insert($entity->getTable(), $data)->execute();
                 
                 if($entity->{$entity->getKey()}=="" || $entity->{$entity->getKey()}==null){
                     //$entity->{$entity->getKey()} = $stmt->lastInsertId();
-                    $entity->{$entity->getKey()} = $this->queryBuilder::$conn->lastInsertId();
+                    $entity->{$entity->getKey()} = self::$queryBuilder::$conn->lastInsertId();
                 }
                 
                 $this->response->set([
@@ -89,12 +89,14 @@ class EasyEntityManager {
                     "msg" => "Sorry, an error occurs while saving the record. ".$e->getMessage(),
                     "status"=>false,
                     "status_code"=>500,
-                    "error"=>$this->queryBuilder->getErrorInfo()
+                    "sqlErrorCode" => self::$queryBuilder->getsqlErrorCode(),
+                    "error"=>self::$queryBuilder->getErrorInfo()
                 ]);
             }
         }
         return $this->response;
     }
+    
     //terminology save will mean both insertion if record does not exist and updation if record already exist
     public function save(EasyEntity $entity): Response{
         if(!$entity->isValidEntity()) {
@@ -111,11 +113,11 @@ class EasyEntityManager {
             try{
                 if(is_null($temp_entity)){
                     //then go for inserting new record
-                    $stmt = $this->queryBuilder->insert($entity->getTable(), $data)->execute();
+                    $stmt = self::$queryBuilder->insert($entity->getTable(), $data)->execute();
 
                     if($entity->{$entity->getKey()}=="" || $entity->{$entity->getKey()}==null){
                         //$entity->{$entity->getKey()} = $stmt->lastInsertId();
-                        $entity->{$entity->getKey()} = $this->queryBuilder::$conn->lastInsertId();
+                        $entity->{$entity->getKey()} = self::$queryBuilder::$conn->lastInsertId();
                     }
 
                     $this->response->set([
@@ -132,7 +134,7 @@ class EasyEntityManager {
                         //primary key attribute = value
                         $entity->getKey() => ['=',$entity->{$entity->getKey()}]
                     ];
-                    $stmt = $this->queryBuilder
+                    $stmt = self::$queryBuilder
                             ->update($entity->getTable())
                             ->set($data)
                             ->where($cond)
@@ -151,7 +153,8 @@ class EasyEntityManager {
                         "msg" => "Sorry, an error occurs while updating the record. ".$e->getMessage(),
                         "status"=>false,
                         "status_code"=>500,
-                        "error"=>$this->queryBuilder->getErrorInfo()
+                        "sqlErrorCode" => self::$queryBuilder->getsqlErrorCode(),
+                        "error"=>self::$queryBuilder->getErrorInfo()
                     ]);
             }
             unset($temp_entity);
@@ -177,7 +180,7 @@ class EasyEntityManager {
                     //primary key attribute = value
                     $entity->getKey() => ['=',$entity->{$entity->getKey()}]
                 ];
-                $stmt = $this->queryBuilder
+                $stmt = self::$queryBuilder
                         ->update($entity->getTable())
                         ->set($data)
                         ->where($cond)
@@ -196,9 +199,10 @@ class EasyEntityManager {
                         "msg" => "Sorry, an error occurs while updating the record. ",
                         "status"=>false,
                         "status_code"=>500,
+                        "sqlErrorCode" => self::$queryBuilder->getsqlErrorCode(),
                         "error"=>[
                             $e->getMessage(),
-                            $this->queryBuilder->getErrorInfo()]
+                            self::$queryBuilder->getErrorInfo()]
                     ]);
             }
         }
@@ -221,7 +225,7 @@ class EasyEntityManager {
                     //primary key attribute = value
                     $entity->getKey() => ['=',$entity->{$entity->getKey()}]
                 ];
-                $stmt = $this->queryBuilder
+                $stmt = self::$queryBuilder
                         ->delete()
                         ->from($entity->getTable())
                         ->where($cond)
@@ -236,7 +240,8 @@ class EasyEntityManager {
                         "msg" => "Sorry, an error occurs while removing the record. ".$e->getMessage(),
                         "status"=>false,
                         "status_code"=>500,
-                        "error"=>$this->queryBuilder->getErrorInfo()
+                        "sqlErrorCode" => self::$queryBuilder->getsqlErrorCode(),
+                        "error"=>self::$queryBuilder->getErrorInfo()
                     ]);
             }
         }
@@ -252,7 +257,7 @@ class EasyEntityManager {
             throw new Exception(get_class($entity)." is not a valid entity class, please make sure "
                     . "that you have set table name and primary key attribute of this entity.",500);
         }
-        $stmt = $this->queryBuilder->select()->from($entity->getTable())->where([
+        $stmt = self::$queryBuilder->select()->from($entity->getTable())->where([
             $entity->getKey() => ['=',$id]
         ])->execute();
         if($stmt->rowCount() == 0){
@@ -267,7 +272,7 @@ class EasyEntityManager {
     
     //find maximum value of a column/field in a table, the column should be of integer data type preferrably
     public function findMax($table,$column/*Column/Attribute name*/,$cond=array()){
-        $stmt = $this->queryBuilder->select(" max(".$column.") as max_val")
+        $stmt = self::$queryBuilder->select(" max(".$column.") as max_val")
                 ->from($table)
                 ->where($cond)
                 ->execute();
@@ -281,21 +286,25 @@ class EasyEntityManager {
     
     //function to get query builder
     public function getQueryBuilder(): EasyQueryBuilder{
-        return $this->queryBuilder;
+        return self::$queryBuilder;
     }
     
     //Transaction Controlling Methods
     //Transaction beginning
     public function beginTransaction(){
-        return $this->queryBuilder->beginTransaction();
+        return self::$queryBuilder->beginTransaction();
     }
     //Transaction rollback
     public function rollbackTransaction(){
-        return $this->queryBuilder->rollbackTransaction();
+        return self::$queryBuilder->rollbackTransaction();
     }
     
     //Committing a transaction 
     public function commitTransaction(){
-        return $this->queryBuilder->commitTransaction();
+        return self::$queryBuilder->commitTransaction();
+    }
+    
+    public function getConnection(){
+        return EasyQueryBuilder::$conn;/*self::$queryBuilder->getConnection();*/
     }
 }

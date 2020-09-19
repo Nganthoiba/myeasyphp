@@ -38,6 +38,8 @@ class EasyQueryBuilder {
     
     //This variable $data_list will be set its value in get() method
     public $data_list;//list of data after select query execution
+    
+    private $sqlErrorCode;
 
     private $entiy_class_name;
     
@@ -65,21 +67,25 @@ class EasyQueryBuilder {
     public function getErrorCode(){
         return $this->errorCode;
     }
+    public function getsqlErrorCode(){
+        return $this->sqlErrorCode;
+    }
     
     /*Method to execute query statement*/
     public function execute(): PDOStatement{
         if($this->qry === ""){
             return null;
         }
-        self::$conn = (self::$conn==null)?Database::connect():self::$conn;//connecting database
-        $stmt = self::$conn->prepare($this->qry);
+        //self::$conn = (self::$conn==null)?Database::connect():self::$conn;//connecting database
+        $stmt = self::$conn->prepare($this->qry);       
         try{
-            $res = $stmt->execute($this->values);
-
+            $res = $stmt->execute($this->values);            
+            $this->sqlErrorCode = $stmt->errorCode();
             if(!$res){
                 //Throw an exception when error occurs while executing query
                 $this->errorInfo = $stmt->errorInfo();
                 $this->errorCode = $stmt->errorCode();
+                
                 throw new Exception("An error occurs while executing the query. ".$this->errorInfo[2]."\n".$this->getQuery(), 
                         $this->errorCode);
             }
@@ -89,6 +95,13 @@ class EasyQueryBuilder {
         }catch(TypeError $ex){
             $this->errorInfo = $ex->getMessage();
             $this->errorCode = $ex->getCode();
+            $this->sqlErrorCode = $stmt->errorCode();
+            throw $ex;
+        }
+        catch(Exception $ex){
+            $this->errorInfo = $ex->getMessage();
+            $this->errorCode = $ex->getCode();
+            $this->sqlErrorCode = $stmt->errorCode();
             throw $ex;
         }
     }
@@ -602,4 +615,7 @@ class EasyQueryBuilder {
     public function commitTransaction(){
         return self::$conn->commit();
     }
+    public function getConnection(){
+        return self::$conn;
+    }        
 }

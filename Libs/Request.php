@@ -43,16 +43,12 @@ class Request {
                     $data = json_decode(file_get_contents("php://input"),true);
                 }
                 else{
-                    //$data = $_POST;
-                    foreach($_POST as $key => $value)
-                    {
-			$data[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
-                    }
+                    $data = $this->filterSpecialChars($_POST,'POST');                    
                 }
                 break;
             case "GET":
             case "DELETE":
-                $data = $_GET;
+                $data = $data = $this->filterSpecialChars($_POST,'GET');//$_GET;
                 break;
             case "PUT":
                 if($this->content_type === "application/json"){
@@ -114,7 +110,24 @@ class Request {
     public function getDevice(){
         return $this->device;
     }
-    
+    public function filterSpecialChars(array $data=array(),string $method = 'GET'){
+        if(sizeof($data) == 0){
+            return $data;
+        }
+        foreach($data as $key => $value)
+        {
+            if(is_array($value)){
+                $data[$key] = $this->filterSpecialChars($value,$method);
+            }
+            else{
+                if(!is_numeric($key)){                    
+                    $type = $method=="POST"?INPUT_POST:INPUT_GET;
+                    $data[$key] = filter_input($type, $key, FILTER_SANITIZE_SPECIAL_CHARS);                    
+                }            
+            }
+        }
+        return $data;
+    }
     public function senitizeInputs($data) {
         $clean_input = Array();
         if (is_array($data)) {
@@ -125,8 +138,8 @@ class Request {
             if(is_null($data)){
                 $clean_input = "";
             }
-            else{
-                $clean_input = trim(htmlspecialchars(strip_tags($data)));
+            else{                
+                $clean_input = trim(htmlspecialchars(strip_tags($data)));                
             }
         }
         return $clean_input;
