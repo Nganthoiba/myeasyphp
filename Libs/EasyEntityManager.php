@@ -305,6 +305,10 @@ class EasyEntityManager {
     }
     
     public function getConnection(){
-        return EasyQueryBuilder::$conn;/*self::$queryBuilder->getConnection();*/
+        return self::$queryBuilder->getConnection();//EasyQueryBuilder::$conn;/**/
+    }
+    
+    public function closeConnection(){
+        self::$queryBuilder->closeConnection();
     }
 }
