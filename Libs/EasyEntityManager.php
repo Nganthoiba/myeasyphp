@@ -193,7 +193,7 @@ class EasyEntityManager {
                         "data"=>$entity,
                         "rows_affected"=>$stmt->rowCount()
                     ]);
-                $this->queryBuilder->clear();
+                self::$queryBuilder->clear();
             }catch(Exception $e){
                 $this->response->set([
                         "msg" => "Sorry, an error occurs while updating the record. ",
@@ -305,10 +305,6 @@ class EasyEntityManager {
     }
     
     public function getConnection(){
-        return self::$queryBuilder->getConnection();//EasyQueryBuilder::$conn;/**/
-    }
-    
-    public function closeConnection(){
-        self::$queryBuilder->closeConnection();
+        return EasyQueryBuilder::$conn;/*self::$queryBuilder->getConnection();*/
     }
 }

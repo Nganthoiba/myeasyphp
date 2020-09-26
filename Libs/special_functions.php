@@ -101,9 +101,7 @@ function isLinkActive($link){
     $link = (!is_null($link))?strtolower($link):"";
     $link = str_replace(Config::get('host'), "", $link);
     
-    $current_link = (filter("uri", "GET"));
-    $current_link = (!is_null($current_link))?strtolower($current_link):"";
-    $current_link = str_replace(Config::get('host'), "", $current_link);
+    $current_link = getCurrentLink();
     
     if(trim($link, '/') == trim($current_link,'/')){
         return "active";
@@ -111,6 +109,13 @@ function isLinkActive($link){
     else{
         return "";
     }
+}
+
+function getCurrentLink(){
+    $current_link = (filter("uri", "GET"));
+    $current_link = (!is_null($current_link))?strtolower($current_link):"";
+    $current_link = str_replace(Config::get('host'), "", $current_link);
+    return $current_link;
 }
 
 //CSRF based functions
@@ -126,12 +131,12 @@ function getCSRFToken(){
     return csrf::getToken('token');
 }
 //function to verify csrf token
-function verifyCSRFToken($origin = null): Response{
+function verifyCSRFToken($origin = null,$timespan = null,$useTokenMultipleTimes = true): Response{
     $response = new Response();
     try{
         $origin = is_null($origin)?$_REQUEST:$origin;
         // Run CSRF check, on REQUEST(whether POST or GET) data, in exception mode, for 10 minutes, in one-time mode.
-        if(csrf::check('token', $origin, true,60*60*20, true)){
+        if(csrf::check('token', $origin, true,$timespan/*60*60*20*/, $useTokenMultipleTimes)){
             $response->set(array(
                 "msg"=>"token matched",
                 "status"=>true,
@@ -140,7 +145,7 @@ function verifyCSRFToken($origin = null): Response{
         }
     } catch (Exception $e){
         $response->set(array(
-            "msg"=>"An error occurs, CSRF token is expired or invalid. Try again after reloading the page.",
+            "msg"=>"An error occurs. ".$e->getMessage()." Try again after reloading the page.",
             "status"=>false,
             "status_code"=>403,
             "error"=>$e->getMessage()

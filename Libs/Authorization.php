@@ -54,9 +54,17 @@ class Authorization {
             }
             //now getting all the roles of a user
             $em = new EasyEntityManager();
+            /*
             $list = $em->readTable("UserRoles UR", ["UR.RoleId","R.Name as role_name"])
                     ->leftJoin("Roles R")->on("UR.RoleId = R.Id")->where([
                         "UR.UserId"=>$userId
+                    ])->get();
+             * 
+             */
+            $list = $em->readTable("users U",['R.role_id','R.role_name'])
+                    ->join("roles R")->on("U.role_id = R.role_id")
+                    ->where([
+                        "U.user_id" => $userId
                     ])->get();
             $userRoles = [];
             foreach ($list as $row){
@@ -92,7 +100,7 @@ class Authorization {
     //extract user roles
     public static function extractRoles($substring): array{
         $roles = explode(",",strtolower(trim($substring)));
-        for($i=0; $i<\sizeof($roles); $i++){
+        for($i=0; $i<sizeof($roles); $i++){
             $roles[$i] = trim($roles[$i]);
         }
         return $roles;

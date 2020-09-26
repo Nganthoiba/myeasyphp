@@ -16,13 +16,14 @@ declare(strict_types=1);
 namespace MyEasyPHP\Libs;
 class Response {
     //data members compulsory for this response class
-    public $data,$error,$status,$status_code,$msg;
+    public $data,$error,$status,$status_code,$msg,$sqlErrorCode;
     public function __construct() {
         //By default
         $this->data = null;
         $this->error = null;
         $this->status = false;
         $this->status_code = 0;
+        $this->sqlErrorCode=0;
         $this->msg = "";
     }
     public function set(array $data = []){

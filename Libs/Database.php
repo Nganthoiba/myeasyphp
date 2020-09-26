@@ -54,6 +54,7 @@ class Database {
             }
             //$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING, PDO::ERRMODE_EXCEPTION);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            //$conn->setAttribute(PDO::ATTR_AUTOCOMMIT, FALSE);
             return $conn;
         }catch(Exception $e){
             self::$conn_error = $e->getMessage();

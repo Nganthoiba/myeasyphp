@@ -10,6 +10,7 @@ declare(strict_types=1);
  *                      get_client_ip()
  */
 namespace MyEasyPHP\Libs;
+use MyEasyPHP\Libs\Config;
 use Exception;
 class Request {
     //put your code here
@@ -48,7 +49,7 @@ class Request {
                 break;
             case "GET":
             case "DELETE":
-                $data = $data = $this->filterSpecialChars($_POST,'GET');//$_GET;
+                $data = $data = $this->filterSpecialChars($_GET,'GET');//$_GET;
                 break;
             case "PUT":
                 if($this->content_type === "application/json"){
@@ -104,7 +105,7 @@ class Request {
         $isHttps = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443);
         $protocol = ($isHttps)?"https://":"http://";
         $headers = $this->getRequestHeaders();
-        return isset($headers['Host'])?$protocol.$headers['Host']:null;
+        return isset($headers['Host'])?$protocol.$headers['Host'].Config::get('host'):null;
     }
     
     public function getDevice(){
@@ -122,7 +123,9 @@ class Request {
             else{
                 if(!is_numeric($key)){                    
                     $type = $method=="POST"?INPUT_POST:INPUT_GET;
-                    $data[$key] = filter_input($type, $key, FILTER_SANITIZE_SPECIAL_CHARS);                    
+                    $string = filter_input($type, $key, FILTER_SANITIZE_SPECIAL_CHARS);                  
+                    //removing special characters
+                    $data[$key] = $string;//preg_replace('/[^A-Za-z0-9]/', '', $string);
                 }            
             }
         }

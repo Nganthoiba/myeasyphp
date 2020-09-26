@@ -2,7 +2,7 @@
 /**
  * Description of csrf: an anti CSRF token generation/checking class.
  *
- * @author Nganthoiba
+ * 
  */
 namespace MyEasyPHP\Libs\ext;
 use Exception;
@@ -24,10 +24,11 @@ class csrf
     */
     public static function check( $key, $origin, $throwException=false, $timespan=null, $multiple=false )
     {
-        session_regenerate_id();
+        //session_regenerate_id();
+        startSecureSession();
         if ( !isset( $_SESSION[ 'csrf_' . $key ] ) ){
             if($throwException){
-                throw new Exception( 'CSRF token is not set in session variable.' );	//Missing CSRF session token.
+                throw new Exception( 'CSRF token is either not set or invalid or expired.' );	//Missing CSRF session token.
             }
             else{
                 return false;
@@ -100,13 +101,24 @@ class csrf
         //session_regenerate_id();
         return $token;
     }
-
+    
+    /*
+     * Method to get generated csrf token from the session
+     */
+    public static function getToken($key){
+        if(isset($_SESSION[ 'csrf_' . $key ])){
+            return $_SESSION[ 'csrf_' . $key ];
+        }
+        return null;
+    }
+    
     /**
      * Generates a random string of given $length.
      *
      * @param Integer $length The string length.
      * @return String The randomly generated string.
      */
+    
     protected static function randomString( $length )
     {
         $seed = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijqlmnopqrtsuvwxyz0123456789';

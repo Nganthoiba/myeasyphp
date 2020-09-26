@@ -98,7 +98,7 @@ class Dispatcher {
                 } 
                 else if(is_object($view) && $view instanceof View){                           
                     //if it is view object then render its contents
-                    //header('X-Frame-Options: SAMEORIGIN');//preventing clickjacking as the page can only be displayed in a frame on the same origin as the page itself. 
+                    header('X-Frame-Options: SAMEORIGIN');//preventing clickjacking as the page can only be displayed in a frame on the same origin as the page itself. 
                     //header('X-Frame-Options: deny');//The page cannot be displayed in a frame, regardless of the site attempting to do so.
                     echo $view->render(); 
                 }

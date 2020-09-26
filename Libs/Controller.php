@@ -74,7 +74,7 @@ class Controller {
      * defined in the second statement as shown above.
      * 
      * action1 can be accessed by  only role1, role2, & role3, action2 by role5 and role6 and latly
-     * there is no role for action 3, this means the particular action3 is granted access for all kinds 
+     * there is no role for action 3, this means the particular action3 is granted access to all kinds 
      * of user. 
         
      *      */
@@ -178,7 +178,7 @@ class Controller {
             409 => 'Conflict',
             500 => 'Internal Server Error'
         );
-        return ($status[$code])?$status[$code]:$status[500]; 
+        return isset($status[$code])?$status[$code]:$status[500]; 
     }
     
     //$this->partialView() only return view without its container

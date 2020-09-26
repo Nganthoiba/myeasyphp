@@ -617,8 +617,6 @@ class EasyQueryBuilder {
     }
     public function getConnection(){
         return self::$conn;
-    }
-    public function closeConnection(){
-        self::$conn = null;
-    }
+    }    
+    
 }
