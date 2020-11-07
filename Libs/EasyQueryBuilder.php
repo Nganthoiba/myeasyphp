@@ -3,8 +3,8 @@ declare(strict_types=1);
 namespace MyEasyPHP\Libs;
 /**
  * Other files used:- 
- * Database.class.php
- * EmptyClass.class.php
+ * Database.php
+ * EmptyClass.php
  * 
  * Description of EasyQueryBuilder
  *  This class generates SQL (DML). The query is purely based on PDO.
@@ -346,6 +346,9 @@ class EasyQueryBuilder {
             $this->qry .= " where ".$cond_str;
             $this->values = array_merge($this->values,
                     $this->getConditionValues($cond));
+        }
+        else{
+            $this->qry .= " where true ";
         }
         return $this;
     }
