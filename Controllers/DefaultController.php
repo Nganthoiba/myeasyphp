@@ -48,7 +48,7 @@ class DefaultController extends Controller{
     public function product(int $num1,int $num2){
         return "Num1=$num1 & Num2=$num2, and product is ".($num1*$num2);
     }
-    
+        
     public function cropImage(){
         return $this->view();
     }
@@ -93,7 +93,6 @@ class DefaultController extends Controller{
                     break;
                 }
             }
-            //$conn->commit();
             $this->entityManager->commitTransaction();
             return ($i-1)." Record(s) saved";
         }
@@ -112,8 +111,7 @@ class DefaultController extends Controller{
     }
     
     public function txn($id,$name){
-        $pdo = Database::connect();
-        
+        $pdo = Database::connect();       
 
         //We will need to wrap our queries inside a TRY / CATCH block.
         //That way, we can rollback the transaction if a query fails and a PDO exception occurs.

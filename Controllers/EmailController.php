@@ -16,7 +16,7 @@ namespace MyEasyPHP\Controllers;
 use MyEasyPHP\Libs\Controller;
 
 use MyEasyPHP\Libs\ext\PHPMailer\PHPMailer;
-use MyEasyPHP\Libs\ext\PHPMailer\SMTP;
+//use MyEasyPHP\Libs\ext\PHPMailer\SMTP;
 use MyEasyPHP\Libs\ext\PHPMailer\Exception as MailerException;
 
 class EmailController extends Controller{

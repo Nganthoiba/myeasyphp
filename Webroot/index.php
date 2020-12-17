@@ -1,5 +1,4 @@
 <?php
-
 require_once dirname(__DIR__) . '../Config/path.php';
 require_once VENDOR_PATH. 'autoload.php';
 require_once CONFIG_PATH. 'app.php';

@@ -3,8 +3,8 @@ declare(strict_types=1);
 namespace MyEasyPHP\Libs;
 
 /**
- * Description of Model
- *
+ * Description of Model base class
+ * 
  * @author Nganthoiba
  */
 use MyEasyPHP\Libs\Response;
