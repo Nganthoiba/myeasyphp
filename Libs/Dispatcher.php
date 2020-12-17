@@ -29,6 +29,8 @@ class Dispatcher {
     public static function dispatch(Router $router){
         //Getting user request information
         self::$request = new Request();
+        
+        
         //Getting uri requested by user
         $uri = Request::getURI();
 		
@@ -39,7 +41,16 @@ class Dispatcher {
         self::$router->setUri($uri);
         self::$router->extractComponents();//extract Controller and action wrt the request uri from the routes
         
-        $params = self::$request->senitizeInputs(self::$router->getParams());
+        $methods = self::$router->getMethods();//getting HTTP verbs
+        //checking whether the request method is allowed for routing URI(For security)
+        if(!in_array(self::$request->getMethod(), $methods)){
+            $exc = new MyEasyException("Method not allowed.",405);//forbidden
+            $exc->setDetails("Methods allowed for the route:- ".self::$router->getRouteUrl()." are: ".json_encode($methods).", but your request method is ".self::$request->getMethod());
+            throw $exc;            
+        }        
+        //senitising all input values via GET or POST methods
+        $params = self::$request->senitizeInputs(self::$router->getParams());       
+        
         //If router is only a function
         if(self::$router->isOnlyFunction()){
             $function = self::$router->getFunction();
@@ -55,14 +66,6 @@ class Dispatcher {
             $action = self::$router->getAction();//Action name
             if(is_null($action)){
                 $action = Config::get('default_action');
-            }
-			           
-            $methods = self::$router->getMethods();//HTTP verbs
-            //checking whether the request method is allowed for routing URI
-            if(!in_array(self::$request->getMethod(), $methods)){
-                $exc = new MyEasyException("Method not allowed.",405);//forbidden
-                $exc->setDetails("Methods allowed for the route:- ".self::$router->getRouteUrl()." are: ".json_encode($methods).", but your request method is ".self::$request->getMethod());
-                throw $exc;            
             }
 			
             //*** creating Controller Object ***

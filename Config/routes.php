@@ -49,7 +49,7 @@ $router->addRoute("/Default/test/{script}", [
 
 
 //An example of grouping routes
-$router->group("/maths/",function($router){
+$router->group("/maths/",function(Router $router){
     $router->addRoute("/sum/{num1}/{num2}", function($num1,$num2){    
         echo "Sum is : ".($num1+$num2);
     });
@@ -58,7 +58,7 @@ $router->group("/maths/",function($router){
     });
     $router->addRoute("/product/{num1}/{num2}", function($num1,$num2){    
         echo "Product is : ".($num1*$num2);
-    });
+    },'POST|GET');
     $router->addRoute("/division/{num1}/{num2}", function($num1,$num2){    
         echo "Division is : ".($num1/$num2);
     });
