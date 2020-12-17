@@ -50,18 +50,20 @@ $router->addRoute("/Default/test/{script}", [
 
 //An example of grouping routes
 $router->group("/maths/",function(Router $router){
-    $router->addRoute("/sum/{num1}/{num2}", function($num1,$num2){    
-        echo "Sum is : ".($num1+$num2);
-    });
-    $router->addRoute("/difference/{num1}/{num2}", function($num1,$num2){    
-        echo "Difference is : ".($num1+$num2);
-    });
-    $router->addRoute("/product/{num1}/{num2}", function($num1,$num2){    
-        echo "Product is : ".($num1*$num2);
-    },'POST|GET');
-    $router->addRoute("/division/{num1}/{num2}", function($num1,$num2){    
-        echo "Division is : ".($num1/$num2);
-    });
+    $router->group("/arithmetic",function(Router $router){
+        $router->addRoute("/sum/{num1}/{num2}", function($num1,$num2){    
+            echo "Sum is : ".($num1+$num2);
+        });
+        $router->addRoute("/difference/{num1}/{num2}", function($num1,$num2){    
+            echo "Difference is : ".($num1-$num2);
+        });
+        $router->addRoute("/product/{num1}/{num2}", function($num1,$num2){    
+            echo "Product is : ".($num1*$num2);
+        },'POST|GET');
+        $router->addRoute("/division/{num1}/{num2}", function($num1,$num2){    
+            echo "Division is : ".($num1/$num2);
+        });
+    });    
 });
 
 $router->addRoute("/show_routes", function(){

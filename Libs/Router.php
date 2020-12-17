@@ -53,15 +53,16 @@ class Router {
         $this->methods = ['GET']; //by default
         $this->is_only_function = false;
         $this->function_name = "";
-        $this->group_name = null;
+        $this->group_name = "";
     }
     
     /* The methods adds each route defined to the $routes array */
     //callable: means $parameters can be just a function
     public function addRoute($url, /*callable*/ $parameters, $methods=[]/*HTTP Verbs in array*/){
         if(!is_null($this->group_name) && $this->group_name!== ""){
-            $url = rtrim($this->group_name, '/').'/'.ltrim($url,'/');
+            $url = '/'.trim($this->group_name, '/').'/'.trim($url,'/');
         }
+        $url = rtrim($url,'/');
         $this->routes[] = new Route($url, $parameters, $methods);
         return $this;
     }
@@ -70,11 +71,11 @@ class Router {
     public function group(string $group_name="", callable $func){ 
         global $router;
         if(!is_null($group_name) && $group_name!== ""){
-            $this->group_name = $group_name;
+            $this->group_name = trim($this->group_name,'/').'/'.trim($group_name,'/');
             //$func();
             call_user_func($func,$router);
         }
-        $this->group_name = "";
+        $this->group_name = "";//resetting group name
     }
     
     /* method to get all routes */
