@@ -41,7 +41,8 @@ class Router {
     protected $function_name; //by default its value is blank
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    //public $test_val;
+    //Grouping name of Routes;
+    protected $group_name;
     
     public function __construct($uri="") {
         //Setting default values
@@ -52,14 +53,30 @@ class Router {
         $this->methods = ['GET']; //by default
         $this->is_only_function = false;
         $this->function_name = "";
+        $this->group_name = null;
     }
     
     /* The methods adds each route defined to the $routes array */
     //callable: means $parameters can be just a function
     public function addRoute($url, /*callable*/ $parameters, $methods=[]/*HTTP Verbs in array*/){
+        if(!is_null($this->group_name) && $this->group_name!== ""){
+            $url = rtrim($this->group_name, '/').'/'.ltrim($url,'/');
+        }
         $this->routes[] = new Route($url, $parameters, $methods);
         return $this;
     }
+    
+    //Grouping Routes
+    public function group(string $group_name="", callable $func){ 
+        global $router;
+        if(!is_null($group_name) && $group_name!== ""){
+            $this->group_name = $group_name;
+            //$func();
+            call_user_func($func,$router);
+        }
+        $this->group_name = "";
+    }
+    
     /* method to get all routes */
     public function getRoutes():array{
         return $this->routes;

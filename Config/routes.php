@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use MyEasyPHP\Libs\Router;
+global $router;
 $router = new Router();
 
 /*
@@ -37,7 +38,7 @@ $router->addRoute("/Default/sum/{num1}/{num2}", [
     "Controller" => "Default",
     "Action" => "sum"
 ],"GET");
-$router->addRoute("/Default/product/{num1}/{num2}", [
+$router->addRoute("/product/{number1}/{number2}", [
     "Controller" => "Default",
     "Action" => "product"
 ]);
@@ -46,8 +47,28 @@ $router->addRoute("/Default/test/{script}", [
     "Action" => "test"
 ],"GET");
 
-$router->addRoute("/api/sum/{num1}/{num2}", function($num1,$num2){    
-    echo "sum is : ".($num1+$num2);
+
+//An example of grouping routes
+$router->group("/maths/",function($router){
+    $router->addRoute("/sum/{num1}/{num2}", function($num1,$num2){    
+        echo "Sum is : ".($num1+$num2);
+    });
+    $router->addRoute("/difference/{num1}/{num2}", function($num1,$num2){    
+        echo "Difference is : ".($num1+$num2);
+    });
+    $router->addRoute("/product/{num1}/{num2}", function($num1,$num2){    
+        echo "Product is : ".($num1*$num2);
+    });
+    $router->addRoute("/division/{num1}/{num2}", function($num1,$num2){    
+        echo "Division is : ".($num1/$num2);
+    });
+});
+
+$router->addRoute("/show_routes", function(){
+    global $router;
+    echo "<pre>";
+    print_r($router->getRoutes());
+    echo "</pre>";
 });
 
 $router->addRoute("/api/contacts", [
