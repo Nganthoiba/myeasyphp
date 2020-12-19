@@ -139,6 +139,9 @@ class Controller {
     public function sendResponse(Response $resp){
         header("Content-Type: application/json");
         header("HTTP/1.1 " . $resp->status_code . " " . $this->_requestStatus($resp->status_code));
+        if(is_null($resp->msg) || $resp->msg == ""){
+            $resp->msg = $this->_requestStatus($resp->status_code);
+        }
         http_response_code($resp->status_code);
         return json_encode($resp);
     }
