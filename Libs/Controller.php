@@ -10,14 +10,12 @@ namespace MyEasyPHP\Libs;
 use MyEasyPHP\Libs\Router;
 use MyEasyPHP\Libs\Request;
 use MyEasyPHP\Libs\Response;
-use MyEasyPHP\Libs\Dispatcher;
-//use MyEasyPHP\Libs\EasyEntityManager;
 use MyEasyPHP\Libs\View;
 use MyEasyPHP\Libs\ViewData;
 use MyEasyPHP\Libs\Config;
 use MyEasyPHP\Libs\Model;
 use MyEasyPHP\Libs\EasyEntity;
-
+use MyEasyPHP\Libs\HttpStatus;
 class Controller {
     /*Parameters: 
         '$params'
@@ -90,6 +88,9 @@ class Controller {
     public function getParams(){
         return $this->params;
     }
+    public function setParams($params){
+        $this->params = $params;
+    }
     //method to set request data
     public function setRequest(Request $request){
         $this->request = $request;
@@ -98,7 +99,7 @@ class Controller {
     public function __construct(ViewData $viewData = null) {
         $this->viewData = $viewData===null?new ViewData():$viewData;
         $this->dataModel = null;
-        $this->params = Dispatcher::getRouter()->getParams();
+        $this->params = null;
         $this->response = new Response();
         
         $this->_authorize = false;//access granted for all kinds of users
@@ -138,6 +139,7 @@ class Controller {
     public function sendResponse(Response $resp){
         header("Content-Type: application/json");
         header("HTTP/1.1 " . $resp->status_code . " " . $this->_requestStatus($resp->status_code));
+        http_response_code($resp->status_code);
         return json_encode($resp);
     }
     
@@ -167,18 +169,7 @@ class Controller {
     }
 
     protected function _requestStatus($code) {
-        $status = array(  
-            200 => 'OK',
-            400 => 'Bad request',
-            401 => 'Unauthorized request',
-            402 => 'Payment required',
-            403 => 'Forbidden',
-            404 => 'Not Found',   
-            405 => 'Method Not Allowed',
-            409 => 'Conflict',
-            500 => 'Internal Server Error'
-        );
-        return isset($status[$code])?$status[$code]:$status[500]; 
+        return HttpStatus::getStatus($code);
     }
     
     //$this->partialView() only return view without its container

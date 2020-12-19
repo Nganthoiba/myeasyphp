@@ -49,8 +49,8 @@ $router->addRoute("/Default/test/{script}", [
 
 
 //An example of grouping routes
-$router->group("/maths/",function(Router $router){
-    $router->group("/arithmetic",function(Router $router){
+$router->group("/maths/",function($router){
+    $router->group("/arithmetic",function($router){
         $router->addRoute("/sum/{num1}/{num2}", function($num1,$num2){    
             echo "Sum is : ".($num1+$num2);
         });
@@ -65,6 +65,22 @@ $router->group("/maths/",function(Router $router){
         });
     });    
 });
+$router->group("/api",function($router){
+    $router->group("/test",function($router){
+        $router->addRoute("/", [
+            "Controller" => "Myapi",
+            "Action" => "index"
+        ],'GET|POST');
+        $router->addRoute("/{id}", [
+            "Controller" => "Myapi",
+            "Action" => "index"
+        ],'GET|PUT|DELETE');
+    });
+});
+$router->addRoute("/Myapi/index", [
+    "Controller" => "Myapi",
+    "Action" => "index"
+],"POST|GET|PUT|DELETE");
 
 $router->addRoute("/show_routes", function(){
     global $router;
@@ -73,10 +89,7 @@ $router->addRoute("/show_routes", function(){
     echo "</pre>";
 });
 
-$router->addRoute("/api/contacts", [
-    "Controller" => "Default",
-    "Action" => "contact"
-],"POST|GET");
+
 /****** End Examples ******/
 
 $router->addRoute("/", [
@@ -91,6 +104,10 @@ $router->addRoute("/Accounts/register", [
     "Controller" => "Accounts",
     "Action" => "register"
 ],"GET|POST");
+$router->addRoute("/account/logout", [
+    "Controller" => "Accounts",
+    "Action" => "logout"
+]);
 
 
 

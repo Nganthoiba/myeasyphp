@@ -16,6 +16,8 @@ namespace MyEasyPHP\Libs;
 class HttpStatus {
     public static $status = array(  
             200 => 'OK',
+            201 => 'Created',
+            204 => 'No Content',
             400 => 'Bad request',
             401 => 'Unauthorized request',
             403 => 'Forbidden',
@@ -28,6 +30,8 @@ class HttpStatus {
             500 => 'Internal Server Error'
         );
     public static $OK = 200;
+    public static $Created = 201;
+    public static $NoContent = 204;
     public static $BadRequest = 400;
     public static $Unauthorized = 401;
     public static $Forbidden = 403;

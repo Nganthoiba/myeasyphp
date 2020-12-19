@@ -11,8 +11,7 @@ use MyEasyPHP\Libs\Config;
 use MyEasyPHP\Libs\MyEasyException;
 
 try{
-    require_once LIBS_PATH.DS.'special_functions.php';
-    startSecureSession();
+    require_once LIBS_PATH.DS.'special_functions.php';    
     date_default_timezone_set(Config::get('default_time_zone'));
     Dispatcher::dispatch($router);
 }

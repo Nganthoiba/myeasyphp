@@ -57,7 +57,7 @@ class Upload {
             ]);
         }
         if(!is_dir($this->file_upload_directory)){
-            //if directory does not exists
+            //if directory does not exist
             mkdir($this->file_upload_directory,0755,true);
         }
 
@@ -151,7 +151,7 @@ class Upload {
             //if validation status is true
             
             if(!is_dir($this->file_upload_directory)){
-                //if directory does not exists
+                //if directory does not exist
                 mkdir($this->file_upload_directory,0755,true);
             }
             

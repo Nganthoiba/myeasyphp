@@ -67,7 +67,7 @@ class Router {
         return $this;
     }
     
-    //Grouping Routes
+    //function for Grouping Routes
     public function group(string $group_name="", callable $func){ 
         global $router;
         if(!is_null($group_name) && $group_name!== ""){
