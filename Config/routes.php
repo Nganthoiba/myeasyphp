@@ -74,7 +74,7 @@ $router->group("/api",function($router){
         $router->addRoute("/{id}", [
             "Controller" => "Myapi",
             "Action" => "index"
-        ],'GET|PUT|DELETE');
+        ],'GET|PUT|PATCH|DELETE');
     });
 });
 $router->addRoute("/Myapi/index", [
