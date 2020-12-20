@@ -103,7 +103,7 @@ class ApiController {
     }
     
     //method to populate data
-    protected function POST($data){
+    protected function POST($data=null){
         //Override the body 
         $this->response->status_code = 201;
         $this->response->msg = "POST request, you can override method";
@@ -138,19 +138,24 @@ class ApiController {
     
     public function index(){
         //this method can also be overridden
-        if($this->request->isMethod("GET")){
-            return call_user_func_array([$this,"GET"], array_values($this->params));            
+        $result = null;
+        switch($this->request->getMethod()){
+            case 'GET':
+                $result = call_user_func_array([$this,"GET"], array_values($this->params));
+                break;
+            case 'PUT':
+            case 'PATCH':
+                $result = call_user_func_array([$this,"PUT"], array_values($this->params));
+                break;
+            case 'DELETE':
+                $result = call_user_func_array([$this,"DELETE"], array_values($this->params));
+                break;
+            case 'POST':
+                $result = $this->POST($this->request->getData());
+                break;
         }
-        else if($this->request->isMethod("POST")){
-            return $this->POST($this->request->getData());
-        }
-        else if($this->request->isMethod("PUT")){
-            return call_user_func_array([$this,"PUT"], array_values($this->params));
-        }
-        else if($this->request->isMethod("DELETE")){
-            return call_user_func_array([$this,"DELETE"], array_values($this->params));
-        }
-        return null;
+        return $result;       
+        
     }
     
 }
