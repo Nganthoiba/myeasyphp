@@ -1,16 +1,12 @@
 <?php
 declare(strict_types=1);
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace MyEasyPHP\Libs;
 
 /**
  * Description of Dispatcher
- *
+ * The main function of Dispatcher class is to grab the url from the client request, 
+ * find the right controller name and action name from the list of routes, then execute 
+ * the action of the controller.
  * @author Nganthoiba
  */
 use MyEasyPHP\Libs\Router;
@@ -70,6 +66,16 @@ class Dispatcher {
             
             //Here check whether the controller is an object of ApiController or just normal Controller
             if(($controllerObj instanceof ApiController)){
+                //checking whether the request method is allowed for accessing URI(For security)
+                if(!in_array(self::$request->getMethod(), $methods)){                    
+                    $resp = $controllerObj->response->set([
+                        "status"=>false,
+                        "status_code"=>405,
+                        "error"=>"Methods allowed for the route:- ".self::$router->getRouteUrl()." are: ".implode(', ',$methods).", but your request method is ".self::$request->getMethod()
+                    ]);
+                    echo $controllerObj->sendResponse($resp);
+                    exit();
+                }
                 //check if method (action) exists for the controller class
                 if(!method_exists($controllerObj, $action)){
                     $resp = $controllerObj->response->set([
@@ -81,6 +87,7 @@ class Dispatcher {
                     exit();
                 }
                 $reflection = new ReflectionMethod($controllerObj, $action);
+                //ensuring only public method or action to be allowed to access
                 if (!$reflection->isPublic()) {
                     $resp = $controllerObj->response->set([
                         "status"=>false,
@@ -110,6 +117,8 @@ class Dispatcher {
                     throw $exc;
                 }
                 $reflection = new ReflectionMethod($controllerObj, $action);
+                //ensuring only public method or action to be allowed to access otherwise
+                //access will be denied.
                 if (!$reflection->isPublic()) {
                     throw new MyEasyException("Access denied.",403);
                 }
@@ -150,7 +159,6 @@ class Dispatcher {
                     exit();
                 }
                 throw $e;
-                //echo $e->getMessage();
             }
         }
         
