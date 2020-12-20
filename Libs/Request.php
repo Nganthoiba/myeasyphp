@@ -14,11 +14,11 @@ use MyEasyPHP\Libs\Config;
 use Exception;
 class Request {
     //put your code here
-    private $method; //HTTP methods (verbs): GET, POST, PUT, DELETE
+    private $method; //HTTP methods (verbs): GET, POST, PUT/PATCH, DELETE
     private $header; //HTTP request header
     private $content_type; //Content type
     private $source; //source of the request(client IP)
-    private $device;
+    private $device; //User agent
     public function __construct() {
         $this->method = strtoupper($_SERVER['REQUEST_METHOD']);//getting HTTP Verb
         if ($this->method == 'POST' && array_key_exists('HTTP_X_HTTP_METHOD', $_SERVER)) {
@@ -30,7 +30,7 @@ class Request {
                 throw new Exception("Unexpected Header");
             }
         }
-        $this->header = apache_request_headers();
+        $this->header = $this->getRequestHeaders();//apache_request_headers();
         $this->content_type = get_data_from_array("Content-Type",$this->header);
         $this->source = get_client_ip();
         $this->device = filter_input(INPUT_SERVER,'HTTP_USER_AGENT');
@@ -50,13 +50,26 @@ class Request {
             case "GET":
             case "DELETE":
                 $data = $data = $this->filterSpecialChars($_GET,'GET');//$_GET;
-                break;
+                break;            
             case "PUT":
+            case "PATCH":
                 if($this->content_type === "application/json"){
                     $data = json_decode(file_get_contents("php://input"),true);
                 }
-                else{
-                    $data = file_get_contents("php://input");
+                else if($this->content_type == "application/x-www-form-urlencoded"){
+                    parse_str(file_get_contents("php://input"), $data);             
+                    $data = json_decode(json_encode($data),true);                    
+                }
+                else if($this->content_type == "multipart/form-data"){
+                    $lines = file('php://input');
+                    foreach($lines as $i =>  $line){
+                        $search = 'Content-Disposition: form-data; name=';
+                        if(strpos($line, $search) !== false){                            
+                            $key = str_replace($search,"",preg_replace("/[\r,\n,\"]/","",$line));
+                            $data[$key] = trim($lines[$i+2]);
+                        }
+                    }
+                    
                 }
                 break;
         }
