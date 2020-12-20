@@ -59,11 +59,11 @@ class EasyEntityManager {
     }
     
     //Create or add a new (entity)record in the table
-    public function add(EasyEntity $entity): Response{
+    public function add(EasyEntity $entity = null): Response{
         //$this->queryBuilder->setEntityClassName($entity->getTable());
-        if(!$entity->isValidEntity()) {
+        if(is_null($entity) || !$entity->isValidEntity()) {
             $this->response->set([
-                "msg" => "Invalid entity: either table name or key is not set.",
+                "msg" => "Invalid entity: either table name or key is not set or entity is null.",
                 "status"=>false,
                 "status_code"=>400
             ]);
@@ -79,9 +79,9 @@ class EasyEntityManager {
                 }
                 
                 $this->response->set([
-                    "msg" => "Record saved successfully.",
+                    "msg" => "Record inserted successfully.",
                     "status"=>true,
-                    "status_code"=>200,
+                    "status_code"=>201,
                     "data"=>$entity
                 ]);
             }catch(Exception $e){
@@ -98,10 +98,10 @@ class EasyEntityManager {
     }
     
     //terminology save will mean both insertion if record does not exist and updation if record already exist
-    public function save(EasyEntity $entity): Response{
-        if(!$entity->isValidEntity()) {
+    public function save(EasyEntity $entity = null): Response{
+        if(is_null($entity) || !$entity->isValidEntity()) {
             $this->response->set([
-                "msg" => "Invalid entity: either table name or key is not set.",
+                "msg" => "Invalid entity: either table name or key is not set or entity is null.",
                 "status"=>false,
                 "status_code"=>400
             ]);          
@@ -163,10 +163,10 @@ class EasyEntityManager {
     }
     
     //to update or save record
-    public function update(EasyEntity $entity): Response{
-        if(!$entity->isValidEntity()) {
+    public function update(EasyEntity $entity = null): Response{
+        if(is_null($entity) || !$entity->isValidEntity()) {
             $this->response->set([
-                "msg" => "Invalid entity: either table name or key is not set.",
+                "msg" => "Invalid entity: either table name or key is not set or entity is null.",
                 "status"=>false,
                 "status_code"=>400
             ]);          
@@ -187,7 +187,7 @@ class EasyEntityManager {
                         ->execute();
                 
                 $this->response->set([
-                        "msg" => "Record saved successfully.",
+                        "msg" => "Record updated successfully.",
                         "status"=>true,
                         "status_code"=>200,
                         "data"=>$entity,
@@ -210,11 +210,11 @@ class EasyEntityManager {
     }
     
     //to delete an entity (record)
-    public function remove(EasyEntity $entity): Response{
+    public function remove(EasyEntity $entity = null): Response{
         //$this->queryBuilder->setEntityClassName($entity->getTable());
-        if(!$entity->isValidEntity()) {
+        if(is_null($entity) || !$entity->isValidEntity()) {
             $this->response->set([
-                "msg" => "Invalid entity: either table name or key is not set.",
+                "msg" => "Invalid entity: either table name or key is not set or entity is null.",
                 "status"=>false,
                 "status_code"=>400
             ]);            
