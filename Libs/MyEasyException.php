@@ -16,6 +16,7 @@ class MyEasyException extends Excp{
     private $details;
     public function __construct(string $message = "", int $code = 0, \Throwable $previous = NULL) {
         parent::__construct($message, $code, $previous);
+        $this->details="";
     }
     
     public function setDetails(string $details){

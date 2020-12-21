@@ -18,7 +18,6 @@ use MyEasyPHP\Models\Entities\Persons;
 use MyEasyPHP\Libs\EasyQueryBuilder as QueryBuilder;
 use MyEasyPHP\Libs\EasyEntityManager as EntityManager;
 use MyEasyPHP\Libs\Database;
-use PDO;
 use PDOException;
 class DefaultController extends Controller{
     public function index(){

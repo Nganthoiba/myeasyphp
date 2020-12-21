@@ -14,8 +14,8 @@ try{
             require_once ($class_file);
         }
         else{
-            throw new Exception("Class: ".$classname." does not exist. class-path: ".$class_file,404);
-            //throw new Exception("Sorry, the resource you are looking for is not found.",404);
+            //throw new Exception("Class: ".$classname." does not exist. class-path: ".$class_file,404);
+            throw new Exception("Sorry, the page you are looking for is not found.",404);
         } 
 		
     });

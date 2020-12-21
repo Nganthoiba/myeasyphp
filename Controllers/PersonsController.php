@@ -25,6 +25,7 @@ class PersonsController extends ApiController{
     protected function GET($id = null) {
         if(is_null($id)){
             $this->response->status = true;
+            $this->response->status_code = 200;
             $this->response->data = $this->em->read(new Persons())->toList();
         }
         else{            

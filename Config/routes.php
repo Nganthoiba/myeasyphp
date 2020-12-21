@@ -19,15 +19,16 @@ $router = new Router();
 
 /*
  * Defining the root:
- * 
-$router->addRoute("/", function(){
-    echo "Hello World! This is root";
-});
-*/
+ * */
+$router->addRoute("/", [
+            "Controller" => "Default",
+            "Action" => "home"
+        ]);
+
 
 /*** Examples ****/
 //Anything enclosed by curly braces is a parameter you are goind to pass. Go to Default controller and index action, see
-//how these parameters are being accessed
+//below how these parameters are being accessed
 /*
 $router->addRoute("/api/hello/{fname}/{lname}", [
     "Controller" => "Default",
