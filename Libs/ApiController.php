@@ -154,11 +154,11 @@ class ApiController {
                 $result = $this->POST($this->request->getData());
                 break;
             default:
-                $result = $this->response->set([
+                $result = $this->sendResponse($this->response->set([
                     "status" => false,
                     "status_code" => 403,
                     "msg" => "Access denied."
-                ]);
+                ]));
         }
         return $result;  
     }
