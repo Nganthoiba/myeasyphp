@@ -15,9 +15,11 @@ class ViewData {
     public $content;
     public $detail ;
     public $ErrorMessage ;
+    public $ErrorDetail ;
     public function __construct($data = array()){
         $this->detail="";
         $this->ErrorMessage="";
+        $this->ErrorDetail="";
         $this->set($data);
     }
     //method to set view data

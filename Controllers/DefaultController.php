@@ -45,9 +45,6 @@ class DefaultController extends Controller{
     public function sum($num1,$num2){
         return "Num1=$num1 & Num2=$num2, and sum is ".($num1+$num2);
     }
-    public function product(int $num1,int $num2){
-        return "Num1=$num1 & Num2=$num2, and product is ".($num1*$num2);
-    }
         
     public function cropImage(){
         return $this->view();

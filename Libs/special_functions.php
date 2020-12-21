@@ -192,13 +192,13 @@ function downloadFile($file_path,$flag=false){
 }
 
 //function to return a view that shows error details when any error occurs
-function errorView($httpCode,$errorDetails,bool $isPartial = false) : View{
+function errorView($httpCode,$errorMessage="",$errorDetails="",bool $isPartial = false) : View{
     
     $viewData = new MyEasyPHP\Libs\ViewData();
     $viewData->httpCode = $httpCode;
     $viewData->httpStatus = HttpStatus::getStatus($httpCode);
-    $viewData->details = $errorDetails;
-    
+    $viewData->ErrorMessage = $errorMessage;
+    $viewData->ErrorDetail = $errorDetails;
     //path to error page
     $path = VIEWS_PATH."Shared".DS."error.view.php";
     $view = new View($path,$viewData);

@@ -30,8 +30,8 @@ class Request {
                 throw new Exception("Unexpected Header");
             }
         }
-        $this->header = $this->getRequestHeaders();//apache_request_headers();
-        $this->content_type = get_data_from_array("Content-Type",$this->header);
+        $this->header = $this->getRequestHeaders();
+        $this->content_type = $_SERVER['CONTENT_TYPE']??"";//get_data_from_array("Content-Type",$this->header);
         $this->source = get_client_ip();
         $this->device = filter_input(INPUT_SERVER,'HTTP_USER_AGENT');
     }
@@ -58,9 +58,9 @@ class Request {
                 }
                 else if($this->content_type == "application/x-www-form-urlencoded"){
                     parse_str(file_get_contents("php://input"), $data);             
-                    $data = json_decode(json_encode($data),true);                    
+                    $data = json_decode(json_encode($data),true);
                 }
-                else if($this->content_type == "multipart/form-data"){
+                else if(strpos($this->content_type,"multipart/form-data") !== false){
                     $lines = file('php://input');
                     foreach($lines as $i =>  $line){
                         $search = 'Content-Disposition: form-data; name=';
@@ -68,8 +68,7 @@ class Request {
                             $key = str_replace($search,"",preg_replace("/[\r,\n,\"]/","",$line));
                             $data[$key] = trim($lines[$i+2]);
                         }
-                    }
-                    
+                    }                    
                 }
                 break;
         }
@@ -96,22 +95,22 @@ class Request {
     public function getSourceIP(){
         return $this->source;
     }
-    /*
-    public function getRequestHeaders(){
-        return apache_request_headers();
-    }
-    */
+    
+//    public function getRequestHeaders(){
+//        return apache_request_headers();
+//    }
+    
     function getRequestHeaders() {
         $headers = array();
+        $headers['Content-Type'] = $_SERVER['CONTENT_TYPE']??"";
         foreach($_SERVER as $key => $value) {
-            if (substr($key, 0, 5) <> 'HTTP_') {
+            if (substr($key, 0, 5) !== 'HTTP_') {
                 continue;
             }
             $header = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
-            $headers[$header] = $value;
+            $headers[$header] = $value;            
         }
         return $headers;
-        //return apache_request_headers();
     }
     //returns domain
     public function getHost(){

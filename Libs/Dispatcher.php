@@ -107,13 +107,16 @@ class Dispatcher {
                 }
                 //check if method (action) exists for the controller class
                 if(!method_exists($controllerObj, $action)){
-                    throw new Exception("The page you are looking for does not exist. Action '".$action."' of controller class '"
-                            .$controller."' does not exist.",404);
+                    $exc = new MyEasyException("The page you are looking for does not exist.",404);
+                    $exc->setDetails(" Action '".$action."' of controller class '"
+                            .$controller."' does not exist.");
+                    throw $exc;
                 }
                 //check if method (action) to be invoked is authorised for the user
                 if(!Authorization::isAuthorized($controllerObj,$action)){
-                    $exc = new Exception("Unauthorize access. You are not allowed to access the page. <a href='".Config::get('host')."/Accounts/login'>Login</a> with "
-                            . "an authorized account. ",403);//forbidden                
+                    $msg = "Unauthorize access. You are not allowed to access the page. <a href='".Config::get('host')."/Accounts/login'>Login</a> with "
+                            . "an authorized account. ";
+                    $exc = new MyEasyException($msg,403);              
                     throw $exc;
                 }
                 $reflection = new ReflectionMethod($controllerObj, $action);
@@ -147,6 +150,19 @@ class Dispatcher {
                 else{
                     echo ($view);            
                 }
+            }
+            catch(TypeError $error){
+                if($controllerObj instanceof ApiController){
+                    $resp = $controllerObj->response->set([
+                        "status"=>false,
+                        "status_code"=>500,
+                        "msg"=>"Whoops! An error has occured.",
+                        "error"=>$error->getMessage()
+                    ]);
+                    echo $controllerObj->sendResponse($resp);
+                    exit();
+                }
+                echo $error->getMessage();
             }
             catch(Exception $e){
                 if($controllerObj instanceof ApiController){

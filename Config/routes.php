@@ -65,14 +65,15 @@ $router->group("/maths/",function($router){
         });
     });    
 });
+//Routes for api
 $router->group("/api",function($router){
-    $router->group("/test",function($router){
+    $router->group("/persons",function($router){
         $router->addRoute("/", [
-            "Controller" => "Myapi",
+            "Controller" => "Persons",
             "Action" => "index"
         ],'GET|POST');
         $router->addRoute("/{id}", [
-            "Controller" => "Myapi",
+            "Controller" => "Persons",
             "Action" => "index"
         ],'GET|PUT|PATCH|DELETE');
     });

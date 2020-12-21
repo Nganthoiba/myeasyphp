@@ -15,10 +15,24 @@ try{
     date_default_timezone_set(Config::get('default_time_zone'));
     Dispatcher::dispatch($router);
 }
-catch(MyEasyException $e){
-    $view = errorView($e->getCode(), $e->getMessage().$e->getDetails());
+catch(TypeError $error){
+    $errorMessage = "Found an error in data type. Please check line number ".$error->getLine().
+            " of the file ".$error->getFile(). ". ".$error->getMessage();
+    
+    $view = errorView(400,$errorMessage,$error->getTraceAsString());
     echo $view->render();
-    //echo http_response_code($e->getCode());
+    /*echo "<pre>";
+    print_r([
+        'Line NO: '=>$error->getLine(),
+        'File Name: '=>$error->getFile(),
+        'Message'=> $error->getMessage(),
+        'Error'=>$error->getTrace()
+            ]);
+    echo "</pre>"; */
+}
+catch(MyEasyException $e){
+    $view = errorView($e->getCode(), $e->getMessage(),$e->getDetails());
+    echo $view->render();
 }
 catch(Exception $e){
     $view = errorView($e->getCode(), $e->getMessage());

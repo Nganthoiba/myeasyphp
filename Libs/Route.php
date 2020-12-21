@@ -71,4 +71,13 @@ class Route {
     public function getFunction(){
         return $this->function;
     }
+    
+    //method to detect whether the route is for API
+    public function isAPI(){
+        $paths = explode("/", $this->path);
+        if(isset($paths[0]) && strtolower($paths[0])=="api"){
+            return true;
+        }
+        return false;
+    }
 }

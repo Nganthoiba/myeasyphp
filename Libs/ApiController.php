@@ -106,7 +106,7 @@ class ApiController {
     protected function POST($data=null){
         //Override the body 
         $this->response->status_code = 201;
-        $this->response->msg = "POST request, you can override method";
+        $this->response->msg = "POST request, you can override method to create resource.";
         return $this->sendResponse($this->response);
     }
     //method to update data
@@ -118,7 +118,7 @@ class ApiController {
         }
         else{
             $this->response->status_code = 200;
-            $this->response->msg = "PUT request, you can override method";
+            $this->response->msg = $this->request->getMethod." request, you can override method to update resource";
         }        
         return $this->sendResponse($this->response);
     }
@@ -131,7 +131,7 @@ class ApiController {
         }
         else{
             $this->response->status_code = 200;
-            $this->response->msg = "DELETE request, you can override method";
+            $this->response->msg = "DELETE request, you can override method to delete a resource.";
         }        
         return $this->sendResponse($this->response);
     }
@@ -153,9 +153,13 @@ class ApiController {
             case 'POST':
                 $result = $this->POST($this->request->getData());
                 break;
+            default:
+                $result = $this->response->set([
+                    "status" => false,
+                    "status_code" => 403,
+                    "msg" => "Access denied."
+                ]);
         }
-        return $result;       
-        
+        return $result;  
     }
-    
 }

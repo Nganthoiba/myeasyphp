@@ -1,9 +1,7 @@
 <?php
-
+declare(strict_types=1);
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * An example of how to use an API
  */
 
 namespace MyEasyPHP\Controllers;
@@ -16,12 +14,12 @@ namespace MyEasyPHP\Controllers;
 use MyEasyPHP\Libs\ApiController;
 use MyEasyPHP\Models\Entities\Persons;
 use MyEasyPHP\Libs\EasyEntityManager as EntityManager;
-class MyapiController extends ApiController{
+class PersonsController extends ApiController{
     private $em;
     public function __construct() {
         parent::__construct();
         $this->em = new EntityManager();
-    }
+    }    
     
     //Overriding
     protected function GET($id = null) {
@@ -33,6 +31,7 @@ class MyapiController extends ApiController{
             $this->response->data = $this->em->find(new Persons(), $id);
             $this->response->status = is_null($this->response->data)?false:true;
             $this->response->status_code = is_null($this->response->data)?404:200;
+            $this->response->msg = is_null($this->response->data)?"Person is not found.":"";
         }
         //parent::GET($id);
         return $this->sendResponse($this->response);
@@ -63,9 +62,16 @@ class MyapiController extends ApiController{
             $data = $this->request->getData();
             //$this->response->data = $data;
             
-            $person = new Persons();
+            $person = $this->em->find(new Persons(),$id);
+            if(is_null($person)){
+                $this->response->set([
+                    "status"=>false,
+                    "status_code"=>404,
+                    "msg"=>"Person not found."
+                ]);
+                return $this->sendResponse($this->response);
+            }
             $person->setEntityData($data);
-            $person->id = $id;
             $this->response = $this->em->update($person);
             
         }

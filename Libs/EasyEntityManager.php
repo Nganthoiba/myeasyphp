@@ -81,8 +81,8 @@ class EasyEntityManager {
                 $this->response->set([
                     "msg" => "Record inserted successfully.",
                     "status"=>true,
-                    "status_code"=>201,
-                    "data"=>$entity
+                    "status_code"=>201/*,
+                    "rows_affected"=>$stmt->rowCount()*/
                 ]);
             }catch(Exception $e){
                 $this->response->set([
@@ -123,8 +123,8 @@ class EasyEntityManager {
                     $this->response->set([
                         "msg" => "Record inserted successfully.",
                         "status"=>true,
-                        "status_code"=>200,
-                        "data"=>$entity
+                        "status_code"=>201/*,
+                        "rows_affected"=>$stmt->rowCount()*/
                     ]);
                 }
                 else{
@@ -143,8 +143,8 @@ class EasyEntityManager {
                     $this->response->set([
                             "msg" => "Record saved successfully.",
                             "status"=>true,
-                            "status_code"=>200,
-                            "data"=>$entity
+                            "status_code"=>200/*,
+                            "rows_affected"=>$stmt->rowCount()*/
                         ]);
                 }
             }
@@ -190,7 +190,6 @@ class EasyEntityManager {
                         "msg" => "Record updated successfully.",
                         "status"=>true,
                         "status_code"=>200,
-                        "data"=>$entity,
                         "rows_affected"=>$stmt->rowCount()
                     ]);
                 self::$queryBuilder->clear();
@@ -233,7 +232,7 @@ class EasyEntityManager {
                 $this->response->set([
                         "msg" => "Record removed successfully.",
                         "status"=>true,
-                        "status_code"=>200
+                        "status_code"=>204
                     ]);
             }catch(Exception $e){
                 $this->response->set([
