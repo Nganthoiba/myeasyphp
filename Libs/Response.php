@@ -14,6 +14,7 @@ declare(strict_types=1);
  * @author Nganthoiba
  */
 namespace MyEasyPHP\Libs;
+use MyEasyPHP\Libs\HttpStatus;
 class Response {
     //data members compulsory for this response class
     public $data,$error,$status,$status_code,$msg,$sqlErrorCode;
@@ -38,5 +39,15 @@ class Response {
             $this->{$key} = $val;
         }
         return $this;
+    }
+    
+    public function toJSON(){
+        header("Content-Type: application/json");
+        header("HTTP/1.1 " . $this->status_code . " " . HttpStatus::getStatus($this->status_code));
+        if(is_null($this->msg) || $this->msg == ""){
+            $this->msg = HttpStatus::getStatus($this->status_code);
+        }
+        http_response_code($this->status_code);
+        return json_encode($this);
     }
 }
