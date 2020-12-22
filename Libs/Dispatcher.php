@@ -44,10 +44,13 @@ class Dispatcher {
         if(self::$router->isOnlyFunction()){
             $function = self::$router->getFunction();
             if(sizeof($params)>0){
-                //$function($params);//executing the function
-                call_user_func_array($function, array_values($params));
+                //executing the function
+                $res = call_user_func_array($function, array_values($params));
             }else{
-                $function();//executing the function
+                $res = $function();//executing the function
+            }
+            if(!is_null($res)){
+                echo $res;
             }
         }
         else{            

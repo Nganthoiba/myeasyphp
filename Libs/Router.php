@@ -62,7 +62,7 @@ class Router {
         if(!is_null($this->group_name) && $this->group_name!== ""){
             $url = '/'.trim($this->group_name, '/').'/'.trim($url,'/');
         }
-        $url = ($url=='/')?'/':rtrim($url,'/');
+        $url = (trim($url)=='/' || trim($url)=="")?'/':rtrim($url,'/');
         $this->routes[] = new Route($url, $parameters, $methods);
         return $this;
     }
