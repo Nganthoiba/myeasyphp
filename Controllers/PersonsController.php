@@ -35,7 +35,7 @@ class PersonsController extends ApiController{
             $this->response->msg = is_null($this->response->data)?"Person is not found.":"";
         }
         //parent::GET($id);
-        return $this->sendResponse($this->response);
+        return $this->response->toJSON();
     }
     
     //@Overriding
@@ -49,7 +49,7 @@ class PersonsController extends ApiController{
             $person->setEntityData($data);
             $this->response = $this->em->add($person);
         }
-        return $this->sendResponse($this->response);
+        return $this->response->toJSON();
     }
     
     //@Override
@@ -60,9 +60,7 @@ class PersonsController extends ApiController{
             $this->response->msg = "Missing parameter.";
         }
         else{
-            $data = $this->request->getData();
-            //$this->response->data = $data;
-            
+            $data = $this->request->getData();            
             $person = $this->em->find(new Persons(),$id);
             if(is_null($person)){
                 $this->response->set([
@@ -70,13 +68,12 @@ class PersonsController extends ApiController{
                     "status_code"=>404,
                     "msg"=>"Person not found."
                 ]);
-                return $this->sendResponse($this->response);
+                return $this->response->toJSON();
             }
             $person->setEntityData($data);
-            $this->response = $this->em->update($person);
-            
+            $this->response = $this->em->update($person);            
         }
-        return $this->sendResponse($this->response);
+        return $this->response->toJSON();
     }
     //@Override
     protected function DELETE($id = null) {
@@ -96,7 +93,7 @@ class PersonsController extends ApiController{
                 $this->response = $this->em->remove($person);
             }
         }        
-        return $this->sendResponse($this->response);
+        return $this->response->toJSON();
     }
     
 }
