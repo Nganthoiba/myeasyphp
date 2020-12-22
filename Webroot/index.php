@@ -15,26 +15,27 @@ try{
     date_default_timezone_set(Config::get('default_time_zone'));
     Dispatcher::dispatch($router);
 }
-catch(TypeError $error){
-    $errorMessage = "Found an error in data type. Please check line number ".$error->getLine().
-            " of the file ".$error->getFile(). ". ".$error->getMessage();
-    
-    $view = errorView(400,$errorMessage,$error->getTraceAsString());
+catch(Error $error){
+    $errorDetails = "Please check line number ".$error->getLine().
+            " of the file ".$error->getFile(). ". <br/>".$error->getTraceAsString();
+    http_response_code(500);
+    $view = errorView(500,$error->getMessage(),$errorDetails);
     echo $view->render();
-    /*echo "<pre>";
-    print_r([
-        'Line NO: '=>$error->getLine(),
-        'File Name: '=>$error->getFile(),
-        'Message'=> $error->getMessage(),
-        'Error'=>$error->getTrace()
-            ]);
-    echo "</pre>"; */
+}
+catch(TypeError $error){
+    $errorDetails = "Found an error in data type. Please check line number ".$error->getLine().
+            " of the file ".$error->getFile(). ". <br/>".$error->getTraceAsString();
+    http_response_code(500);
+    $view = errorView(500,$error->getMessage(),$errorDetails);
+    echo $view->render();
 }
 catch(MyEasyException $e){
+    http_response_code($e->getCode());
     $view = errorView($e->getCode(), $e->getMessage(),$e->getDetails());
     echo $view->render();
 }
 catch(Exception $e){
-    $view = errorView($e->getCode(), $e->getMessage());
+    http_response_code(500);
+    $view = errorView(500, $e->getMessage());
     echo $view->render();
 }
