@@ -17,38 +17,16 @@ $router = new Router();
  * the route is accessible by GET method. Below is a list of exxamples:
  */
 
-/*
- * Defining the root:
- * */
-$router->addRoute("/", [
-            "Controller" => "Default",
-            "Action" => "home"
-        ]);
-
-
 /*** Examples ****/
 //Anything enclosed by curly braces is a parameter you are goind to pass. Go to Default controller and index action, see
 //below how these parameters are being accessed
 /*
-$router->addRoute("/api/hello/{fname}/{lname}", [
+ * Defining the root:
+ * */
+$router->addRoute("/", [
     "Controller" => "Default",
-    "Action" => "hello"
-],"GET");
-*/
-$router->addRoute("/Default/sum/{num1}/{num2}", [
-    "Controller" => "Default",
-    "Action" => "sum"
-],"GET");
-$router->addRoute("/product/{number1}/{number2}", [
-    "Controller" => "Default",
-    "Action" => "product"
+    "Action" => "home"
 ]);
-$router->addRoute("/Default/test/{script}", [
-    "Controller" => "Default",
-    "Action" => "test"
-],"GET");
-
-
 //An example of grouping routes
 $router->group("/maths/",function($router){
     $router->group("/arithmetic",function($router){
@@ -93,23 +71,21 @@ $router->addRoute("/show_routes", function(){
 
 
 /****** End Examples ******/
+$router->group("/Accounts", function(Router $router){
+    $router->addRoute("/login", [
+        "Controller" => "Accounts",
+        "Action" => "login"
+    ],"GET|POST");
+    $router->addRoute("/register", [
+        "Controller" => "Accounts",
+        "Action" => "register"
+    ],"GET|POST");
+    $router->addRoute("/logout", [
+        "Controller" => "Accounts",
+        "Action" => "logout"
+    ]);
+});
 
-$router->addRoute("/", [
-    "Controller" => "Default",
-    "Action" => "index"
-],"GET");
-$router->addRoute("/Accounts/login", [
-    "Controller" => "Accounts",
-    "Action" => "login"
-],"GET|POST");
-$router->addRoute("/Accounts/register", [
-    "Controller" => "Accounts",
-    "Action" => "register"
-],"GET|POST");
-$router->addRoute("/account/logout", [
-    "Controller" => "Accounts",
-    "Action" => "logout"
-]);
 
 
 

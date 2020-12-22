@@ -133,7 +133,7 @@ class Router {
                 $this->action = $route->getAction();
                 $this->methods = $route->getMethods();   
             }
-        }
+        }        
         else{
             //If there is no route set for the particular URI specifically, then by default break down the request url into 3 main segments
             //which means the first is the Controller, the second one is the action and the remainings are the parameters
@@ -148,13 +148,11 @@ class Router {
                 if(current($path_parts)){
                     //First part is considered as controller name
                     $this->controller = trim(htmlspecialchars(strip_tags(current($path_parts))));
-                    //$this->controller = current($path_parts);
                     array_shift($path_parts);
                 }
                 if(current($path_parts)){
                     //Second part is considered as the action name
-                    $this->action = trim(htmlspecialchars(strip_tags(current($path_parts))));
-                    //$this->action = current($path_parts);
+                    $this->action = trim(htmlspecialchars(strip_tags(current($path_parts))));                    
                     array_shift($path_parts);
                 }
                 $this->params = $path_parts;
