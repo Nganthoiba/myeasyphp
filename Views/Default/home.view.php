@@ -51,16 +51,16 @@ $user_info = LoginModel::getLoginInfo();
                             <span class="fa fa-angle-down"></span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="<?= Config::get('host')?>/account/manageAccount">
+                            <a class="dropdown-item" href="<?= Config::get('host')?>/Accounts/manageAccount">
                                 <span class="fa fa-cog"></span>
                                 Manage Profile
                             </a>
-                            <a class="dropdown-item" href="<?= Config::get('host')?>/account/changePassword">
+                            <a class="dropdown-item" href="<?= Config::get('host')?>/Accounts/changePassword">
                                 <span class="fa fa-lock"></span>
                                 Change Password
                             </a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="<?= Config::get('host')?>/account/logout">
+                            <a class="dropdown-item" href="<?= Config::get('host')?>/Accounts/logout">
                                 <span class="fa fa-sign-out"></span>
                                 Log out
                             </a>
@@ -72,7 +72,7 @@ $user_info = LoginModel::getLoginInfo();
                 else{
             ?>
                 <a id="navbar-static-login" class="btn btn-default btn-rounded btn-sm waves-effect waves-light" 
-                   href="<?= Config::get('host')?>/accounts/login">Log In
+                   href="<?= Config::get('host')?>/Accounts/login">Log In
                 </a>
             <?php
                 } 
