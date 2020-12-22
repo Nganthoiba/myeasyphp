@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace MyEasyPHP\Libs;
 use MyEasyPHP\Libs\Dispatcher;
 use MyEasyPHP\Libs\ViewData;
-use Exception;
+use MyEasyPHP\Libs\MyEasyException;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -40,7 +40,7 @@ class View {
             $this->path = $path;
         }
         if(!file_exists($this->path)){
-            throw new Exception("View file is not found in the path: ".$this->path,404);
+            throw new MyEasyException("View file is not found in the path: ".$this->path,404);
         }
         $this->viewData = $viewData;
     }
