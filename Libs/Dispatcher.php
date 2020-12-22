@@ -5,8 +5,8 @@ namespace MyEasyPHP\Libs;
 /**
  * Description of Dispatcher
  * The main function of Dispatcher class is to grab the url from the client request, 
- * find the right controller name and action name from the list of routes, then execute 
- * the action of the controller.
+ * then pass the request uri to the right controller name and action name from the list 
+ * of routes, then execute the action of the controller.
  * @author Nganthoiba
  */
 use MyEasyPHP\Libs\Router;
@@ -42,6 +42,11 @@ class Dispatcher {
         
         //If router is only a function
         if(self::$router->isOnlyFunction()){
+            if(!in_array(self::$request->getMethod(), $methods)){                    
+                $exc = new MyEasyException("Method not allowed.",405);
+                $exc->setDetails("Methods allowed for the route '".self::$router->getRouteUrl()."' :- ".implode(', ',$methods)." but your request method is ".self::$request->getMethod());
+                throw $exc;
+            }
             $function = self::$router->getFunction();
             if(sizeof($params)>0){
                 //executing the function
@@ -62,6 +67,11 @@ class Dispatcher {
 			
             //*** creating Controller Object ***
             $controller_class = "MyEasyPHP\\Controllers\\".$controller;
+            if(!class_exists($controller_class, TRUE)){
+                $exception = new MyEasyException("Sorry, the page you are looking for is not found.",404);
+                $exception->setDetails("Controller file ".$controller." class does not exist. Please check.");
+                throw $exception;
+            }
             $controllerObj = new $controller_class();//instantiate a new controller object
             $controllerObj->setRouter(self::$router);//very much necessary
             $controllerObj->setRequest(self::$request);//very much necessary
@@ -75,7 +85,7 @@ class Dispatcher {
                     $resp = $controllerObj->response->set([
                         "status"=>false,
                         "status_code"=>405,
-                        "error"=>"Methods allowed for the route:- ".self::$router->getRouteUrl()." are: ".implode(', ',$methods).", but your request method is ".self::$request->getMethod()
+                        "error"=>"Methods allowed for the route '".self::$router->getRouteUrl()."' are: ".implode(', ',$methods).", but your request method is ".self::$request->getMethod()
                     ]);
                     echo $controllerObj->sendResponse($resp);
                     exit();
@@ -107,7 +117,7 @@ class Dispatcher {
                 //checking whether the request method is allowed for accessing URI(For security)
                 if(!in_array(self::$request->getMethod(), $methods)){
                     $exc = new MyEasyException("Method not allowed.",405);
-                    $exc->setDetails("Methods allowed for the route:- ".self::$router->getRouteUrl()." are: ".json_encode($methods).", but your request method is ".self::$request->getMethod());
+                    $exc->setDetails("Methods allowed for the route '".self::$router->getRouteUrl()."' :- ".implode(', ',$methods)." but your request method is ".self::$request->getMethod());
                     throw $exc;            
                 }
                 //check if method (action) exists for the controller class
@@ -144,7 +154,7 @@ class Dispatcher {
                 }
                 //Controller Action may returns view or json data depending upon whether the controller is api controller or just controller, and it is going to be printed
                 if(is_null($view)){
-                    echo "Null";
+                    //echo "Null";
                 } 
                 else if(is_object($view) && $view instanceof View){                           
                     //if it is view object then render its contents
@@ -167,7 +177,7 @@ class Dispatcher {
                     echo $controllerObj->sendResponse($resp);
                     exit();
                 }
-                echo $error->getMessage();
+                throw $error;
             }
             catch(Exception $e){
                 if($controllerObj instanceof ApiController){
