@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+namespace MyEasyPHP\Libs;
 /*
  * How do MVC routers work
  * A MVC Router class inspects the URL of an HTTP request and attempts to match individual URL 
@@ -8,16 +9,21 @@ declare(strict_types=1);
  * Reference: https://www.codediesel.com/php/how-do-mvc-routers-work/
  * 
  * The purpose of this class is to maintain set of URIs. It checks whether the url requested by user is available 
- * in the routes set or not, if found it breaks down thr url requested by user into three segments:-
+ * in the set of routes or not, if found it breaks down thr url requested by user into three segments:-
  *  Controller, Action, and parameters.
  * #Note: Routes object is a collection of  objects of class 'Route'
- */
-
-namespace MyEasyPHP\Libs;
-
-/**
- * Description of Router
- *
+ 
+ * Examples: * 
+ * 
+ * $router = new Router();
+ * $router->addRoute(param1,param2,param3[optional]);
+ * The first parameter is the request uri or url, and the second parameter can be just a function
+ * or an associative array indicating which controller and what action to be called.
+ * and lastly the third parameter is the methods(http verbs) which is allowed for the request url, its values 
+ * should be passed in the form of array like ['POST','PUT'] or in the string format separated by | character
+ * like "POST|PUT", this third parameter is optional, if you don't pass, by default its value is GET, which means 
+ * the route is accessible by GET method. Below is a list of exxamples:
+ * 
  * @author Nganthoiba
  * 19/06/2020
  */
@@ -43,7 +49,8 @@ class Router {
     
     //Grouping name of Routes;
     protected $group_name;
-    
+
+
     public function __construct($uri="") {
         //Setting default values
         $this->routes = [];
@@ -70,12 +77,15 @@ class Router {
     //function for Grouping Routes
     public function group(string $group_name="", callable $func){ 
         global $router;
+        $old_group_name = $this->group_name;
         if(!is_null($group_name) && $group_name!== ""){
             $this->group_name = trim($this->group_name,'/').'/'.trim($group_name,'/');
-            //$func();
             call_user_func($func,$router);
         }
-        $this->group_name = "";//resetting group name
+        //resetting group name to the earlier one, because group functions can be nested
+        //that is one group inside another group.
+        $this->group_name = $old_group_name;
+        unset($old_group_name);
     }
     
     /* method to get all routes */

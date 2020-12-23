@@ -1,7 +1,7 @@
 <IfModule mod_rewrite.c>
     RewriteEngine on
-    RewriteRule ^$ Webroot/ [L]
-    RewriteRule (.*) Webroot/$1 [L]
+#    RewriteRule ^$ Webroot/ [L]
+    RewriteRule ^(.*)$ Webroot/$1 [L]
 </IfModule>
 
 #deny from all 

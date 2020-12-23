@@ -80,7 +80,7 @@ class Dispatcher {
             //Here check whether the controller is an object of ApiController or just normal Controller
             if(($controllerObj instanceof ApiController)){
                 //checking whether the request method is allowed for accessing URI(For security)
-                /*
+                
                 if(!in_array(self::$request->getMethod(), $methods)){                    
                     $resp = $controllerObj->response->set([
                         "status"=>false,
@@ -90,7 +90,7 @@ class Dispatcher {
                     echo $controllerObj->sendResponse($resp);
                     exit();
                 }
-                */
+                
                 //check if method (action) exists for the controller class
                 if(!method_exists($controllerObj, $action)){
                     $resp = $controllerObj->response->set([

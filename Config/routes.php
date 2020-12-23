@@ -28,21 +28,11 @@ $router->addRoute("/", [
     "Action" => "home"
 ]);
 //An example of grouping routes
-$router->group("/maths/",function($router){
-    $router->group("/arithmetic",function($router){
-        $router->addRoute("/sum/{num1}/{num2}", function($num1,$num2){    
-            echo "Sum is : ".($num1+$num2);
-        });
-        $router->addRoute("/difference/{num1}/{num2}", function($num1,$num2){    
-            echo "Difference is : ".($num1-$num2);
-        });
-        $router->addRoute("/product/{num1}/{num2}", function($num1,$num2){    
-            echo "Product is : ".($num1*$num2);
-        },'POST|GET');
-        $router->addRoute("/division/{num1}/{num2}", function($num1,$num2){    
-            echo "Division is : ".($num1/$num2);
-        });
-    });    
+$router->addRoute("/show_routes", function(){
+    global $router;
+    echo "<pre>";
+    print_r($router->getRoutes());
+    echo "</pre>";
 });
 //Routes for api
 $router->group("/api",function($router){
@@ -56,22 +46,23 @@ $router->group("/api",function($router){
             "Action" => "index"
         ],'GET|PUT|PATCH|DELETE');
     });
+    $router->group("/users", function($router){
+        $router->addRoute("/", [
+            "Controller" => "Users",
+            "Action" => "index"
+        ],'GET|POST');
+        $router->addRoute("/{id}", [
+            "Controller" => "Users",
+            "Action" => "index"
+        ],'GET|PUT|PATCH|DELETE');
+    });
 });
-$router->addRoute("/Myapi/index", [
-    "Controller" => "Myapi",
-    "Action" => "index"
-],"POST|GET|PUT|DELETE");
 
-$router->addRoute("/show_routes", function(){
-    global $router;
-    echo "<pre>";
-    print_r($router->getRoutes());
-    echo "</pre>";
-});
-
-
-/****** End Examples ******/
 $router->group("/Accounts", function(Router $router){
+    $router->addRoute("/", [
+        "Controller" => "Accounts",
+        "Action" => "login"
+    ],"GET|POST");
     $router->addRoute("/login", [
         "Controller" => "Accounts",
         "Action" => "login"
@@ -86,6 +77,7 @@ $router->group("/Accounts", function(Router $router){
     ]);
 });
 
+/****** End Examples ******/
 
 
 

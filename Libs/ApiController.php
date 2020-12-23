@@ -99,7 +99,7 @@ class ApiController {
         //Override the body 
         $this->response->status_code = 200;
         $this->response->msg = "GET request, you can override method";
-        return $this->sendResponse($this->response); 
+        return $this->response->toJSON(); 
     }
     
     //method to populate data
@@ -107,7 +107,7 @@ class ApiController {
         //Override the body 
         $this->response->status_code = 201;
         $this->response->msg = "POST request, you can override method to create resource.";
-        return $this->sendResponse($this->response);
+        return $this->response->toJSON(); 
     }
     //method to update data
     protected function PUT($id = null){
@@ -120,7 +120,7 @@ class ApiController {
             $this->response->status_code = 200;
             $this->response->msg = $this->request->getMethod." request, you can override method to update resource";
         }        
-        return $this->sendResponse($this->response);
+        return $this->response->toJSON(); 
     }
     //method to delete data
     protected function DELETE($id = null){
@@ -133,7 +133,7 @@ class ApiController {
             $this->response->status_code = 200;
             $this->response->msg = "DELETE request, you can override method to delete a resource.";
         }        
-        return $this->sendResponse($this->response);
+        return $this->response->toJSON(); 
     }
     
     public function index(){
@@ -154,11 +154,11 @@ class ApiController {
                 $result = $this->POST($this->request->getData());
                 break;
             default:
-                $result = $this->sendResponse($this->response->set([
+                $result = $this->response->set([
                     "status" => false,
                     "status_code" => 403,
                     "msg" => "Access denied."
-                ]));
+                ])->toJSON();
         }
         return $result;  
     }
