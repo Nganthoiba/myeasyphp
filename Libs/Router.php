@@ -194,9 +194,8 @@ class Router {
                 if(!$this->isParameter($first_url_parts[$i])){
                     return false;
                 }
-                //removing curly braces
-                $index = trim($first_url_parts[$i],"{");
-                $index = trim($index,"}");
+                //removing curly braces                
+                $index = preg_replace('/{}/','',$first_url_parts[$i]);
                 $this->params[$index] = $second_url_parts[$i];                
             }
         }//end of parsing every single corresponding element
