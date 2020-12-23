@@ -75,7 +75,7 @@ class Router {
     }
     
     //function for Grouping Routes
-    public function group(string $group_name="", callable $func){ 
+    public function group(string $group_name="", callable $func /*function*/){ 
         global $router;
         $old_group_name = $this->group_name;
         if(!is_null($group_name) && $group_name!== ""){

@@ -36,6 +36,9 @@ $router->addRoute("/show_routes", function(){
 });
 //Routes for api
 $router->group("/api",function($router){
+    $router->addRoute('/',function(){
+        return "Welcome to RESTful API";
+    });
     $router->group("/persons",function($router){
         $router->addRoute("/", [
             "Controller" => "Persons",
