@@ -60,10 +60,23 @@ class View {
     }
     //Randering view data
     public function render(){
-        ob_start();//turns on output buffering
-        
+        ob_start();//turns on output buffering        
         $viewData = $this->viewData;
         $model = $this->model;
+        if(is_object($model)){
+            $data = json_decode(json_encode($model),true);
+        }else if(is_array($model)){
+            $data = $model;
+            foreach ($data as $key=>$value){
+                if(!is_numeric($key)){
+                    //creating dynamic variables
+                    ${$key} = $value;
+                }
+            }
+        }
+        else{
+            $data = $model;
+        }
         if(file_exists($this->path)){
             include_once($this->path);
         }
@@ -72,5 +85,9 @@ class View {
         //If output buffering isn't active then FALSE is returned. 
         $content = ob_get_clean();
         return $content;
+    }
+    
+    public function __toString() {
+        return $this->render();
     }
 }
