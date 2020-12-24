@@ -1,11 +1,5 @@
 <?php
 declare(strict_types=1);
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace MyEasyPHP\Controllers;
 
 /**
@@ -31,6 +25,10 @@ class DefaultController extends Controller{
         return "This is my contact";//returning a string
     }         
     public function home(){
-        return $this->view();
+        return view();
+        //view() is a global function in the entire application. It can be accessed
+        //from anywhere. The function $this->view() is only accessible from inside the 
+        //method of a controller class. $this->view() can take upto 2 parameters whereas, 
+        //global view() can take upto 3 parameters.
     }    
 }

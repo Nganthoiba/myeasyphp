@@ -5,7 +5,7 @@ use MyEasyPHP\Libs\Response;
 use MyEasyPHP\Libs\ext\csrf;
 use MyEasyPHP\Libs\View;
 use MyEasyPHP\Libs\HttpStatus;
-
+use MyEasyPHP\Libs\ViewData;
 function generateRandomString($length = 32) {
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     $charactersLength = strlen($characters);
@@ -187,14 +187,108 @@ function downloadFile($file_path,$flag=false){
         die();
     } else {
         http_response_code(404);
-        die();
+        die("File not found.");
     }
+}
+/********************** VIEW FUNCTIONS ****************************/
+//function to return view
+//HOW TO USE:-
+//The function can consume up to 3 parameters, so there are 4 ways how this function 
+//can be accessed:
+//1.    pass no argument i.e. simply view(). This will return a default view object
+//2.    pass a single argument, this argument can be a path of a view page (string), 
+//      or a model object, or an entity object or simply an array or a view data.
+//3.    pass 2 argments, then the first argument must be a string which is view path,
+//      and the second argument is either a model object, or an entity object, or array
+//      or an object of ViewData.
+//4.    pass 3 arguments, then the first argument must be a string which is view path,
+//      and the second argument is either a model object, or an entity object or an array.
+//      And the third argument(last) must be an object of ViewData.
+//      
+//#Note: If the function is used in a method of a controller, then pass the view data of 
+//that controller.
+//
+
+function view():View{
+    global $router;
+    $viewPath = "";
+    $dataModel = null;
+    $viewData = new ViewData();
+    $numargs = func_num_args();
+    switch($numargs){
+        case 0:
+            $viewPath = "";
+            break;
+        case 1:
+            $arg = func_get_arg(0);
+            if($arg instanceof Model or $arg instanceof EasyEntity or is_array($arg)){
+                $dataModel = $arg;
+            }
+            else if(is_string($arg)){
+                $viewPath = $arg;
+            }
+            else if($arg instanceof ViewData){
+                $viewData = $arg;
+            }
+            break;
+        case 2:
+            //first argument is assumed to be view path
+            $viewPath = func_get_arg(0);
+            //second argument is assumed to be an object of either Entity or a Model class
+            // or simply an object of ViewData   
+            $arg2 = func_get_arg(1);
+            if($arg2 instanceof Model or $arg2 instanceof EasyEntity or is_array($arg2)){
+                $dataModel = $arg2;
+            }
+            else if($arg2 instanceof ViewData){
+                $viewData = $arg2;
+            }            
+            break;
+        default:
+            //first argument is view path
+            $viewPath = func_get_arg(0);
+            //second argument is assumed to be an object of either Entity or a Model class
+            $dataModel = func_get_arg(1);
+            //third argument is the view data
+            $viewData = func_get_arg(2);       
+            
+    }
+    if($viewPath !== ""){        
+        if(file_exists(VIEWS_PATH.$viewPath.'.view.php') && is_readable(VIEWS_PATH.$viewPath.'.view.php')){
+            $viewPath = VIEWS_PATH.$viewPath.'.view.php';
+        }
+        else if(file_exists(VIEWS_PATH."Shared".DS.$viewPath.'.view.php') && is_readable(VIEWS_PATH."Shared".DS.$viewPath.'.view.php')){
+            $viewPath = VIEWS_PATH."Shared".DS.$viewPath.'.view.php';
+        }
+        else{
+            $controller_name = $router->getController();
+            $viewPath = VIEWS_PATH.$controller_name.DS.$viewPath.'.view.php';
+        }
+    }
+    $view_obj = new View($viewPath,$viewData);
+    if(!is_null($dataModel)){
+        $view_obj->setDataModel($dataModel);
+    }
+    $viewData->content = $view_obj->render();
+    $layout = Config::get('default_view_container');
+    //Finding container view
+    if(file_exists(VIEWS_PATH.$layout.'.view.php')){
+        $layout_path = VIEWS_PATH.$layout.'.view.php';
+    }
+    else if(file_exists(VIEWS_PATH."Shared".DS.$layout.'.view.php')){
+        $layout_path = VIEWS_PATH."Shared".DS.$layout.'.view.php';
+    }
+    else{
+        $layout_path="";
+    }
+    $layout_view_obj = new View($layout_path,$viewData);
+    return $layout_view_obj; //return the whole view object with view container
 }
 
 //function to return a view that shows error details when any error occurs
 function errorView($httpCode,$errorMessage="",$errorDetails="",bool $isPartial = false) : View{
     
-    $viewData = new MyEasyPHP\Libs\ViewData();
+    $viewData = new ViewData();
     $viewData->httpCode = $httpCode;
     $viewData->httpStatus = HttpStatus::getStatus($httpCode);
     $viewData->ErrorMessage = $errorMessage;
@@ -223,7 +317,7 @@ function errorView($httpCode,$errorMessage="",$errorDetails="",bool $isPartial =
     $layout_view_obj = new View($layout_path,$viewData);
     return $layout_view_obj;
 }
-
+/*************************************-------*****************************************/
 //Accounts related function
 //function to get roles assigned to a user 
 function getRoles(string $userId):array{

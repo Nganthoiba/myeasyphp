@@ -30,9 +30,11 @@ $router->addRoute("/", [
 //An example of grouping routes
 $router->addRoute("/show_routes", function(){
     global $router;
-    echo "<pre>";
+    /*echo "<pre>";
     print_r($router->getRoutes());
     echo "</pre>";
+    */
+    return view('Shared/route',$router->getRoutes());
 });
 //Routes for api
 $router->group("/api",function($router){
