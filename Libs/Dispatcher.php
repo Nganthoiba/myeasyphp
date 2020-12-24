@@ -54,9 +54,11 @@ class Dispatcher {
             }else{
                 $res = $function();//executing the function
             }
-            if(!is_null($res)){
-                echo $res;
+            if(is_null($res)){
+                http_response_code(102);
+                exit();
             }
+            echo $res;
         }
         else{            
             $controller = is_null(self::$router->getController())?"Controller":ucfirst(self::$router->getController())."Controller";
@@ -154,6 +156,8 @@ class Dispatcher {
                 }
                 //Controller Action may returns view or json data depending upon whether the controller is api controller or just controller, and it is going to be printed
                 if(is_null($view)){
+                    http_response_code(102);
+                    exit();
                     //echo "Null";
                 } 
                 else if(is_object($view) && $view instanceof View){                           
