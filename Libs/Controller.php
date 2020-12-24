@@ -194,7 +194,6 @@ class Controller {
         switch($numargs){
             case 0:
                 $view_path="";
-                //$this->dataModel = null;
                 break;
             case 1:
                 $arg = func_get_arg(0);
