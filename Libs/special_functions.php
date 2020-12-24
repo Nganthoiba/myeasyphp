@@ -210,10 +210,13 @@ function downloadFile($file_path,$flag=false){
 //
 
 function view():View{
-    global $router;
+    global $router,$controllerObj;
     $viewPath = "";
     $dataModel = null;
     $viewData = new ViewData();
+    if(!is_null($controllerObj)){
+        $viewData = $controllerObj->getViewData();
+    }
     $numargs = func_num_args();
     switch($numargs){
         case 0:

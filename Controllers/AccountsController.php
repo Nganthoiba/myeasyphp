@@ -46,7 +46,7 @@ class AccountsController extends Controller{
         if($this->request->isMethod("POST")){
             $this->authenticate();
         }
-        return $this->view();
+        return view();
     }
     
     public function register(){

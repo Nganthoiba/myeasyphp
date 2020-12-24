@@ -23,7 +23,9 @@ class Dispatcher {
     public static function getRouter(){
         return self::$router;
     }
-    public static function dispatch(Router $router){
+    public static function dispatch(){
+        global $router; //Router Object
+        global $controllerObj;//Controller Object
         //Getting user request information
         self::$request = new Request();        
         
@@ -33,9 +35,10 @@ class Dispatcher {
         if(!is_null($uri)){
             $uri = (rtrim($uri,'/'));
         }
+        
+        $router->setUri($uri);
+        $router->extractComponents();//extract Controller and action wrt the request uri from the routes
         self::$router = $router;
-        self::$router->setUri($uri);
-        self::$router->extractComponents();//extract Controller and action wrt the request uri from the routes
         $methods = self::$router->getMethods();//getting HTTP verbs       
         //senitising all input values via GET or POST methods
         $params = self::$request->senitizeInputs(self::$router->getParams());       

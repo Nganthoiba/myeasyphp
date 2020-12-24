@@ -80,7 +80,7 @@ class Controller {
     public function setRouter(Router $router){
         $this->router = $router;
     }
-    public function getData(){
+    public function getViewData(){
         return $this->viewData;
     }
     

@@ -1,8 +1,10 @@
 <?php
-require_once dirname(__DIR__) . '../Config/path.php';
+require_once dirname(__DIR__) . '../Config/path.php';//path configuration
 require_once VENDOR_PATH. 'autoload.php';
-require_once CONFIG_PATH. 'app.php';
-require_once CONFIG_PATH. 'routes.php';
+require_once CONFIG_PATH. 'app.php';// Application configuration file
+
+
+require_once CONFIG_PATH. 'routes.php';//Route Configuration file
 require_once LIBS_PATH. 'special_functions.php';
 // object $router is instantiated in the Config/routes.php file
 
@@ -10,10 +12,18 @@ use MyEasyPHP\Libs\Dispatcher;
 use MyEasyPHP\Libs\Config;
 use MyEasyPHP\Libs\MyEasyException;
 
+///// GLOBAL VARIABLES FOR APPLICATION /////
+/*
+ * Important Note: Don't change these variable names because they are global for the
+ * entire application, so they are used in other files also. Changing them may lead to 
+ * severe errors in the system.
+ */
+global $controllerObj; //Controller Object
+////////////////////////////////////////////
 try{
     require_once LIBS_PATH.DS.'special_functions.php';    
     date_default_timezone_set(Config::get('default_time_zone'));
-    Dispatcher::dispatch($router);
+    Dispatcher::dispatch();
 }
 catch(Error $error){
     $errorDetails = "Please check line number ".$error->getLine().

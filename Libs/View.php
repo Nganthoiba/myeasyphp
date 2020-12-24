@@ -22,7 +22,7 @@ class View {
     protected $model;//Data Model, or an entity 
     
     protected static function getDefaultViewPath(){
-        $router = Dispatcher::getRouter();
+        global $router;/* = Dispatcher::getRouter()*/;
         if(!$router){
             return false;
         }

@@ -2,8 +2,15 @@
 declare(strict_types=1);
 
 use MyEasyPHP\Libs\Router;
+
+/*
+ * Important Note: Don't change variable name for $route because it is global for the
+ * entire application, so it is used in other files also. Changing it may lead to errors
+ * in the system.
+ */
 global $router;
-$router = new Router();
+$router = new Router();//Don't change it
+/******************************************************/
 
 /*
  * Reference: https://www.codediesel.com/php/how-do-mvc-routers-work/
@@ -30,11 +37,7 @@ $router->addRoute("/", [
 //An example of grouping routes
 $router->addRoute("/show_routes", function(){
     global $router;
-    /*echo "<pre>";
-    print_r($router->getRoutes());
-    echo "</pre>";
-    */
-    return view('Shared/route',$router->getRoutes());
+    return view('Shared/route',['routes'=>$router->getRoutes(),'app_name'=>'MyEasyPHP']);
 });
 //Routes for api
 $router->group("/api",function($router){
