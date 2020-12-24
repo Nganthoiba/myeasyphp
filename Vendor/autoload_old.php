@@ -10,7 +10,7 @@ try{
         $classname = str_replace("MyEasyPHP\\", "", $classname);
         $class_file = ROOT.DS.$classname.'.php';
         $class_file = str_replace("\\",DS,$class_file);
-        if(file_exists($class_file) || is_readable($class_file)){
+        if(file_exists($class_file) && is_readable($class_file)){
             require_once ($class_file);
         }
         else{
