@@ -7,7 +7,6 @@ declare(strict_types=1);
  */
 namespace MyEasyPHP\Libs;
 
-use MyEasyPHP\Libs\Router;
 use MyEasyPHP\Libs\Request;
 use MyEasyPHP\Libs\Response;
 use MyEasyPHP\Libs\View;
@@ -76,10 +75,7 @@ class Controller {
      * of user. 
         
      *      */
-
-    public function setRouter(Router $router){
-        $this->router = $router;
-    }
+    
     public function getViewData(){
         return $this->viewData;
     }
@@ -197,7 +193,7 @@ class Controller {
                 break;
             case 1:
                 $arg = func_get_arg(0);
-                if($arg instanceof Model or $arg instanceof EasyEntity or is_array($arg)){
+                if(is_object($arg) or is_array($arg)){
                     $this->dataModel = $arg;
                 }
                 else if(is_string($arg)){
@@ -208,8 +204,8 @@ class Controller {
             default:
                 $arg1 = func_get_arg(0);//first argument is assumed to be view path
                 $arg2 = func_get_arg(1);//second argument is assumed to be an object of either Entity or a Model class
-                $view_path = is_null($arg1)?"":$arg1;
-                $this->dataModel = ($arg2 instanceof Model or $arg2 instanceof EasyEntity or is_array($arg2))?$arg2:$this->dataModel;
+                $view_path = is_null($arg1)?"":$arg1;                
+                $this->dataModel = (is_object($arg2) or is_array($arg2))?$arg2:$this->dataModel;
                 break;            
         }
         
@@ -237,7 +233,7 @@ class Controller {
         }
         
         $this->viewData->content = $view_obj->render();
-        $layout = Config::get('default_view_container');//$this->router->getRoute();
+        $layout = Config::get('default_view_container');
         
         //Finding container view
         if(file_exists(VIEWS_PATH.$layout.'.view.php')){
