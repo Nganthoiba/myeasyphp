@@ -8,8 +8,10 @@ namespace MyEasyPHP\Libs;
  * @author Nganthoiba
  */
 use MyEasyPHP\Libs\Response;
-use Exception;
-class Model {
+
+abstract class Model {
+       
+    protected $errors = [];//set of error for different attributes
     /*Convert self object to array*/
     public function toArray(){
         return json_decode(json_encode($this),true);
@@ -17,23 +19,10 @@ class Model {
     
     /*** method to set data to a model ***/
     public function setModelData(array $data){
-        $obj_data = $this->toArray();
-        $flag=0;
-        $form_element="";
-        foreach($obj_data as $key=>$val){
-            //$this->{$key} = isset($data[$key])?$data[$key]:null;
-            if(isset($data[$key])){
-                $this->{$key} = $data[$key];
+        foreach($data as $key=>$value){
+            if(property_exists($this, $key)){
+                $this->{$key} = $value;
             }
-            else{
-                $flag = 1;
-                $form_element = $key;
-                break;
-            }
-        }
-        if($flag){
-            throw new Exception("Could not find an element with name '".$form_element."' in your input request form.".json_encode($data),
-                    400);            
         }
     }
     
@@ -55,10 +44,6 @@ class Model {
             }
         }
         if($flag){
-            /*
-            throw new Exception("Found null for the element with name '".$form_element."' in your input request form.",
-                    400);  
-                    */
             $response->msg = "Found null or blank value for the element with name '".$form_element."' in your input request form.";
             $response->status= false;
             $response->status_code = 400;          
@@ -66,5 +51,20 @@ class Model {
         $response->data = $this;
         return  $response;
     }   
+    
+    public function __toString(){
+        return json_encode($this);
+    }
+    
+    public function addError(string $attribute, string $message){
+        $this->errors[$attribute][] = $message;
+    }
+    public function getError(string $attribute){
+        return (isset($this->errors[$attribute]))?$this->errors[$attribute]:"";
+    }
+    public function getAllErrors():array{
+        return $this->errors;
+    }    
+    //abstract public function rules():array;
     
 }
