@@ -80,6 +80,7 @@ class EasyEntityManager {
                 }
                 
                 $this->response->set([
+                    "data" => $entity,
                     "msg" => "Record inserted successfully.",
                     "status"=>true,
                     "status_code"=>201/*,
@@ -118,11 +119,11 @@ class EasyEntityManager {
                     $stmt = self::$queryBuilder->insert($entity->getTable(), $data)->execute();
 
                     if($entity->{$entity->getKey()}=="" || $entity->{$entity->getKey()}==null){
-                        //$entity->{$entity->getKey()} = $stmt->lastInsertId();
                         $entity->{$entity->getKey()} = self::$queryBuilder::$conn->lastInsertId();
                     }
 
                     $this->response->set([
+                        "data" => $entity,
                         "msg" => "Record inserted successfully.",
                         "status"=>true,
                         "status_code"=>201/*,
@@ -143,6 +144,7 @@ class EasyEntityManager {
                             ->execute();
 
                     $this->response->set([
+                            "data" => $entity,
                             "msg" => "Record saved successfully.",
                             "status"=>true,
                             "status_code"=>200/*,
@@ -190,6 +192,7 @@ class EasyEntityManager {
                         ->execute();
                 
                 $this->response->set([
+                        "data" => $entity,
                         "msg" => "Record updated successfully.",
                         "status"=>true,
                         "status_code"=>200,
