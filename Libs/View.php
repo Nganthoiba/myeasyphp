@@ -61,7 +61,7 @@ class View {
     //Randering view data
     public function render(){
         ob_start();//turns on output buffering        
-        $viewData = $this->viewData;
+        $viewData = $this->viewData; 
         $model = $this->model;
         if(is_object($model)){
             $data = json_decode(json_encode($model),true);
