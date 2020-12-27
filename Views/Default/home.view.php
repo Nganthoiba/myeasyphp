@@ -1,11 +1,6 @@
 <?php 
 use MyEasyPHP\Libs\Config;
 use MyEasyPHP\Libs\Html;
-use MyEasyPHP\Models\LoginModel;
-use MyEasyPHP\Models\Entities\Logins;
-
-$isAuthenticated = LoginModel::isAuthenticated();
-$user_info = LoginModel::getLoginInfo();
 ?>
     <head>
         <title><?= Config::get('site_name') ?></title>
@@ -82,8 +77,8 @@ $user_info = LoginModel::getLoginInfo();
         </nav>
         <!--/.Navbar-->      
         
-        
-        
+        <p style="margin-top: 60px;">Below Nav bar</p>
+        <P><?= $viewData->test.'Sum = '.(9+5) ?></P>
         <?php
         
         Html::loadJs('jquery');
