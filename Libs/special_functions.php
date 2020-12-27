@@ -6,6 +6,7 @@ use MyEasyPHP\Libs\ext\csrf;
 use MyEasyPHP\Libs\View;
 use MyEasyPHP\Libs\HttpStatus;
 use MyEasyPHP\Libs\ViewData;
+use MyEasyPHP\Libs\Controller;
 function generateRandomString($length = 32) {
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     $charactersLength = strlen($characters);
@@ -214,7 +215,8 @@ function view():View{
     $viewPath = "";
     $dataModel = null;
     $viewData = new ViewData();
-    if(!is_null($controllerObj)){
+    if($controllerObj instanceof Controller){
+        //view data will be set only when the is an instance of controller object
         $viewData = $controllerObj->getViewData();
     }
     $numargs = func_num_args();
@@ -224,7 +226,8 @@ function view():View{
             break;
         case 1:
             $arg = func_get_arg(0);
-            if($arg instanceof Model or $arg instanceof EasyEntity or is_array($arg)){
+            //if($arg instanceof Model or $arg instanceof EasyEntity or is_array($arg)){
+            if(is_object($arg) or is_array($arg)){
                 $dataModel = $arg;
             }
             else if(is_string($arg)){
@@ -233,6 +236,7 @@ function view():View{
             else if($arg instanceof ViewData){
                 $viewData = $arg;
             }
+            unset($arg);
             break;
         case 2:
             //first argument is assumed to be view path
@@ -240,12 +244,13 @@ function view():View{
             //second argument is assumed to be an object of either Entity or a Model class
             // or simply an object of ViewData   
             $arg2 = func_get_arg(1);
-            if($arg2 instanceof Model or $arg2 instanceof EasyEntity or is_array($arg2)){
+            if(is_object($arg2) or is_array($arg2)){
                 $dataModel = $arg2;
             }
             else if($arg2 instanceof ViewData){
                 $viewData = $arg2;
-            }            
+            }
+            unset($arg2);            
             break;
         default:
             //first argument is view path
@@ -263,7 +268,7 @@ function view():View{
         else if(file_exists(VIEWS_PATH."Shared".DS.$viewPath.'.view.php') && is_readable(VIEWS_PATH."Shared".DS.$viewPath.'.view.php')){
             $viewPath = VIEWS_PATH."Shared".DS.$viewPath.'.view.php';
         }
-        else{
+        else if($controllerObj instanceof Controller){
             $controller_name = $router->getController();
             $viewPath = VIEWS_PATH.$controller_name.DS.$viewPath.'.view.php';
         }
@@ -321,6 +326,7 @@ function errorView($httpCode,$errorMessage="",$errorDetails="",bool $isPartial =
     return $layout_view_obj;
 }
 /*************************************-------*****************************************/
+
 //Accounts related function
 //function to get roles assigned to a user 
 function getRoles(string $userId):array{

@@ -18,11 +18,8 @@ use MyEasyPHP\Libs\Authorization;
 use MyEasyPHP\Libs\ApiController;
 use ReflectionMethod;
 class Dispatcher {
-    public static $router;
+    
     public static $request;
-    public static function getRouter(){
-        return self::$router;
-    }
     public static function dispatch(){
         global $router; //Router Object
         global $controllerObj;//Controller Object
@@ -38,19 +35,19 @@ class Dispatcher {
         
         $router->setUri($uri);
         $router->extractComponents();//extract Controller and action wrt the request uri from the routes
-        self::$router = $router;
-        $methods = self::$router->getMethods();//getting HTTP verbs       
+        
+        $methods = $router->getMethods();//getting HTTP verbs       
         //senitising all input values via GET or POST methods
-        $params = self::$request->senitizeInputs(self::$router->getParams());       
+        $params = self::$request->senitizeInputs($router->getParams());       
         
         //If router is only a function
-        if(self::$router->isOnlyFunction()){
+        if($router->isOnlyFunction()){
             if(!in_array(self::$request->getMethod(), $methods)){                    
                 $exc = new MyEasyException("Method not allowed.",405);
-                $exc->setDetails("Methods allowed for the route '".self::$router->getRouteUrl()."' :- ".implode(', ',$methods)." but your request method is ".self::$request->getMethod());
+                $exc->setDetails("Methods allowed for the route '".$router->getRouteUrl()."' :- ".implode(', ',$methods)." but your request method is ".self::$request->getMethod());
                 throw $exc;
             }
-            $function = self::$router->getFunction();
+            $function = $router->getFunction();
             if(sizeof($params)>0){
                 //executing the function
                 $res = call_user_func_array($function, array_values($params));
@@ -64,8 +61,8 @@ class Dispatcher {
             echo $res;
         }
         else{            
-            $controller = is_null(self::$router->getController())?"Controller":ucfirst(self::$router->getController())."Controller";
-            $action = self::$router->getAction();//Action name
+            $controller = is_null($router->getController())?"Controller":ucfirst($router->getController())."Controller";
+            $action = $router->getAction();//Action name
             if(is_null($action)){
                 $action = Config::get('default_action');
             }
@@ -78,7 +75,7 @@ class Dispatcher {
                 throw $exception;
             }
             $controllerObj = new $controller_class();//instantiate a new controller object
-            $controllerObj->setRouter(self::$router);//very much necessary
+            
             $controllerObj->setRequest(self::$request);//very much necessary
             $controllerObj->setParams($params);//setting parameters is very much necessary
             
@@ -90,7 +87,7 @@ class Dispatcher {
                     $resp = $controllerObj->response->set([
                         "status"=>false,
                         "status_code"=>405,
-                        "error"=>"Methods allowed for the route '".self::$router->getRouteUrl()."' are: ".implode(', ',$methods).", but your request method is ".self::$request->getMethod()
+                        "error"=>"Methods allowed for the route '".$router->getRouteUrl()."' are: ".implode(', ',$methods).", but your request method is ".self::$request->getMethod()
                     ]);
                     echo $controllerObj->sendResponse($resp);
                     exit();
@@ -122,7 +119,7 @@ class Dispatcher {
                 //checking whether the request method is allowed for accessing URI(For security)
                 if(!in_array(self::$request->getMethod(), $methods)){
                     $exc = new MyEasyException("Method not allowed.",405);
-                    $exc->setDetails("Methods allowed for the route '".self::$router->getRouteUrl()."' :- ".implode(', ',$methods)." but your request method is ".self::$request->getMethod());
+                    $exc->setDetails("Methods allowed for the route '".$router->getRouteUrl()."' :- ".implode(', ',$methods)." but your request method is ".self::$request->getMethod());
                     throw $exc;            
                 }
                 //check if method (action) exists for the controller class
