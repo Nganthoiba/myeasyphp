@@ -125,8 +125,8 @@ class EasyEntityManager {
                         "data" => $entity,
                         "msg" => "Record inserted successfully.",
                         "status"=>true,
-                        "status_code"=>201/*,
-                        "rows_affected"=>$stmt->rowCount()*/
+                        "status_code"=>201,
+                        "rows_affected"=>$stmt->rowCount()
                     ]);
                 }
                 else{
@@ -146,8 +146,8 @@ class EasyEntityManager {
                             "data" => $entity,
                             "msg" => "Record saved successfully.",
                             "status"=>true,
-                            "status_code"=>200/*,
-                            "rows_affected"=>$stmt->rowCount()*/
+                            "status_code"=>200,
+                            "rows_affected"=>$stmt->rowCount()
                         ]);
                 }
             }
@@ -237,7 +237,8 @@ class EasyEntityManager {
                 $this->response->set([
                         "msg" => "Record removed successfully.",
                         "status"=>true,
-                        "status_code"=>204
+                        "status_code"=>200,
+                        "rows_affected"=>$stmt->rowCount()
                     ]);
             }catch(Exception $e){
                 $this->response->set([
