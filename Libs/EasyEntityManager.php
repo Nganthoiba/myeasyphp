@@ -70,6 +70,7 @@ class EasyEntityManager {
         }
         else{
             try{
+                $entity = $this->removeUndefinedProperty($entity);
                 $data = ($entity->toArray());
                 $stmt = self::$queryBuilder->insert($entity->getTable(), $data)->execute();
                 
@@ -86,7 +87,7 @@ class EasyEntityManager {
                 ]);
             }catch(Exception $e){
                 $this->response->set([
-                    "msg" => "Sorry, an error occurs while saving the record. ".$e->getMessage(),
+                    "msg" => "Sorry, an error occurs while saving the record.",
                     "status"=>false,
                     "status_code"=>500,
                     "sqlErrorCode" => self::$queryBuilder->getsqlErrorCode(),
@@ -107,6 +108,7 @@ class EasyEntityManager {
             ]);          
         }
         else{
+            $entity = $this->removeUndefinedProperty($entity);
             //check if entity already exist or not
             $temp_entity = $this->find($entity, $entity->{$entity->getKey()});
             $data = ($entity->toArray());
@@ -150,7 +152,7 @@ class EasyEntityManager {
             }
             catch (Exception $e){
                 $this->response->set([
-                        "msg" => "Sorry, an error occurs while updating the record. ".$e->getMessage(),
+                        "msg" => "Sorry, an error occurs while updating the record.",
                         "status"=>false,
                         "status_code"=>500,
                         "sqlErrorCode" => self::$queryBuilder->getsqlErrorCode(),
@@ -174,6 +176,7 @@ class EasyEntityManager {
         else{
             //$this->queryBuilder->setEntityClassName($entity->getTable());
             try{
+                $entity = $this->removeUndefinedProperty($entity);
                 $data = ($entity->toArray());
                 unset($data[$entity->getKey()]);//key will not be updated
                 $cond = [
@@ -236,7 +239,7 @@ class EasyEntityManager {
                     ]);
             }catch(Exception $e){
                 $this->response->set([
-                        "msg" => "Sorry, an error occurs while removing the record. ".$e->getMessage(),
+                        "msg" => "Sorry, an error occurs while removing the record.",
                         "status"=>false,
                         "status_code"=>500,
                         "sqlErrorCode" => self::$queryBuilder->getsqlErrorCode(),
@@ -306,4 +309,28 @@ class EasyEntityManager {
     public function getConnection(){
         return EasyQueryBuilder::$conn;/*self::$queryBuilder->getConnection();*/
     }
+    
+    /*
+     * Security Feature:
+     * 
+     * Each property of an entity which has been declared public corresponds to the attribute
+     * of the database table. So, if an unknown new property which is not an attribute of the 
+     * table has been set at runtime accidentally by mistake or intensionally, then there might
+     * be an error while updating record or populalting a new record, because that property 
+     * does not exist in the table. So such property has to be removed before adding a new 
+     * record or updating an existing record. Romoving of such unwanted or undefined property 
+     * of an entity class is done by the function removeUndefinedProperty(). 
+     * 
+     */
+    private function removeUndefinedProperty(EasyEntity $entity): EasyEntity{        
+        $data = $entity->toArray();
+        foreach ($data as $key=>$value){
+            if(!property_exists(get_class($entity), $key)){
+                //unsetting unwanted properties from the entity object
+                unset($entity->{$key});
+            }
+        }
+        return $entity;
+    }
+    
 }

@@ -103,10 +103,11 @@ class EasyEntity extends Model{
         }
         else{
             try{
+                $this->removeUndefinedProperty();
                 $data = ($this->toArray());
                 $stmt = $this->queryBuilder->insert($this->table_name, $data)->execute();
                 if($this->{$this->getKey()}=="" || $this->{$this->getKey()}==null){
-                    $entity->{$entity->getKey()} = $this->queryBuilder::$conn->lastInsertId();
+                    $this->{$this->getKey()} = $this->queryBuilder::$conn->lastInsertId();
                 }
                 $this->response->set([
                     "msg" => "Record saved successfully.",
@@ -142,6 +143,7 @@ class EasyEntity extends Model{
         }
         else{
             try{
+                $this->removeUndefinedProperty();
                 $data = ($this->toArray());
                 unset($data[$this->key]);//key will not be updated
                 $cond = [
@@ -255,5 +257,26 @@ class EasyEntity extends Model{
         }
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row['max_val'] == NULL?0:(is_numeric($row['max_val'])?(int)$row['max_val']:$row['max_val']);
+    }
+    /*
+     * Security Feature:
+     * 
+     * Each property of an entity which has been declared public corresponds to the attribute
+     * of the database table. So, if an unknown new property which is not an attribute of the 
+     * table has been set at runtime accidentally by mistake or intensionally, then there might
+     * be an error while updating record or populalting a new record, because that property 
+     * does not exist in the table. So such property has to be removed before adding a new 
+     * record or updating an existing record. Romoving of such unwanted or undefined property 
+     * of an entity class is done by the function removeUndefinedProperty(). 
+     * 
+     */
+    private function removeUndefinedProperty(){
+        $data = $this->toArray();
+        foreach ($data as $key=>$value){
+            if(!property_exists(get_class($this), $key)){
+                //unsetting unwanted properties from the entity object
+                unset($this->{$key});
+            }
+        }
     }
 }
