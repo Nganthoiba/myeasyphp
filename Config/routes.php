@@ -8,7 +8,6 @@ use MyEasyPHP\Libs\Router;
  * entire application, so it is used in other files also. Changing it may lead to errors
  * in the system.
  */
-global $router;
 $router = new Router();//Don't change it
 /******************************************************/
 
@@ -33,6 +32,10 @@ $router = new Router();//Don't change it
 $router->addRoute("/", [
     "Controller" => "Default",
     "Action" => "home"
+]);
+$router->addRoute("/Contact", [
+    "Controller" => "Default",
+    "Action" => "contact"
 ]);
 //An example of grouping routes
 $router->addRoute("/show_routes", function(){
