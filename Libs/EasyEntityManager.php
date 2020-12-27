@@ -74,8 +74,7 @@ class EasyEntityManager {
                 $data = ($entity->toArray());
                 $stmt = self::$queryBuilder->insert($entity->getTable(), $data)->execute();
                 
-                if($entity->{$entity->getKey()}=="" || $entity->{$entity->getKey()}==null){
-                    //$entity->{$entity->getKey()} = $stmt->lastInsertId();
+                if($entity->{$entity->getKey()}=="" || $entity->{$entity->getKey()}==null){                    
                     $entity->{$entity->getKey()} = self::$queryBuilder::$conn->lastInsertId();
                 }
                 
