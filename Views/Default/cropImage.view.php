@@ -1,2 +1,0 @@
-<p>Image Cropping</p>
-
