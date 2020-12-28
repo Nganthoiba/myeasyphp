@@ -63,19 +63,14 @@ class View {
         ob_start();//turns on output buffering        
         $viewData = $this->viewData; 
         $model = $this->model;
-        if(is_object($model)){
-            $data = json_decode(json_encode($model),true);
-        }else if(is_array($model)){
-            $data = $model;
+        $data = is_object($model)?json_decode(json_encode($model),true):$model;        
+        if(is_array($data)){
             foreach ($data as $key=>$value){
                 if(!is_numeric($key)){
                     //creating dynamic variables
                     ${$key} = $value;
                 }
             }
-        }
-        else{
-            $data = $model;
         }
         if(file_exists($this->path)){
             include_once($this->path);

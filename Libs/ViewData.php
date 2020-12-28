@@ -35,4 +35,8 @@ class ViewData {
         }
         return (isset($this->{$key}))?$this->{$key}:null;
     }
+    //to convert to array
+    public function toArray():array{
+        return json_decode(json_encode($this),true);
+    }
 }
