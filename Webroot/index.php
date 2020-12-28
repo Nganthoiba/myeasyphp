@@ -17,17 +17,19 @@ try{
     Dispatcher::dispatch();
 }
 catch(Error $error){
-    $errorDetails = "Please check line number ".$error->getLine().
-            " of the file ".$error->getFile(). ". <br/>".$error->getTraceAsString();
+    $errorDetails = $error->getTraceAsString();
+    $errorMsg = "Please check line number ".$error->getLine().
+            " of the file ".$error->getFile(). ". ";
     http_response_code(500);
-    $view = errorView(500,$error->getMessage(),$errorDetails);
+    $view = errorView(500,$error->getMessage()." ".$errorMsg,$errorDetails);
     echo $view->render();
 }
 catch(TypeError $error){
-    $errorDetails = "Found an error in data type. Please check line number ".$error->getLine().
-            " of the file ".$error->getFile(). ". <br/>".$error->getTraceAsString();
+    $errorDetails = $error->getTraceAsString();
     http_response_code(500);
-    $view = errorView(500,$error->getMessage(),$errorDetails);
+    $errorMsg = "Found an error in data type. Please check line number ".$error->getLine().
+            " of the file ".$error->getFile(). ".";
+    $view = errorView(500,$error->getMessage()." ".$errorMsg,$errorDetails);
     echo $view->render();
 }
 catch(MyEasyException $e){

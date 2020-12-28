@@ -8,7 +8,12 @@ $css_class = $viewData->httpCode == 500?"text-danger":"text-warning";
 <?php 
 if($viewData->ErrorDetail!=""){
 ?>
-<p><b>Details:</b> <?= $viewData->ErrorDetail ?></p>
+<p><h4>Details:</h4>
 <?php
+    $Errors = explode("#", $viewData->ErrorDetail);
+    foreach($Errors as $error){
+        echo $error."<br/>";
+    }
 }
 ?>
+</p>
