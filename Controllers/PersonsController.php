@@ -47,8 +47,7 @@ class PersonsController extends ApiController{
         else{
             $person = new Persons();
             $person->setEntityData($data);
-            $person->sex = "hsgs";
-            $this->response = $person->add();//$this->em->add($person);
+            $this->response = $this->em->add($person);
         }
         return $this->response->toJSON();
     }

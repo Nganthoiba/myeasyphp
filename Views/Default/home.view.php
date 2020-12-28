@@ -78,7 +78,9 @@ use MyEasyPHP\Libs\Html;
         <!--/.Navbar-->      
         
         <p style="margin-top: 60px;">Below Nav bar</p>
-        <P><?= $viewData->test.'Sum = '.(9+5) ?></P>
+        <P>
+            <?= $viewData->test ?>
+        </P>
         <?php
         
         Html::loadJs('jquery');

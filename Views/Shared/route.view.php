@@ -7,7 +7,7 @@
 }*/
 ?>
 <table border="1">
-    <caption>List of routes:</caption>
+    <caption>List of available routes:</caption>
     <thead>
         <tr>
             <th>Sl. No.</th>

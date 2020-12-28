@@ -22,6 +22,6 @@ class Persons extends Entity{
             $address;
     public function __construct() {
         parent::__construct();
-        $this->setTable("persons")->setKey("id");
+        $this->setKey("id");
     }
 }
