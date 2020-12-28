@@ -4,8 +4,8 @@
 //                                                                                  //
 //PATH CONFIGURATION FILES                                                          //
 define("ROOT",dirname(__DIR__));                                                    //
-//define("DS", DIRECTORY_SEPARATOR);                                                //
-define("DS", '/');                                                                  //
+define("DS", DIRECTORY_SEPARATOR);                                                //
+//define("DS", '/');                                                                  //
                                                                                     //
 define("VENDOR_PATH", ROOT.DS."Vendor".DS);                                         //
 define("CONFIG_PATH", ROOT.DS."Config".DS);                                         //
@@ -16,6 +16,7 @@ define('ENTITY_PATH', MODELS_PATH.DS.'Entities'.DS);//Path for entities         
                                                                                     //
 //NAMESPACES                                                                        //
 define('ENTITY_NAMESPACE','MyEasyPHP\\Models\\Entities\\');                         //
+define('CONTROLLER_NAMESPACE','MyEasyPHP\\Controllers\\');                          //
                                                                                     //
 //////////////////////////////////////////////////////////////////////////////////////
 
