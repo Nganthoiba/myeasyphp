@@ -9,7 +9,6 @@ namespace MyEasyPHP\Libs;
  * of routes, then execute the action of the controller.
  * @author Nganthoiba
  */
-use MyEasyPHP\Libs\Router;
 use MyEasyPHP\Libs\Request;
 use MyEasyPHP\Libs\Config;
 use Exception;
@@ -68,7 +67,7 @@ class Dispatcher {
             }
 			
             //*** creating Controller Object ***
-            $controller_class = "MyEasyPHP\\Controllers\\".$controller;
+            $controller_class = CONTROLLER_NAMESPACE.$controller;
             if(!class_exists($controller_class, TRUE)){
                 $exception = new MyEasyException("Sorry, the page you are looking for is not found.",404);
                 $exception->setDetails("Controller file ".$controller." class does not exist. Please check.");
@@ -164,7 +163,7 @@ class Dispatcher {
                     //if it is view object then render its contents
                     header('X-Frame-Options: SAMEORIGIN');//preventing clickjacking as the page can only be displayed in a frame on the same origin as the page itself. 
                     //header('X-Frame-Options: deny');//The page cannot be displayed in a frame, regardless of the site attempting to do so.
-                    echo $view->render(); 
+                    echo $view;//->render(); 
                 }
                 else{
                     echo ($view);            
