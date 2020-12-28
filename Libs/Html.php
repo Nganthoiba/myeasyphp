@@ -92,6 +92,15 @@ class Html {
             ob_start();//turns on output buffering
             $viewData = $view_Data;
             $model = $modelObj;
+            $data = is_object($model)?json_decode(json_encode($model),true):$model;        
+            if(is_array($data)){
+                foreach ($data as $key=>$value){
+                    if(!is_numeric($key)){
+                        //creating dynamic variables
+                        ${$key} = $value;
+                    }
+                }
+            }
             require_once VIEWS_PATH.$filepath.".view.php";
             $output = ob_get_clean();
         }
