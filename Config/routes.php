@@ -37,11 +37,13 @@ $router->addRoute("/Contact", [
     "Controller" => "Default",
     "Action" => "contact"
 ]);
-//An example of grouping routes
+//Listing of available routes
 $router->addRoute("/show_routes", function(){
     global $router;
     return view('Shared/route',['routes'=>$router->getRoutes(),'app_name'=>'MyEasyPHP']);
 });
+
+//An example of grouping routes
 //Routes for api
 $router->group("/api",function($router){
     $router->addRoute('/',function(){
