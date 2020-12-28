@@ -2,7 +2,6 @@
 declare(strict_types=1);
 
 namespace MyEasyPHP\Libs;
-use MyEasyPHP\Libs\Dispatcher;
 use MyEasyPHP\Libs\ViewData;
 use MyEasyPHP\Libs\MyEasyException;
 /*
@@ -22,7 +21,7 @@ class View {
     protected $model;//Data Model, or an entity 
     
     protected static function getDefaultViewPath(){
-        global $router;/* = Dispatcher::getRouter()*/;
+        global $router;
         if(!$router){
             return false;
         }
