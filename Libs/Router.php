@@ -195,7 +195,9 @@ class Router {
                     return false;
                 }
                 //removing curly braces                
-                $index = preg_replace('/{}/','',$first_url_parts[$i]);
+                //$index = preg_replace('/\{\}/','',$first_url_parts[$i]);
+                $index = ltrim($first_url_parts[$i],'{');
+                $index = rtrim($index,'}');
                 $this->params[$index] = $second_url_parts[$i];                
             }
         }//end of parsing every single corresponding element
