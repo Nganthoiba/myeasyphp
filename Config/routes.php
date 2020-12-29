@@ -37,6 +37,11 @@ $router->addRoute("/Contact", [
     "Controller" => "Default",
     "Action" => "contact"
 ]);
+$router->addRoute("/Default/addPerson", [
+    "Controller" => "Default",
+    "Action" => "addPerson"
+],'GET|POST');
+
 //Listing of available routes
 $router->addRoute("/show_routes", function(){
     global $router;

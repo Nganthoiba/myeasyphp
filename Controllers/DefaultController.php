@@ -9,6 +9,7 @@ namespace MyEasyPHP\Controllers;
  */
 use MyEasyPHP\Libs\Controller;
 use MyEasyPHP\Models\LoginModel;
+use MyEasyPHP\Models\MyModel;
 class DefaultController extends Controller{
     public function index(){
         return $this->view();//returning view
@@ -38,5 +39,12 @@ class DefaultController extends Controller{
             "isAuthenticated" => LoginModel::isAuthenticated(),
             "user_info" => LoginModel::getLoginInfo()
         ]);
-    }    
+    }  
+    public function show(int $number, float $n2){
+        return "You have passed ".($number*$n2);
+    }
+    
+    public function addPerson(MyModel $person){
+        return "Person received: ".json_encode($person);
+    }
 }
