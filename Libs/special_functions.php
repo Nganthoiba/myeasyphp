@@ -1,5 +1,12 @@
 <?php
-//declare(strict_types=1);
+/* 
+ * GLOBAL FUNCTIONS
+ * All the functions defined in this file are globally accessible in the entire 
+ * application.
+ * 
+ * WARNING: Don't change anything in the file even by mistake, otherwise the system 
+ * may undergo unwanted behaviours.
+ */
 use MyEasyPHP\Libs\Config;
 use MyEasyPHP\Libs\Response;
 use MyEasyPHP\Libs\ext\csrf;
@@ -7,6 +14,7 @@ use MyEasyPHP\Libs\View;
 use MyEasyPHP\Libs\HttpStatus;
 use MyEasyPHP\Libs\ViewData;
 use MyEasyPHP\Libs\Controller;
+/*---***********----------- UTILITY FUNCTIONS----------------------*/
 function generateRandomString($length = 32) {
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     $charactersLength = strlen($characters);
@@ -27,6 +35,46 @@ function randId($length=32){
     return $rand;
 }
 
+/*------------------- HTML RELATED FUNCTIONS ------------------------*/
+//redirection to other page
+function redirect($controller, $action=""){
+    header("Location: ".Config::get('host')."/".$controller."/".$action);
+}
+function isLinkActive($link){
+    $link = (!is_null($link))?strtolower($link):"";
+    $link = str_replace(Config::get('host'), "", $link);
+    
+    $current_link = getCurrentLink();
+    
+    if(trim($link, '/') == trim($current_link,'/')){
+        return "active";
+    }
+    else{
+        return "";
+    }
+}
+
+function getCurrentLink(){
+    $current_link = (filter("uri", "GET"));
+    $current_link = (!is_null($current_link))?strtolower($current_link):"";
+    $current_link = str_replace(Config::get('host'), "", $current_link);
+    return $current_link;
+}
+//function to get link
+function getHtmlLink($controller,$action="",$params = ""){
+    $link = Config::get('host')."/".$controller."/".$action;
+    if((is_string($params) && trim($params) !== "") || is_numeric($params)){
+        $link .= "/".$params;
+    }
+    else if(is_array($params)){
+        foreach ($params as $param){
+            $link .= "/".$param;
+        }
+    }
+    return $link;
+}
+
+/*-------------------- SECURITY FUNCTIONS--------------------*/
 function filter($key,$method){
     if(trim($method)=="POST"){
         $value = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
@@ -93,32 +141,6 @@ function get_client_ip() {
     {$ipaddress = 'UNKNOWN';}
     return $ipaddress;
 }
-
-function redirect($controller, $action=""){
-    header("Location: ".Config::get('host')."/".$controller."/".$action);
-}
-
-function isLinkActive($link){
-    $link = (!is_null($link))?strtolower($link):"";
-    $link = str_replace(Config::get('host'), "", $link);
-    
-    $current_link = getCurrentLink();
-    
-    if(trim($link, '/') == trim($current_link,'/')){
-        return "active";
-    }
-    else{
-        return "";
-    }
-}
-
-function getCurrentLink(){
-    $current_link = (filter("uri", "GET"));
-    $current_link = (!is_null($current_link))?strtolower($current_link):"";
-    $current_link = str_replace(Config::get('host'), "", $current_link);
-    return $current_link;
-}
-
 //CSRF based functions
 function writeCSRFToken($csrf_token=""){
     //if token is not passed
@@ -155,20 +177,7 @@ function verifyCSRFToken($origin = null,$timespan = null,$useTokenMultipleTimes 
     return $response;
 }
 
-//function to get link
-function getHtmlLink($controller,$action="",$params = ""){
-    $link = Config::get('host')."/".$controller."/".$action;
-    if((is_string($params) && trim($params) !== "") || is_numeric($params)){
-        $link .= "/".$params;
-    }
-    else if(is_array($params)){
-        foreach ($params as $param){
-            $link .= "/".$param;
-        }
-    }
-    return $link;
-}
-
+/*--------------------- FILE RELATED FUNCTIONS --------------------------*/
 //file reading and writing functions
 function downloadFile($file_path,$flag=false){
     if(file_exists($file_path)) {
@@ -191,7 +200,7 @@ function downloadFile($file_path,$flag=false){
         die("File not found.");
     }
 }
-/********************** VIEW FUNCTIONS ****************************/
+/*-------------------------------- VIEW FUNCTIONS ----------------------------------*/
 //function to return view
 //HOW TO USE:-
 //The function can consume up to 3 parameters, so there are 4 ways how this function 
@@ -327,7 +336,9 @@ function errorView($httpCode,$errorMessage="",$errorDetails="",bool $isPartial =
 }
 /*************************************-------*****************************************/
 
-//Accounts related function
+
+/*---------------------------- ACCOUNTS RELATED FUNCTIONS -----------------------*/
+
 //function to get roles assigned to a user 
 function getRoles(string $userId):array{
     $em = new MyEasyPHP\Libs\EasyEntityManager();
@@ -356,5 +367,17 @@ function isRole($userId,$role_name):bool{
         return true;
     }
     return false;
+}
+/*********************------------**********************************/
+
+/*----------------------- ERROR HANDLING FUNCTION -------------------------*/
+function handleMyEasyPHPError($errNo, $errMsg, $errFile, $errLine,$errTypes) {
+    if($errNo!=E_NOTICE){
+        http_response_code(500);
+        $errDetails = "**Please check line no. ".$errLine." of the file ".$errFile;
+        $view = errorView(500, "[{$errNo}]".$errMsg.'.',$errDetails);
+        echo $view->render();
+        exit();
+    }
 }
 
