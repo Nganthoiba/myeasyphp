@@ -58,4 +58,8 @@ Config::set('DB_CONFIG', [
 //]);
 //error Details display either true or false
 //set it true during development time
+//Debugging is granted only if error_display is set to true.
+//This flag must be set to true only when development is in progress.
+//Beware that, when the code is in production server, it must be set
+//to false.
 Config::set('error_display',true);
