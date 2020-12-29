@@ -15,7 +15,12 @@ use Exception;
 use MyEasyPHP\Libs\MyEasyException;
 use MyEasyPHP\Libs\Authorization;
 use MyEasyPHP\Libs\ApiController;
+use MyEasyPHP\Libs\Model;
+use MyEasyPHP\Libs\EasyEntity;
+
 use ReflectionMethod;
+use ReflectionParameter;
+
 class Dispatcher {
     
     public static $request;
@@ -23,8 +28,7 @@ class Dispatcher {
         global $router; //Router Object
         global $controllerObj;//Controller Object
         //Getting user request information
-        self::$request = new Request();        
-        
+        self::$request = new Request(); 
         //Getting uri requested by user
         $uri = Request::getURI();
 		
@@ -112,7 +116,7 @@ class Dispatcher {
                     ]);
                     echo $controllerObj->sendResponse($resp);
                     exit();
-                }
+                }                
             }
             else{                
                 //checking whether the request method is allowed for accessing URI(For security)
@@ -140,11 +144,11 @@ class Dispatcher {
                 //access will be denied.
                 if (!$reflection->isPublic()) {
                     throw new MyEasyException("Access denied.",403);
-                }
+                }                
                 //If the controller is not an api controller
                 startSecureSession();
-            }
-			
+            }            
+            $params = self::synchroniseParameters($reflection->getParameters(),$params);
             try{
                 ///checking whether parameter exists or not
                 if(sizeof($params)>0){
@@ -195,6 +199,69 @@ class Dispatcher {
                 throw $e;
             }
         }
-        
     }
+    //function to synchronise parameters and arguments
+    public static function synchroniseParameters(array $parameters,array $arguments):array
+    {   
+        /*
+         * $parameters is the array of parameters acceptable by the action method of the controller
+         * and the $arguments is the array of arguments that will be passed to that action method
+         */
+        //php data types
+        $php_datatypes = ['int','float','bool','object','array','NULL','string','resource'];
+        
+        //if argument is more than the parameters to be accepted by the action method
+        if(sizeof($arguments)>=sizeof($parameters)){
+            $i=0;
+            foreach($arguments as $index=>$value){            
+                if(!isset($parameters[$i])){
+                    break;
+                }
+                //finding out the data type of each parameter
+                $type = ($parameters[$i]->getType())==null?'NULL':$parameters[$i]->getType()->getName();
+                if(!in_array($type, $php_datatypes)){
+                    if(class_exists($type,TRUE)){
+                        //It should be a Model object
+                        $object = new $type();                        
+                        $arguments[$index] = self::setObjectData($object);
+                    }//end if for class exist
+                }//end if
+                $i++;
+            }//end foreach
+        }
+        else{
+            //if the size of parameters to be accepted by action method is more
+            for($i=0;$i<sizeof($parameters);$i++){
+                //finding out the data type of each parameter
+                $type = ($parameters[$i]->getType())==null?'NULL':$parameters[$i]->getType()->getName();
+            
+                if(!in_array($type, $php_datatypes)){
+                    if(class_exists($type,TRUE)){
+                        //It should be a Model object
+                        $object = new $type();
+                        //$arguments[$parameters[$i]->getName()] = self::setObjectData($object);
+                        $arguments[$i] = self::setObjectData($object);
+                    }//end if
+                }//end if
+            }//end for
+        }//end else
+        
+        return $arguments;
+    }
+    
+    //function to set data of a model object
+    public static function setObjectData(object $object):object{
+        if($object instanceof Model or $object instanceof EasyEntity){
+            $object->setModelData(self::$request->getData());
+        }
+        else{
+            foreach(self::$request->getData() as $key=>$val){
+                $object->{$key} = $val; 
+            }
+        }
+        return $object;
+    }
+    
 }
+
+
