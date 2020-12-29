@@ -10,7 +10,7 @@ require_once LIBS_PATH. 'special_functions.php';
 use MyEasyPHP\Libs\Dispatcher;
 use MyEasyPHP\Libs\Config;
 use MyEasyPHP\Libs\MyEasyException;
-
+set_error_handler("handleMyEasyPHPError");
 try{
     require_once LIBS_PATH.DS.'special_functions.php';    
     date_default_timezone_set(Config::get('default_time_zone'));
@@ -21,7 +21,7 @@ catch(Error $error){
     $errorMsg = "Please check line number ".$error->getLine().
             " of the file ".$error->getFile(). ". ";
     http_response_code(500);
-    $view = errorView(500,$error->getMessage()." ".$errorMsg,$errorDetails);
+    $view = errorView(500,$error->getMessage().". ".$errorMsg,$errorDetails);
     echo $view->render();
 }
 catch(TypeError $error){
@@ -29,7 +29,7 @@ catch(TypeError $error){
     http_response_code(500);
     $errorMsg = "Found an error in data type. Please check line number ".$error->getLine().
             " of the file ".$error->getFile(). ".";
-    $view = errorView(500,$error->getMessage()." ".$errorMsg,$errorDetails);
+    $view = errorView(500,$error->getMessage().". ".$errorMsg,$errorDetails);
     echo $view->render();
 }
 catch(MyEasyException $e){
