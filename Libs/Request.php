@@ -49,7 +49,8 @@ class Request {
                 break;
             case "GET":
             case "DELETE":
-                $data = $data = $this->filterSpecialChars($_GET,'GET');//$_GET;
+                $data = $this->filterSpecialChars($_GET,'GET');//$_GET;
+                unset($data['uri']);
                 break;            
             case "PUT":
             case "PATCH":
