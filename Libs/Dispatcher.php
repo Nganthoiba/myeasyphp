@@ -230,6 +230,7 @@ class Dispatcher {
             }//end foreach
         }
         else{
+            $arguments = array_values($arguments);
             //if the size of parameters to be accepted by action method is more
             for($i=0;$i<sizeof($parameters);$i++){
                 //finding out the data type of each parameter
@@ -238,14 +239,28 @@ class Dispatcher {
                 if(!in_array($type, $php_datatypes)){
                     if(class_exists($type,TRUE)){
                         //It should be a Model object
-                        $object = new $type();
-                        //$arguments[$parameters[$i]->getName()] = self::setObjectData($object);
-                        $arguments[$i] = self::setObjectData($object);
+                        $object = new $type(); 
+                        if(!isset($arguments[$i])){
+                            $arguments[$i] = self::setObjectData($object);
+                        }
+                        else{
+                            $j=sizeof($arguments);
+                            //shift the elements to next postion successively
+                            while($j > $i){                                
+                                $arguments[$j] = $arguments[$j-1]; 
+                                $j--;
+                            }
+                            $arguments[$j] = self::setObjectData($object);
+                        } 
                     }//end if
                 }//end if
             }//end for
         }//end else
-        
+        /*
+        echo "<pre>";  
+        print_r($arguments);
+        echo "</pre>"; 
+        */
         return $arguments;
     }
     

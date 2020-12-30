@@ -14,5 +14,8 @@ namespace MyEasyPHP\Models;
  * @author Nganthoiba
  */
 class MyModel {
-    //put your code here
+    public $x, $y;
+    public function sum(){
+        return ($this->x+$this->y);
+    }
 }
