@@ -27,9 +27,15 @@ class UsersController extends ApiController{
             $this->response->status = true;
             $this->response->status_code = 200;
             $this->response->data = $this->em->read(new Users())->toList();
+            for($i=0; $i<sizeof($this->response->data); $i++){
+                unset($this->response->data[$i]->user_password);
+                unset($this->response->data[$i]->security_stamp);
+            }
         }
         else{            
             $this->response->data = $this->em->find(new Users(), $id);
+            unset($this->response->data->user_password);
+            unset($this->response->data->security_stamp);
             $this->response->status = is_null($this->response->data)?false:true;
             $this->response->status_code = is_null($this->response->data)?404:200;
             $this->response->msg = is_null($this->response->data)?"Person is not found.":"";

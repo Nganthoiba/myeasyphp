@@ -20,9 +20,9 @@ abstract class Model {
     /*** method to set data to a model ***/
     public function setModelData(array $data){
         foreach($data as $key=>$value){
-            if(property_exists($this, $key)){
+            //if(property_exists($this, $key)){
                 $this->{$key} = $value;
-            }
+            //}
         }
     }
     
@@ -66,5 +66,15 @@ abstract class Model {
         return $this->errors;
     }    
     //abstract public function rules():array;
+    
+    /*
+     * For security reason, restriction is made from accessing non-existing
+     * properties of the class. With this feature, any non-existing property 
+     * can not be set dynamically.
+    */ 
+    public function __get($name) {
+    }
+    public function __set($name, $value) { 
+    }
     
 }
