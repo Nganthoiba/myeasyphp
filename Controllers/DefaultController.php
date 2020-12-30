@@ -40,11 +40,4 @@ class DefaultController extends Controller{
             "user_info" => LoginModel::getLoginInfo()
         ]);
     }  
-    public function show(int $number, float $n2){
-        return "You have passed ".($number*$n2);
-    }
-    
-    public function addPerson(MyModel $person){
-        return "Person received: ".json_encode($person);
-    }
 }
