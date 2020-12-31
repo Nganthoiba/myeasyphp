@@ -182,23 +182,23 @@ class Router {
         $this->params = [];//reseting parameters
         
         $first_url_parts = explode('/',$first_url);
-        $second_url_parts = explode("/", $second_url);
-        
-        if(sizeof($first_url_parts) !== sizeof($second_url_parts)){
+        $second_url_parts = explode('/', $second_url);
+        if(sizeof($first_url_parts) < sizeof($second_url_parts)){
             return false;
         }
-        
         //Further go for checking for every corresponding element
         for($i = 0; $i < sizeof($first_url_parts); $i++){
-            if(strtolower($first_url_parts[$i]) !== strtolower($second_url_parts[$i])){
+            $part=isset($second_url_parts[$i])?strtolower($second_url_parts[$i]):null;
+            if(strtolower($first_url_parts[$i]) !== $part){
                 if(!$this->isParameter($first_url_parts[$i])){
                     return false;
                 }
-                //removing curly braces                
-                //$index = preg_replace('/\{\}/','',$first_url_parts[$i]);
-                $index = ltrim($first_url_parts[$i],'{');
-                $index = rtrim($index,'}');
-                $this->params[$index] = $second_url_parts[$i];                
+                if(isset($second_url_parts[$i])){
+                    //removing curly braces
+                    $index = ltrim($first_url_parts[$i],'{');
+                    $index = rtrim($index,'}');
+                    $this->params[$index] = $second_url_parts[$i];  
+                }
             }
         }//end of parsing every single corresponding element
         return true;
