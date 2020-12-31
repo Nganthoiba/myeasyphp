@@ -47,6 +47,11 @@ $router->addRoute("/show_routes", function(){
     return view('Shared/route',['routes'=>$router->getRoutes(),'app_name'=>'MyEasyPHP']);
 });
 
+$router->addRoute("/test/{i}/{j}", function(MyEasyPHP\Models\MyModel $obj,int $i,int $j=0){
+    echo "i= ".$i." j= ".$j."<br/>";
+    echo "Object: ".json_encode($obj);
+});
+
 //An example of grouping routes
 //Routes for api
 $router->group("/api",function($router){

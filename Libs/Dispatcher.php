@@ -19,7 +19,6 @@ use MyEasyPHP\Libs\Model;
 use MyEasyPHP\Libs\EasyEntity;
 
 use ReflectionMethod;
-use ReflectionParameter;
 
 class Dispatcher {
     
@@ -51,6 +50,11 @@ class Dispatcher {
                 throw $exc;
             }
             $function = $router->getFunction();
+            
+            $reflectionFunc = new \ReflectionFunction($function);
+            
+            $params = self::synchroniseParameters($reflectionFunc->getParameters(), $params);
+            
             if(sizeof($params)>0){
                 //executing the function
                 $res = call_user_func_array($function, array_values($params));
@@ -81,7 +85,7 @@ class Dispatcher {
             
             $controllerObj->setRequest(self::$request);//very much necessary
             $controllerObj->setParams($params);//setting parameters is very much necessary
-            
+            $reflection = new ReflectionMethod($controllerObj, $action);
             //Here check whether the controller is an object of ApiController or just normal Controller
             if(($controllerObj instanceof ApiController)){
                 //checking whether the request method is allowed for accessing URI(For security)
@@ -106,7 +110,7 @@ class Dispatcher {
                     echo $controllerObj->sendResponse($resp);
                     exit();
                 }
-                $reflection = new ReflectionMethod($controllerObj, $action);
+                
                 //ensuring only public method or action to be allowed to access
                 if (!$reflection->isPublic()) {
                     $resp = $controllerObj->response->set([
@@ -139,7 +143,7 @@ class Dispatcher {
                     $exc = new MyEasyException($msg,403);              
                     throw $exc;
                 }
-                $reflection = new ReflectionMethod($controllerObj, $action);
+                
                 //ensuring only public method or action to be allowed to access otherwise
                 //access will be denied.
                 if (!$reflection->isPublic()) {
