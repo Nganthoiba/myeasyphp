@@ -45,15 +45,15 @@ class DefaultController extends Controller{
         return "Sum is: ".($a+$b);
     }
     
-    public function testModel(MyModel $model, int $a, int $b){
+    public function testModel(MyModel $model, int $a=0, int $b){
         echo "<pre>";  
         print_r($model);
         echo "</pre><br/>";
-        
-        echo "Sum of ($model->x + $model->y) is : ".$model->sum();
         echo "<br/>Parameters: ";
         echo "<pre>";
         print_r($this->getParams());
         echo "</pre>";
+        
+        echo "a = ".$a." and b = ".$b;
     }
 }
