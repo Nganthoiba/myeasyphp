@@ -136,19 +136,20 @@ class ApiController {
         return $this->response->toJSON(); 
     }
     
-    public function index(){
+    public function index($id = null){
         //this method can also be overridden
         $result = null;
+        $params = $id==null?[]:[$id];
         switch($this->request->getMethod()){
             case 'GET':
-                $result = call_user_func_array([$this,"GET"], array_values($this->params));
+                $result = call_user_func_array([$this,"GET"],$params);
                 break;
             case 'PUT':
             case 'PATCH':
-                $result = call_user_func_array([$this,"PUT"], array_values($this->params));
+                $result = call_user_func_array([$this,"PUT"],$params);
                 break;
             case 'DELETE':
-                $result = call_user_func_array([$this,"DELETE"], array_values($this->params));
+                $result = call_user_func_array([$this,"DELETE"],$params);
                 break;
             case 'POST':
                 $result = $this->POST($this->request->getData());

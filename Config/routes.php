@@ -45,7 +45,7 @@ $router->addRoute("/sum/{a:optional}/{b:optional}",[
     "Controller"=>"Default",
     "Action"=>"sum"
 ]);
-$router->addRoute("/Default/testModel/{a}/{b:optional}", [
+$router->addRoute("/Default/testModel/{a}/{b}", [
     "Controller" => "Default",
     "Action" => "testModel"
 ],'GET|POST');
@@ -55,9 +55,9 @@ $router->addRoute("/show_routes", function(){
     return view('Shared/route',['routes'=>$router->getRoutes(),'app_name'=>'MyEasyPHP']);
 });
 
-$router->addRoute("/test/{i}/{j}", function(MyEasyPHP\Models\MyModel $obj,int $i,int $j){
+$router->addRoute("/test/{i}/{j}", function(MyEasyPHP\Models\MyModel $obj){
     //echo "i= ".$i. " j = $j"."<br/>";
-    echo "i= ".$i."<br/>";
+    //echo "i= ".$i."<br/>";
     echo "Object: ".json_encode($obj);
 });
 
@@ -67,22 +67,16 @@ $router->group("/api",function($router){
     $router->addRoute('/',function(){
         return "Welcome to RESTful API";
     });
-    $router->group("/persons",function($router){
-        $router->addRoute("/{id}", [
-            "Controller" => "Persons",
-            "Action" => "index"
-        ],'GET|POST|PUT|PATCH|DELETE');
-    });
-    $router->group("/users", function($router){
-        $router->addRoute("/", [
-            "Controller" => "Users",
-            "Action" => "index"
-        ],'GET|POST');
-        $router->addRoute("/{id}", [
-            "Controller" => "Users",
-            "Action" => "index"
-        ],'GET|PUT|PATCH|DELETE');
-    });
+    
+    $router->addRoute("/persons/{id}", [
+        "Controller" => "Persons",
+        "Action" => "index"
+    ],'GET|POST|PUT|PATCH|DELETE');
+    
+    $router->addRoute("/users/{id}", [
+        "Controller" => "Users",
+        "Action" => "index"
+    ],'GET|POST|PUT|PATCH|DELETE');
 });
 
 $router->group("/Accounts", function(Router $router){

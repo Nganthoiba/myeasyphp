@@ -46,7 +46,7 @@ class DefaultController extends Controller{
         return "Sum of $a + $b =".($a+$b);
     }
     
-    public function testModel(MyModel $model, int $a=0, int $b=8){
+    public function testModel(int $a,MyModel $model,int $b){
         echo "<pre>";  
         print_r($model);
         echo "</pre><br/>";
@@ -54,7 +54,9 @@ class DefaultController extends Controller{
         echo "<pre>";
         print_r($this->getParams());
         echo "</pre>";
-        
+        /**/
         echo "a = ".$a." and b = ".$b;
+        
+        return "<br/>Test Model";
     }
 }
