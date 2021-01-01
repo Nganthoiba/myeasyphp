@@ -42,7 +42,7 @@ class DefaultController extends Controller{
         ]);
     }  
     
-    public function sum(int $a, int $b=0){
+    public function sum(int $a=0, int $b){
         return "Sum of $a + $b =".($a+$b);
     }
     

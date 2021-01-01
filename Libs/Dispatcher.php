@@ -293,28 +293,8 @@ class Dispatcher {
                 }
                 else
                 {
-                    //$arguments[$i] = null;
-                    /*
-                    switch($type){
-                        case "NULL":
-                            $arguments[$i] = null;
-                            break;
-                        case "int":
-                        case "float":
-                            $arguments[$i] = 0;
-                            break;
-                        case "bool":
-                            $arguments[$i] = false;
-                            break;
-                        case "string":
-                            $arguments[$i] = "";
-                            break;
-                        case "array":
-                            $arguments[$i] = [];
-                            break;
-                        default:
-                    }
-                    */
+                    //Arguments for non optional parameters have to be removed.
+                    unset($arguments[$i]);
                 }
             }
         }
