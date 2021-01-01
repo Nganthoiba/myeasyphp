@@ -56,7 +56,8 @@ $router->addRoute("/show_routes", function(){
 });
 
 $router->addRoute("/test/{i}/{j}", function(MyEasyPHP\Models\MyModel $obj,int $i,int $j){
-    echo "i= ".$i." j= ".$j."<br/>";
+    //echo "i= ".$i. " j = $j"."<br/>";
+    echo "i= ".$i."<br/>";
     echo "Object: ".json_encode($obj);
 });
 

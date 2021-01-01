@@ -46,7 +46,7 @@ class DefaultController extends Controller{
         return "Sum of $a + $b =".($a+$b);
     }
     
-    public function testModel(MyModel $model, int $a=0, int $b=null){
+    public function testModel(MyModel $model, int $a=0, int $b=8){
         echo "<pre>";  
         print_r($model);
         echo "</pre><br/>";

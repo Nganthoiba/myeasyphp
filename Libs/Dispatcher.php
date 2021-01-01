@@ -19,9 +19,9 @@ use MyEasyPHP\Libs\Model;
 use MyEasyPHP\Libs\EasyEntity;
 
 use ReflectionMethod;
+use ReflectionFunction;
 
-class Dispatcher {
-    
+class Dispatcher {    
     public static $request;
     public static function dispatch(){
         global $router; //Router Object
@@ -50,14 +50,12 @@ class Dispatcher {
                 throw $exc;
             }
             $function = $router->getFunction();
-            
-            $reflectionFunc = new \ReflectionFunction($function);
-            
+            $reflectionFunc = new ReflectionFunction($function);
             $params = self::synchroniseParameters($reflectionFunc->getParameters(), $params);
             
             if(sizeof($params)>0){
                 //executing the function
-                $res = call_user_func_array($function, array_values($params));
+                $res = call_user_func_array($function, $params);
             }else{
                 $res = $function();//executing the function
             }
@@ -156,7 +154,7 @@ class Dispatcher {
             try{
                 ///checking whether parameter exists or not
                 if(sizeof($params)>0){
-                    $view = call_user_func_array([$controllerObj,$action], array_values($params));
+                    $view = call_user_func_array([$controllerObj,$action], $params);
                 }
                 else{
                     $view = $controllerObj->$action();
@@ -167,15 +165,14 @@ class Dispatcher {
                     exit();
                     //echo "Null";
                 } 
-                else if(is_object($view) && $view instanceof View){                           
+                else if($view instanceof View){                           
                     //if it is view object then render its contents
                     header('X-Frame-Options: SAMEORIGIN');//preventing clickjacking as the page can only be displayed in a frame on the same origin as the page itself. 
-                    //header('X-Frame-Options: deny');//The page cannot be displayed in a frame, regardless of the site attempting to do so.
-                    echo $view;//->render(); 
+                    //header('X-Frame-Options: deny');
+                    //The page cannot be displayed in a frame, regardless of the site 
+                    //attempting to do so.
                 }
-                else{
-                    echo ($view);            
-                }
+                echo ($view);  
             }
             catch(TypeError $error){
                 if($controllerObj instanceof ApiController){
@@ -213,55 +210,42 @@ class Dispatcher {
          */
         //php data types
         $php_datatypes = ['int','float','bool','object','array','NULL','string','resource'];
-        
+        $arguments = array_values($arguments);
         //if argument is more than the parameters to be accepted by the action method
         if(sizeof($arguments)>=sizeof($parameters)){
-            $i=0;
-            foreach($arguments as $index=>$value){            
+            for($i = 0; $i<sizeof($arguments); $i++){            
                 if(!isset($parameters[$i])){
                     break;
                 }
                 //finding out the data type of each parameter
                 $type = ($parameters[$i]->getType())==null?'NULL':$parameters[$i]->getType()->getName();
-                if(!in_array($type, $php_datatypes)){
-                    if(class_exists($type,TRUE)){
-                        //It should be a Model object
-                        $object = new $type();                        
-                        $arguments[$index] = self::setObjectData($object);
-                    }//end if for class exist
+                if(!in_array($type, $php_datatypes) && class_exists($type,TRUE)){
+                    //It should be a Model object
+                    $object = new $type();
+                    $arguments = self::insertItemInArray($arguments,self::setObjectData($object),$i);
                 }//end if
-                $i++;
             }//end foreach
         }
         else{
-            $arguments = array_values($arguments);
+            
             //if the size of parameters to be accepted by action method is more
             for($i=0;$i<sizeof($parameters);$i++){
                 //finding out the data type of each parameter
                 $type = ($parameters[$i]->getType())==null?'NULL':$parameters[$i]->getType()->getName();
             
-                if(!in_array($type, $php_datatypes)){
-                    if(class_exists($type,TRUE)){
-                        //It should be a Model object
-                        $object = new $type(); 
-                        if(!isset($arguments[$i])){
-                            $arguments[$i] = self::setObjectData($object);
-                        }
-                        else{
-                            $j=sizeof($arguments);
-                            //shift the elements to next postion successively
-                            while($j > $i){                                
-                                $arguments[$j] = $arguments[$j-1]; 
-                                $j--;
-                            }
-                            $arguments[$j] = self::setObjectData($object);
-                        } 
-                    }//end if
+                if(!in_array($type, $php_datatypes) && class_exists($type,TRUE)){                    
+                    //It should be a Model object
+                    $object = new $type(); 
+                    if(!isset($arguments[$i])){
+                        $arguments[$i] = self::setObjectData($object);
+                    }
+                    else{
+                        $arguments = self::insertItemInArray($arguments,self::setObjectData($object),$i);
+                    } 
                 }//end if
             }//end for
         }//end else
-        //return $arguments;
-        return self::setOptionalParamValues($parameters,$arguments);
+        return self::setOptionalParamValues($parameters,array_values($arguments));
     }
     
     //function to set data of a model object
@@ -277,29 +261,38 @@ class Dispatcher {
         return $object;
     }
     //setting default values for optional parameters of a method
-    private static function setOptionalParamValues(array $parameters, array $arguments):array{
-        $arguments = array_values($arguments);
+    private static function setOptionalParamValues(array $parameters, array $arguments):array
+    {
         for($i=0;$i<sizeof($parameters);$i++){
-            $type = ($parameters[$i]->getType())==null?'NULL':$parameters[$i]->getType()->getName();
             //if optional parameter is found as per route url, then suitable value must
             //be set
             if(is_object($arguments[$i])){
                 continue;
             }
             if($arguments[$i] == ":optional"){
-                //die("optional found");
                 if($parameters[$i]->isOptional()){
                     $arguments[$i] = $parameters[$i]->getDefaultValue();
                 }
                 else
                 {
-                    //Arguments for non optional parameters have to be removed.
+                    //Arguments which have beed declared as optinal must have its default
+                    //value in the function parameter otherwise those arguments have to be 
+                    //removed.
                     unset($arguments[$i]);
                 }
             }
         }
         return $arguments;
     }
+    
+    private static function insertItemInArray(array $arr=[],$item,int $position):array
+    {
+        $j = sizeof($arr);
+        while($j > $position){
+            $arr[$j] = $arr[$j-1];
+            $j--;
+        }
+        $arr[$j] = $item;
+        return $arr;        
+    }    
 }
-
-

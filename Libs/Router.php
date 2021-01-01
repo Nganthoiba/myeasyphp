@@ -178,7 +178,7 @@ class Router {
     }
     
     //compare two urls, to decide whether they are equal or not
-    private function areEqualURLs($first_url, $second_url): bool{
+    private function areEqualURLs($first_url/*url set in route config*/, $second_url/*user requested url*/): bool{
         $this->params = [];//reseting parameters
         
         $first_url_parts = explode('/',$first_url);
