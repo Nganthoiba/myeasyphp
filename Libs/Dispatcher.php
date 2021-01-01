@@ -149,8 +149,12 @@ class Dispatcher {
                 }                
                 //If the controller is not an api controller
                 startSecureSession();
-            }            
+            }  
+            /*echo "<pre>";
+            print_r($params);
+            echo "</pre>";*/
             $params = self::synchroniseParameters($reflection->getParameters(),$params);
+            
             try{
                 ///checking whether parameter exists or not
                 if(sizeof($params)>0){
