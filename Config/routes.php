@@ -24,8 +24,10 @@ $router = new Router();//Don't change it
  */
 
 /*** Examples ****/
-//Anything enclosed by curly braces is a parameter you are goind to pass. Go to Default controller and index action, see
-//below how these parameters are being accessed
+//Anything enclosed by curly braces is a parameter you are going to pass. Go to Default controller and index action, see
+//below how these parameters are being accessed. If the parameter in the curly braces contains 
+//substring :optional, than that parameter is optional, user can access the url without the parameter
+//value.
 /*
  * Defining the root:
  * */
@@ -37,7 +39,13 @@ $router->addRoute("/Contact", [
     "Controller" => "Default",
     "Action" => "contact"
 ]);
-$router->addRoute("/Default/testModel/{a}/{b}", [
+
+//an example for optional parameter
+$router->addRoute("/sum/{a:optional}/{b:optional}",[
+    "Controller"=>"Default",
+    "Action"=>"sum"
+]);
+$router->addRoute("/Default/testModel/{a}/{b:optional}", [
     "Controller" => "Default",
     "Action" => "testModel"
 ],'GET|POST');
@@ -59,14 +67,10 @@ $router->group("/api",function($router){
         return "Welcome to RESTful API";
     });
     $router->group("/persons",function($router){
-        $router->addRoute("/", [
-            "Controller" => "Persons",
-            "Action" => "index"
-        ],'GET|POST');
         $router->addRoute("/{id}", [
             "Controller" => "Persons",
             "Action" => "index"
-        ],'GET|PUT|PATCH|DELETE');
+        ],'GET|POST|PUT|PATCH|DELETE');
     });
     $router->group("/users", function($router){
         $router->addRoute("/", [

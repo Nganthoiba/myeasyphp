@@ -10,16 +10,17 @@ namespace MyEasyPHP\Controllers;
 use MyEasyPHP\Libs\Controller;
 use MyEasyPHP\Models\LoginModel;
 use MyEasyPHP\Models\MyModel;
+use MyEasyPHP\Models\ContactModel;
 class DefaultController extends Controller{
     public function index(){
         return $this->view();//returning view
     }
     //as an api end point
-    public function about(){
+    public function about(string $test=null){
+        $this->viewData->teststring = $test;
         return $this->view();
     }
-    public function contact(){
-        $model  = new \MyEasyPHP\Models\ContactModel();
+    public function contact(ContactModel $model){
         /*
         $model->Name = "Nganthoiba";
         $model->Email = "leecba@gmail.com";
@@ -41,11 +42,11 @@ class DefaultController extends Controller{
         ]);
     }  
     
-    public function sum(int $a, int $b){
-        return "Sum is: ".($a+$b);
+    public function sum(int $a, int $b=0){
+        return "Sum of $a + $b =".($a+$b);
     }
     
-    public function testModel(MyModel $model, int $a=0, int $b){
+    public function testModel(MyModel $model, int $a=0, int $b=null){
         echo "<pre>";  
         print_r($model);
         echo "</pre><br/>";

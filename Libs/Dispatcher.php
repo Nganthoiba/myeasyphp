@@ -260,12 +260,8 @@ class Dispatcher {
                 }//end if
             }//end for
         }//end else
-        /*
-        echo "<pre>";  
-        print_r($arguments);
-        echo "</pre>"; 
-        */
-        return $arguments;
+        //return $arguments;
+        return self::setOptionalParamValues($parameters,$arguments);
     }
     
     //function to set data of a model object
@@ -280,7 +276,50 @@ class Dispatcher {
         }
         return $object;
     }
-    
+    //setting default values for optional parameters of a method
+    private static function setOptionalParamValues(array $parameters, array $arguments):array{
+        $arguments = array_values($arguments);
+        for($i=0;$i<sizeof($parameters);$i++){
+            $type = ($parameters[$i]->getType())==null?'NULL':$parameters[$i]->getType()->getName();
+            //if optional parameter is found as per route url, then suitable value must
+            //be set
+            if(is_object($arguments[$i])){
+                continue;
+            }
+            if($arguments[$i] == ":optional"){
+                //die("optional found");
+                if($parameters[$i]->isOptional()){
+                    $arguments[$i] = $parameters[$i]->getDefaultValue();
+                }
+                else
+                {
+                    //$arguments[$i] = null;
+                    /*
+                    switch($type){
+                        case "NULL":
+                            $arguments[$i] = null;
+                            break;
+                        case "int":
+                        case "float":
+                            $arguments[$i] = 0;
+                            break;
+                        case "bool":
+                            $arguments[$i] = false;
+                            break;
+                        case "string":
+                            $arguments[$i] = "";
+                            break;
+                        case "array":
+                            $arguments[$i] = [];
+                            break;
+                        default:
+                    }
+                    */
+                }
+            }
+        }
+        return $arguments;
+    }
 }
 
 

@@ -155,7 +155,7 @@ class Request {
                 $clean_input = "";
             }
             else{                
-                $clean_input = trim(htmlspecialchars(strip_tags(stripslashes($data))));                
+                $clean_input = trim(htmlspecialchars(strip_tags(stripslashes("".$data))));                
             }
         }
         return $clean_input;
