@@ -18,7 +18,8 @@ class ContactModel extends Model{
         return [
             'Name' => [Validation::RULE_REQUIRED],
             'Email' => [Validation::RULE_REQUIRED, Validation::RULE_EMAIL],
-            'Body' => [Validation::RULE_REQUIRED]
+            'Body' => [Validation::RULE_REQUIRED, Validation::RULE_MIN=>5],
+            'Sex' => [Validation::RULE_REQUIRED]
         ];
     }
 }
