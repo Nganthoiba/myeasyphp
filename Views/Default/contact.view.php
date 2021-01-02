@@ -16,9 +16,17 @@ Html::setContainer('_masterPage');
             <?php Html::textField($model, 'Email','form-control'); ?>
         </div>
         <div class="form-group">
+            <label>Sex:</label>
+            <?php Html::radioButtons($model, 'Sex', [
+                ["name"=>"Male","value"=>"M"],
+                ["name"=>"Female","value"=>"F"],
+            ]); ?>
+        </div> 
+        <div class="form-group">
             <label>Body:</label>
             <?php Html::textareaField($model, 'Body', 5, 50, 'form-control'); ?>
-        </div>  
+        </div> 
+        
         <button type="submit" class="btn btn-success">Submit</button>
         <?php Html::endForm(); ?>
     </div>

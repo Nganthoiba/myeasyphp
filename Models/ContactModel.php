@@ -12,6 +12,7 @@ class ContactModel extends Model{
     public $Name;
     public $Email;
     public $Body; 
+    public $Sex; 
     
     public function rules(): array {
         return [
