@@ -174,8 +174,8 @@ class Html {
         $btnList = "";
         foreach($list as $item){
             $checked = ($model->{$name_attribute} == $item['value'])?"checked":"";
-            $btnList .= " <input type='button' name='$name_attribute' value='".$item['value']."' $checked /> ".$item['name'];
+            $btnList .= " <input type='radio' name='$name_attribute' value='".$item['value']."' $checked /> ".$item['name'];
         }
-        echo $btnList.'\r\n';
+        echo sprintf($btnList." <div class='validation-error-msg'>%s</div>\r\n",$model->getError($name_attribute));
     }
 }
