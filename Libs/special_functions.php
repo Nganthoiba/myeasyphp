@@ -354,8 +354,8 @@ function getRoles(string $userId):array{
     }
     return $userRoles;
 }
-//function to check whether a user's role is the input user id and role name
-function isRole($userId,$role_name):bool{
+//function to check whether input role name is same as role name of the input user id
+function isRole($userId,$role_name/*role name to be checked*/):bool{
     if(is_null($role_name) || trim($role_name)==""){
         return false;
     }
@@ -368,6 +368,16 @@ function isRole($userId,$role_name):bool{
     }
     return false;
 }
+
+//function to check if user is authenticated, i.e user login session is alive
+function isAuthenticated(){
+    return \MyEasyPHP\Models\LoginModel::isAuthenticated();
+}
+//function to get login information
+function getLoginInfo(){
+    return \MyEasyPHP\Models\LoginModel::getLoginInfo();
+}
+
 /*********************------------**********************************/
 
 /*----------------------- ERROR HANDLING FUNCTION -------------------------*/

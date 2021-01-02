@@ -161,6 +161,10 @@ footer {
   /*text-align:left;*/
 }
 
+.validation-error-msg{
+    color:#dc3545;
+    font-size: 9pt;
+}
 
 /* Other options 
 

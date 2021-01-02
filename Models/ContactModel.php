@@ -7,6 +7,7 @@ namespace MyEasyPHP\Models;
  * @author Nganthoiba
  */
 use MyEasyPHP\Libs\Model;
+use MyEasyPHP\Libs\Validation;
 class ContactModel extends Model{
     public $Name;
     public $Email;
@@ -14,9 +15,9 @@ class ContactModel extends Model{
     
     public function rules(): array {
         return [
-            'Name' => [self::RULE_REQUIRED],
-            'Email' => [self::RULE_REQUIRED, self::RULE_EMAIL],
-            'Body' => [self::RULE_REQUIRED]
+            'Name' => [Validation::RULE_REQUIRED],
+            'Email' => [Validation::RULE_REQUIRED, Validation::RULE_EMAIL],
+            'Body' => [Validation::RULE_REQUIRED]
         ];
     }
 }

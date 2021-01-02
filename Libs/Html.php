@@ -122,8 +122,60 @@ class Html {
     }
     
     //function to set container view where the view will be loaded
-    public function setContainer($view_container_path){
-        //Note: any view file must be inside the Views directory or within its sub directory
+    public static function setContainer($view_container_path){
+        //Note: any view file must be inside the Views directory or within its sub directories
         Config::set('default_view_container',$view_container_path);        
+    }
+    
+    /****************** Form methods *******************/    
+    //to begin a form
+    public static function beginForm(string $action='',string $method='', string $class=''){
+        echo sprintf("<form action='%s' method='%s' class='%s'>\r\n",$action,$method,$class);
+    }
+    
+    //to end a form
+    public static function endForm(){
+        echo "</form>\r\n";
+    }
+    
+    //output a text field
+    public static function textField(Model $model,string $name_attribute,string $class=''){
+        echo sprintf("<input type='text' name='%s' value='%s' class='%s'/>\r\n"
+                . "<div class='validation-error-msg'>%s</div>\r\n",
+                $name_attribute, 
+                $model->{$name_attribute},
+                $class,
+                $model->getError($name_attribute));
+    }
+    
+    public static function textareaField(Model $model,string $name_attribute, int $rows=4, int $cols = 50, string $class=''){
+        echo sprintf("<textarea name='%s' class='%s'>%s</textarea>\r\n"
+                ."<div class='validation-error-msg'>%s</div>\r\n",
+                $name_attribute,
+                $class,
+                $model->{$name_attribute},
+                $model->getError($name_attribute));
+    }
+    
+    public static function optionField(Model $model,string $name_attribute,array $list=[],string $class=''){
+        $options = "<select name='%s' class='%s'>\r\n";
+        foreach ($list as $item){
+            $selected = ($model->{$name_attribute} == $item['value'])?"selected":"";
+            $option .= "<option value='".$item['value']."' $selected>".$item['name']."</option>\r\n";
+        }
+        $options .= "</select>"; 
+        echo sprintf($options.
+                "<div class='validation-error-msg'>%s</div>\r\n",
+                $name_attribute,$class,
+                $model->getError($name_attribute));
+    }
+    
+    public static function radioButtons(Model $model,string $name_attribute,array $list=[],string $class=''){
+        $btnList = "";
+        foreach($list as $item){
+            $checked = ($model->{$name_attribute} == $item['value'])?"checked":"";
+            $btnList .= " <input type='button' name='$name_attribute' value='".$item['value']."' $checked /> ".$item['name'];
+        }
+        echo $btnList.'\r\n';
     }
 }

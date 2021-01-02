@@ -21,17 +21,18 @@ class DefaultController extends Controller{
         return $this->view();
     }
     public function contact(ContactModel $model){
-        /*
-        $model->Name = "Nganthoiba";
+        
+        /*$model->Name = "Nganthoiba";
         $model->Email = "leecba@gmail.com";
         $model->Body = "This is the body";
         */
-        $model->setModelData($this->request->getData());
-        /*
-        if($model->validate()){
-            return "Success"; 
+        if($this->request->isMethod("POST")){
+            $model->setModelData($this->request->getData());
+
+            if($model->validate()){
+                return "Success"; 
+            }
         }
-        */
         return $this->view($model);
     }         
     public function home(){

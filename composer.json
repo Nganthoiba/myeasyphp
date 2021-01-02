@@ -8,10 +8,12 @@
             "email": "leecba@gmail.com"
         }
     ],
-    "require": {},
+    "require": {
+        
+        },
 	"autoload": {
-        "psr-4": {
-            "MyEasyPHP\\": "./"
+            "psr-4": {
+                "MyEasyPHP\\": "./"
+            }
         }
-    }
 }

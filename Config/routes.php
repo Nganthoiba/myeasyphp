@@ -38,7 +38,7 @@ $router->addRoute("/", [
 $router->addRoute("/Contact", [
     "Controller" => "Default",
     "Action" => "contact"
-]);
+],'GET|POST');
 
 //an example for optional parameter
 $router->addRoute("/sum/{a:optional}/{b:optional}",[

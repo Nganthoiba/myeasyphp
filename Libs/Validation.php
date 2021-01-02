@@ -17,19 +17,7 @@ class Validation {
     public const RULE_NUMERIC = 'numeric';
     public const RULE_MATCH = 'match';
     public const RULE_ALPHA = 'alpha';
-    public const RULE_DATE = 'date';
-    
-    public static $errorMessages= [
-            self::RULE_REQUIRED => "The field is required.",
-            self::RULE_EMAIL => "The field must be a valid email address.",
-            self::RULE_MIN => "The field must be at least {min} characters long.",
-            self::RULE_MAX => "The field must be at most {min} characters long.",
-            self::RULE_NUMERIC => "The field must be only numbers.",
-            self::RULE_MATCH => "The field must be the same as {match}.",
-            self::RULE_ALPHA => "The field must be of only alphabet characters.",
-            self::RULE_DATE => "The field must be a valid date."
-        ];
-    
+    public const RULE_DATE = 'date';    
     
     private $_errors = [];
 
@@ -46,10 +34,9 @@ class Validation {
                     switch ($rule){
                         case self::RULE_REQUIRED:
                             if(empty($item_value) && $rule_value){
-                                $this->addError($item,ucwords($item). ' required');
+                                $this->addError($item,ucwords($item). ' is required');
                             }
                         break;
-
                         case self::RULE_MIN:
                             if(strlen($item_value) < $rule_value){
                                 $this->addError($item, ucwords($item). ' should be minimum '.$rule_value. ' characters');
@@ -71,6 +58,12 @@ class Validation {
                             if(!ctype_alpha($item_value) && $rule_value){
                                 $this->addError($item, ucwords($item). ' should be alphabetic characters');
                             }
+                            break;
+                        case self::RULE_EMAIL:
+                            if(!filter_var($item_value, FILTER_VALIDATE_EMAIL)){
+                                $this->addError($item, "The field must be a valid email address.");
+                            }
+                            break;
                         default :
                     }
                 }

@@ -1,14 +1,29 @@
 <?php 
+use MyEasyPHP\Libs\Html;
 use MyEasyPHP\Libs\Config;
-use MyEasyPHP\Models\ContactModel;
-Config::set('default_view_container','_masterPage');
+Html::setContainer('_masterPage');
+?>
+<div class="container">
+    <p>This is the contact form.</p>
+    <div>
+        <?php Html::beginForm(Config::get('host').'/Contact','POST'); ?>
+        <div class="form-group">
+            <label>Name:</label>
+            <?php Html::textField($model, 'Name','form-control'); ?>
+        </div>
+        <div class="form-group">
+            <label>Email:</label>
+            <?php Html::textField($model, 'Email','form-control'); ?>
+        </div>
+        <div class="form-group">
+            <label>Body:</label>
+            <?php Html::textareaField($model, 'Body', 5, 50, 'form-control'); ?>
+        </div>  
+        <button type="submit" class="btn btn-success">Submit</button>
+        <?php Html::endForm(); ?>
+    </div>
+</div>
 
-/** @var $model \MyEasyPHP\Models\ContactModel */
-?>
-<p>This is the contact form.</p>
-<?php
-echo "<pre>";
-var_dump($model);
-echo "</pre>";
-?>
+
+
 

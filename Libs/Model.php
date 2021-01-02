@@ -8,7 +8,7 @@ namespace MyEasyPHP\Libs;
  * @author Nganthoiba
  */
 use MyEasyPHP\Libs\Response;
-
+use MyEasyPHP\Libs\Validation;
 abstract class Model {
        
     protected $errors = [];//set of error for different attributes
@@ -25,7 +25,7 @@ abstract class Model {
             //}
         }
     }
-    
+    //this function will be deprecated
     public function isValidModel(): Response{
         $response = new Response();
         $response->set([
@@ -51,6 +51,16 @@ abstract class Model {
         $response->data = $this;
         return  $response;
     }   
+    public function rules():array{
+        //this method must be overridden in the based class
+        return [];
+    }
+    public function validate(){
+        $validator = new Validation();
+        $validator->validate($this->toArray(), $this->rules());
+        $this->errors = $validator->error();
+        return empty($this->errors);
+    }
     
     public function __toString(){
         return json_encode($this);
@@ -60,7 +70,7 @@ abstract class Model {
         $this->errors[$attribute][] = $message;
     }
     public function getError(string $attribute){
-        return (isset($this->errors[$attribute]))?$this->errors[$attribute]:"";
+        return (isset($this->errors[$attribute]))?$this->errors[$attribute][0]:"";
     }
     public function getAllErrors():array{
         return $this->errors;
@@ -73,8 +83,15 @@ abstract class Model {
      * can not be set dynamically.
     */ 
     public function __get($name) {
+        if(!property_exists($this, $name)){
+            return null;
+        }
+        return $this->{$name};
     }
-    public function __set($name, $value) { 
+    public function __set($name, $value) {
+        if(property_exists($this, $name)){
+            $this->{$name} = $value;
+        }
     }
     
 }
