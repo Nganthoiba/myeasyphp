@@ -9,11 +9,11 @@
         }
     ],
     "require": {
-        
-        },
-	"autoload": {
-            "psr-4": {
-                "MyEasyPHP\\": "./"
-            }
+        "doctrine/orm": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "MyEasyPHP\\": "./"
         }
+    }
 }
