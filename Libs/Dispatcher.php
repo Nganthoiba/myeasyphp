@@ -228,6 +228,16 @@ class Dispatcher {
                 //finding out the data type of each parameter
                 $type = ($parameters[$i]->getType())==null?'NULL':$parameters[$i]->getType()->getName();
                 if($type == 'array'){
+                    /*
+                     *
+                     * If method of a controller accepts parameter of typed array, then it is going to 
+                     * accept all the parameters in array structure. The implementations have also been 
+                     * tested. For example: If we have a method public function test(array $args){}, and 
+                     * if the route is configured as /test/{a}/{b} where those a and b enclosed by curly 
+                     * braces are parameters, such parameters are structured in an associative array form 
+                     * as ['a'=><<some_value1>>,'b'=>'<<some_value2>>'] and passed to the method or function. 
+                     * And the variable $args has those parameters.
+                     *                      */
                     $arguments[$i] = $router->getParams();
                 }
                 else if($type=='object' || (!in_array($type, $php_datatypes) && class_exists($type,TRUE))){
@@ -245,6 +255,16 @@ class Dispatcher {
                 //finding out the data type of each parameter
                 $type = ($parameters[$i]->getType())==null?'NULL':$parameters[$i]->getType()->getName();
                 if($type == 'array'){
+                    /*
+                     *
+                     * If method of a controller accepts parameter of typed array, then it is going to 
+                     * accept all the parameters in array structure. The implementations have also been 
+                     * tested. For example: If we have a method public function test(array $args){}, and 
+                     * if the route is configured as /test/{a}/{b} where those a and b enclosed by curly 
+                     * braces are parameters, such parameters are structured in an associative array form 
+                     * as ['a'=><<some_value1>>,'b'=>'<<some_value2>>'] and passed to the method or function. 
+                     * And the variable $args has those parameters.
+                     */
                     $arguments[$i] = $router->getParams();
                 }
                 else if($type=='object' || (!in_array($type, $php_datatypes) && class_exists($type,TRUE))){                    
