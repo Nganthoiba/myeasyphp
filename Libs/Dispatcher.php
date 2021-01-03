@@ -244,9 +244,13 @@ class Dispatcher {
                             throw ($exc);
                         }
                     }
-                    break;
-                case 'bool':
+                    break;                
                 case 'NULL':
+                    if(is_array($parameters[$i]->getDefaultValue())){
+                        $arguments = self::insertItemInArray($arguments,$router->getParams(),$i);
+                    }
+                    break;
+                case 'bool':    
                 case 'resource':
                     break;
                 case 'array':
@@ -260,18 +264,16 @@ class Dispatcher {
                  * as ['a'=><<some_value1>>,'b'=>'<<some_value2>>'] and passed to the method or function. 
                  * And the variable $args has those parameters.
                  */
-                    $arguments[$i] = $router->getParams();
+                    $arguments = self::insertItemInArray($arguments,$router->getParams(),$i);
                     break;
-                case 'object':
                 default:                        
                     //putting object as argument in its correct position with respect to parameters
                     //of the function or method
                     $object = new $type(); 
                     $arguments = self::insertItemInArray($arguments,self::setObjectData($object),$i);
 
-            }
+            }//end switch
         }//end foreach
-        
         return $arguments;
     }
     

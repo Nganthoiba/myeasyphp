@@ -45,7 +45,7 @@ $router->addRoute("/sum/{a:optional}/{b:optional}",[
     "Controller"=>"Default",
     "Action"=>"sum"
 ]);
-$router->addRoute("/parameters/{a}/{b}", [
+$router->addRoute("/parameters/{a}/{b}/{c}/{d}", [
     "Controller" => "Default",
     "Action" => "getParameters"
 ],'GET|POST');
