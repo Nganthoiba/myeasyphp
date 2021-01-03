@@ -23,6 +23,6 @@ class MyEasyException extends Excp{
         $this->details = $details;
     }
     public function getDetails() : string{
-        return $this->details;
+        return "##**".$this->details;
     }
 }

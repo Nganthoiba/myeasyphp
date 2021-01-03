@@ -218,70 +218,61 @@ class Dispatcher {
         $arguments = array_values($arguments);
         //if no of arguments is more than the no of parameters to be accepted by the 
         //action method, then synchronisation must be done according to arguments
-        if(sizeof($arguments)>=sizeof($parameters)){
-            for($i = 0; $i<sizeof($arguments); $i++){            
-                if(!isset($parameters[$i])){
-                    //break the loop if the function or method is not accepting 
-                    //any further parameter
-                    break;
-                }
-                //finding out the data type of each parameter
-                $type = ($parameters[$i]->getType())==null?'NULL':$parameters[$i]->getType()->getName();
-                if($type == 'array'){
-                    /*
-                     *
-                     * If method of a controller accepts parameter of typed array, then it is going to 
-                     * accept all the parameters in array structure. The implementations have also been 
-                     * tested. For example: If we have a method public function test(array $args){}, and 
-                     * if the route is configured as /test/{a}/{b} where those a and b enclosed by curly 
-                     * braces are parameters, such parameters are structured in an associative array form 
-                     * as ['a'=><<some_value1>>,'b'=>'<<some_value2>>'] and passed to the method or function. 
-                     * And the variable $args has those parameters.
-                     *                      */
-                    $arguments[$i] = $router->getParams();
-                }
-                else if($type=='object' || (!in_array($type, $php_datatypes) && class_exists($type,TRUE))){
-                    //It should be a Model object
-                    $object = new $type();
-                    $arguments = self::insertItemInArray($arguments,self::setObjectData($object),$i);
-                }//end if
-            }//end foreach
-        }
-        else{
-            
-            //if the no of parameters to be accepted by action method is more than the number of
-            //arguments, then synchronisation must be done according to those parameters.
-            for($i=0;$i<sizeof($parameters);$i++){
-                //finding out the data type of each parameter
-                $type = ($parameters[$i]->getType())==null?'NULL':$parameters[$i]->getType()->getName();
-                if($type == 'array'){
-                    /*
-                     *
-                     * If method of a controller accepts parameter of typed array, then it is going to 
-                     * accept all the parameters in array structure. The implementations have also been 
-                     * tested. For example: If we have a method public function test(array $args){}, and 
-                     * if the route is configured as /test/{a}/{b} where those a and b enclosed by curly 
-                     * braces are parameters, such parameters are structured in an associative array form 
-                     * as ['a'=><<some_value1>>,'b'=>'<<some_value2>>'] and passed to the method or function. 
-                     * And the variable $args has those parameters.
-                     */
-                    $arguments[$i] = $router->getParams();
-                }
-                else if($type=='object' || (!in_array($type, $php_datatypes) && class_exists($type,TRUE))){                    
-                    //It should be a Model object
-                    $object = new $type(); 
-                    if(!isset($arguments[$i])){
-                        $arguments[$i] = self::setObjectData($object);
+        $limit = sizeof($arguments)>sizeof($parameters)?sizeof($arguments):sizeof($parameters);
+        
+        for($i = 0; $i < $limit; $i++){            
+            if(!isset($parameters[$i])){
+                //break the iteration if the function or method is not accepting 
+                //any further parameter
+                break;
+            }
+            //finding out the data type of each parameter
+            $type = ($parameters[$i]->getType())==null?'NULL':$parameters[$i]->getType()->getName();
+            switch($type){
+                case 'int':
+                case 'float':
+                case 'string':
+                    if(!isset($arguments[$i]) || $arguments[$i]==":optional"){
+                        if($parameters[$i]->isOptional()){
+                            $arguments[$i] = $parameters[$i]->getDefaultValue();
+                        }
+                        else{
+                            $exc = new MyEasyException("Missing required parameters ...", 400);
+                            $exc->setDetails("Please check Config/routes.php file for the requested url "
+                                    . "and the parameters in the action method of the respective "
+                                    . "controller.");
+                            throw ($exc);
+                        }
                     }
-                    else{
-                        //putting object as argument in its correct position with respect to parameters
-                        //of the function or method
-                        $arguments = self::insertItemInArray($arguments,self::setObjectData($object),$i);
-                    } 
-                }//end if
-            }//end for
-        }//end else
-        return self::setOptionalParamValues($parameters,array_values($arguments));
+                    break;
+                case 'bool':
+                case 'NULL':
+                case 'resource':
+                    break;
+                case 'array':
+                    /*
+                 *
+                 * If method of a controller accepts parameter of typed array, then it is going to 
+                 * accept all the parameters in array structure. The implementations have also been 
+                 * tested. For example: If we have a method public function test(array $args){}, and 
+                 * if the route is configured as /test/{a}/{b} where those a and b enclosed by curly 
+                 * braces are parameters, such parameters are structured in an associative array form 
+                 * as ['a'=><<some_value1>>,'b'=>'<<some_value2>>'] and passed to the method or function. 
+                 * And the variable $args has those parameters.
+                 */
+                    $arguments[$i] = $router->getParams();
+                    break;
+                case 'object':
+                default:                        
+                    //putting object as argument in its correct position with respect to parameters
+                    //of the function or method
+                    $object = new $type(); 
+                    $arguments = self::insertItemInArray($arguments,self::setObjectData($object),$i);
+
+            }
+        }//end foreach
+        
+        return $arguments;
     }
     
     //function to set data of a model object
@@ -295,30 +286,6 @@ class Dispatcher {
             }
         }
         return $object;
-    }
-    //setting default values for optional parameters of a method
-    private static function setOptionalParamValues(array $parameters, array $arguments):array
-    {
-        for($i=0;$i<sizeof($parameters);$i++){
-            //if optional parameter is found as per route url, then suitable value must
-            //be set
-            if(is_object($arguments[$i])){
-                continue;
-            }
-            if($arguments[$i] == ":optional"){
-                if($parameters[$i]->isOptional()){
-                    $arguments[$i] = $parameters[$i]->getDefaultValue();
-                }
-                else
-                {
-                    //Arguments which have beed declared as optinal must have its default
-                    //value in the function parameter otherwise those arguments have to be 
-                    //removed.
-                    unset($arguments[$i]);
-                }
-            }
-        }
-        return $arguments;
     }
     
     private static function insertItemInArray(array $arr=[],$item,int $position):array
