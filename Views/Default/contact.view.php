@@ -4,7 +4,7 @@ use MyEasyPHP\Libs\Config;
 Html::setContainer('_masterPage');
 ?>
 <div class="container">
-    <p>This is the contact form.</p>
+    <h2>Contact us.</h2>
     <div>
         <?php Html::beginForm(Config::get('host').'/Contact','POST'); ?>
         <div class="form-group">

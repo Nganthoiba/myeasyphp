@@ -60,4 +60,10 @@ class DefaultController extends Controller{
         
         return "<br/>Test Model";
     }
+    
+    public function getParameters(int $a=9,array $args){
+        echo "<pre>";  
+        print_r($args);
+        echo "</pre><br/> A = ".$a;
+    }
 }

@@ -208,6 +208,7 @@ class Dispatcher {
     //function to synchronise parameters and arguments
     public static function synchroniseParameters(array $parameters,array $arguments):array
     {   
+        global $router;
         /*
          * $parameters is the array of parameters acceptable by the action method of the controller
          * and the $arguments is the array of arguments that will be passed to that action method
@@ -223,7 +224,10 @@ class Dispatcher {
                 }
                 //finding out the data type of each parameter
                 $type = ($parameters[$i]->getType())==null?'NULL':$parameters[$i]->getType()->getName();
-                if(!in_array($type, $php_datatypes) && class_exists($type,TRUE)){
+                if($type == 'array'){
+                    $arguments[$i] = $router->getParams();
+                }
+                else if(!in_array($type, $php_datatypes) && class_exists($type,TRUE)){
                     //It should be a Model object
                     $object = new $type();
                     $arguments = self::insertItemInArray($arguments,self::setObjectData($object),$i);
@@ -236,8 +240,10 @@ class Dispatcher {
             for($i=0;$i<sizeof($parameters);$i++){
                 //finding out the data type of each parameter
                 $type = ($parameters[$i]->getType())==null?'NULL':$parameters[$i]->getType()->getName();
-            
-                if(!in_array($type, $php_datatypes) && class_exists($type,TRUE)){                    
+                if($type == 'array'){
+                    $arguments[$i] = $router->getParams();
+                }
+                else if(!in_array($type, $php_datatypes) && class_exists($type,TRUE)){                    
                     //It should be a Model object
                     $object = new $type(); 
                     if(!isset($arguments[$i])){
