@@ -38,7 +38,7 @@ class Router {
     protected $controller;  // Name of the controller
     protected $action;      //action method
     protected $params;      //Parameters passed in url
-    protected $method;      //HTTP Verbs GET, POST, PUT, DELETE etc which are allowed for accessing the cuttent url
+    protected $method;      //HTTP Verbs GET, POST, PUT, DELETE etc which are allowed for accessing the requested url
     protected $routeUrl;    //Url for the route
     ///////////////////////////////////////    
     
@@ -199,12 +199,14 @@ class Router {
                 if(isset($second_url_parts[$i])){                    
                     $this->params[str_replace(":optional", "", $index)] = $second_url_parts[$i];  
                 }
-                else if(strpos($index, ":optional")!==false){
+                else{ 
+                    if(strpos($index, ":optional")!==false){
                     //This means that if user hits the url without an parameter, then 
                     //the parameter will store value ":optional", this value will be again
                     //checked at the Dispatcher class and set the default value according
                     //to the called function or method.
-                    $this->params[str_replace(":optional", "", $index)] = ":optional";
+                        $this->params[str_replace(":optional", "", $index)] = ":optional";
+                    }
                 }
             }
         }//end of parsing every single corresponding element

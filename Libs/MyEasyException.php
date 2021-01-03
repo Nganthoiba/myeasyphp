@@ -3,7 +3,6 @@ declare(strict_types=1);
 /*
  * Customizing the exception
  */
-
 namespace MyEasyPHP\Libs;
 
 /**
@@ -23,6 +22,6 @@ class MyEasyException extends Excp{
         $this->details = $details;
     }
     public function getDetails() : string{
-        return $this->details;
+        return "##**".$this->details;
     }
 }
