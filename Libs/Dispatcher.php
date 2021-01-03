@@ -216,10 +216,13 @@ class Dispatcher {
         //php data types
         $php_datatypes = ['int','float','bool','object','array','NULL','string','resource'];
         $arguments = array_values($arguments);
-        //if argument is more than the parameters to be accepted by the action method
+        //if no of arguments is more than the no of parameters to be accepted by the 
+        //action method, then synchronisation must be done according to arguments
         if(sizeof($arguments)>=sizeof($parameters)){
             for($i = 0; $i<sizeof($arguments); $i++){            
                 if(!isset($parameters[$i])){
+                    //break the loop if the function or method is not accepting 
+                    //any further parameter
                     break;
                 }
                 //finding out the data type of each parameter
@@ -227,7 +230,7 @@ class Dispatcher {
                 if($type == 'array'){
                     $arguments[$i] = $router->getParams();
                 }
-                else if(!in_array($type, $php_datatypes) && class_exists($type,TRUE)){
+                else if($type=='object' || (!in_array($type, $php_datatypes) && class_exists($type,TRUE))){
                     //It should be a Model object
                     $object = new $type();
                     $arguments = self::insertItemInArray($arguments,self::setObjectData($object),$i);
@@ -236,20 +239,23 @@ class Dispatcher {
         }
         else{
             
-            //if the size of parameters to be accepted by action method is more
+            //if the no of parameters to be accepted by action method is more than the number of
+            //arguments, then synchronisation must be done according to those parameters.
             for($i=0;$i<sizeof($parameters);$i++){
                 //finding out the data type of each parameter
                 $type = ($parameters[$i]->getType())==null?'NULL':$parameters[$i]->getType()->getName();
                 if($type == 'array'){
                     $arguments[$i] = $router->getParams();
                 }
-                else if(!in_array($type, $php_datatypes) && class_exists($type,TRUE)){                    
+                else if($type=='object' || (!in_array($type, $php_datatypes) && class_exists($type,TRUE))){                    
                     //It should be a Model object
                     $object = new $type(); 
                     if(!isset($arguments[$i])){
                         $arguments[$i] = self::setObjectData($object);
                     }
                     else{
+                        //putting object as argument in its correct position with respect to parameters
+                        //of the function or method
                         $arguments = self::insertItemInArray($arguments,self::setObjectData($object),$i);
                     } 
                 }//end if
