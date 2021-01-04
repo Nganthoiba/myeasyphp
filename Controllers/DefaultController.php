@@ -61,7 +61,7 @@ class DefaultController extends Controller{
         return "<br/>Test Model";
     }
     
-    public function getParameters(array $args,int $a,int $b=1){
+    public function getParameters(array $args,int $a,int $b){
         echo "<pre>";  
         print_r($args);
         //print_r($b);

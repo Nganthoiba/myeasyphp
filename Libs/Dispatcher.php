@@ -5,8 +5,8 @@ namespace MyEasyPHP\Libs;
 /**
  * Description of Dispatcher
  * The main function of Dispatcher class is to grab the url from the client request, 
- * then pass the request uri to the right controller name and action name from the list 
- * of routes, then execute the action of the controller.
+ * then find out the suitable controller name and action name from the list 
+ * of routes with he help of router, then execute the action of the controller.
  * @author Nganthoiba
  */
 use MyEasyPHP\Libs\Request;
@@ -53,12 +53,7 @@ class Dispatcher {
             $reflectionFunc = new ReflectionFunction($function);
             $params = self::synchroniseParameters($reflectionFunc->getParameters(), $params);
             
-            if(sizeof($params)>0){
-                //executing the function
-                $res = call_user_func_array($function, $params);
-            }else{
-                $res = $function();//executing the function
-            }
+            $res = call_user_func_array($function, $params);
             if(is_null($res)){
                 http_response_code(102);
                 exit();
@@ -83,7 +78,7 @@ class Dispatcher {
             
             $controllerObj->setRequest(self::$request);//very much necessary
             $controllerObj->setParams($params);//setting parameters is very much necessary
-            $reflection = new ReflectionMethod($controllerObj, $action);
+            
             //Here check whether the controller is an object of ApiController or just normal Controller
             if(($controllerObj instanceof ApiController)){
                 //checking whether the request method is allowed for accessing URI(For security)
@@ -108,7 +103,7 @@ class Dispatcher {
                     echo $controllerObj->sendResponse($resp);
                     exit();
                 }
-                
+                $reflection = new ReflectionMethod($controllerObj, $action);
                 //ensuring only public method or action to be allowed to access
                 if (!$reflection->isPublic()) {
                     $resp = $controllerObj->response->set([
@@ -120,7 +115,8 @@ class Dispatcher {
                     exit();
                 }                
             }
-            else{                
+            else{   
+                
                 //checking whether the request method is allowed for accessing URI(For security)
                 if(!in_array(self::$request->getMethod(), $methods)){
                     $exc = new MyEasyException("Method not allowed.",405);
@@ -129,11 +125,13 @@ class Dispatcher {
                 }
                 //check if method (action) exists for the controller class
                 if(!method_exists($controllerObj, $action)){
+                    
                     $exc = new MyEasyException("The page you are looking for does not exist.",404);
                     $exc->setDetails(" Action '".$action."' of controller class '"
                             .$controller."' does not exist.");
                     throw $exc;
                 }
+                $reflection = new ReflectionMethod($controllerObj, $action);
                 //check if method (action) to be invoked is authorised for the user
                 if(!Authorization::isAuthorized($controllerObj,$action)){
                     $msg = "Unauthorize access. You are not allowed to access the page. <a href='".Config::get('host')."/Accounts/login'>Login</a> with "
@@ -150,19 +148,12 @@ class Dispatcher {
                 //If the controller is not an api controller
                 startSecureSession();
             }  
-            /*echo "<pre>";
-            print_r($params);
-            echo "</pre>";*/
-            $params = self::synchroniseParameters($reflection->getParameters(),$params);
+            
+            $params = self::synchroniseParameters($reflection->getParameters(),array_values($params));
             
             try{
                 ///checking whether parameter exists or not
-                if(sizeof($params)>0){
-                    $view = call_user_func_array([$controllerObj,$action], $params);
-                }
-                else{
-                    $view = $controllerObj->$action();
-                }
+                $view = call_user_func_array([$controllerObj,$action], $params);
                 //Controller Action may returns view or json data depending upon whether the controller is api controller or just controller, and it is going to be printed
                 if(is_null($view)){
                     http_response_code(102);
@@ -206,17 +197,14 @@ class Dispatcher {
         }
     }
     //function to synchronise parameters and arguments
-    public static function synchroniseParameters(array $parameters,array $arguments):array
+    public static function synchroniseParameters(array $parameters=[],array $arguments=[]):array
     {   
         global $router;
         /*
          * $parameters is the array of parameters acceptable by the action method of the controller
          * and the $arguments is the array of arguments that will be passed to that action method
          */
-        //php data types
-        $php_datatypes = ['int','float','bool','object','array','NULL','string','resource'];
-        $arguments = array_values($arguments);
-        //if no of arguments is more than the no of parameters to be accepted by the 
+        //if number of arguments is more than the number of parameters to be accepted by the 
         //action method, then synchronisation must be done according to arguments
         $limit = sizeof($arguments)>sizeof($parameters)?sizeof($arguments):sizeof($parameters);
         
@@ -244,14 +232,14 @@ class Dispatcher {
                             throw ($exc);
                         }
                     }
-                    break;                
-                case 'NULL':
-                    if(is_array($parameters[$i]->getDefaultValue())){
-                        $arguments = self::insertItemInArray($arguments,$router->getParams(),$i);
-                    }
                     break;
                 case 'bool':    
                 case 'resource':
+                    break;
+                 case 'NULL':
+                    if(is_array($parameters[$i]->getDefaultValue())){
+                        $arguments = self::insertItemInArray($arguments,$router->getParams(),$i);
+                    }
                     break;
                 case 'array':
                     /*
@@ -282,22 +270,14 @@ class Dispatcher {
         if($object instanceof Model or $object instanceof EasyEntity){
             $object->setModelData(self::$request->getData());
         }
-        else{
-            foreach(self::$request->getData() as $key=>$val){
-                $object->{$key} = $val; 
-            }
-        }
         return $object;
     }
     
     private static function insertItemInArray(array $arr=[],$item,int $position):array
     {
-        $j = sizeof($arr);
-        while($j > $position){
-            $arr[$j] = $arr[$j-1];
-            $j--;
-        }
-        $arr[$j] = $item;
-        return $arr;        
+        $slice1 = array_slice($arr, 0, $position,true);
+        array_push($slice1,$item);
+        $slice2 = array_slice($arr, $position, sizeof($arr)-$position,true);
+        return array_merge($slice1,$slice2);
     }    
 }

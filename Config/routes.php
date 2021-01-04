@@ -24,7 +24,7 @@ $router = new Router();//Don't change it
  */
 
 /*** Examples ****/
-//Anything enclosed by curly braces is a parameter you are going to pass. Go to Default controller and index action, see
+//Anything enclosed by curly braces is a parameter you are going to pass. Go to Default controller, see
 //below how these parameters are being accessed. If the parameter in the curly braces contains 
 //substring :optional, than that parameter is optional, user can access the url without the parameter
 //value.
@@ -59,8 +59,8 @@ $router->addRoute("/show_routes", function(){
     return view('Shared/route',['routes'=>$router->getRoutes(),'app_name'=>'MyEasyPHP']);
 });
 
-$router->addRoute("/test/{i}/{j}", function(MyEasyPHP\Models\MyModel $obj){
-    //echo "i= ".$i. " j = $j"."<br/>";
+$router->addRoute("/test/{i}/{j}", function(int $i,MyEasyPHP\Models\MyModel $obj, int $j){
+    echo "i= ".$i. " j = $j"."<br/>";
     //echo "i= ".$i."<br/>";
     echo "Object: ".json_encode($obj);
 });
