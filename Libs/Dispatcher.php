@@ -78,80 +78,27 @@ class Dispatcher {
             
             $controllerObj->setRequest(self::$request);//very much necessary
             $controllerObj->setParams($params);//setting parameters is very much necessary
-            
-            //Here check whether the controller is an object of ApiController or just normal Controller
-            if(($controllerObj instanceof ApiController)){
-                //checking whether the request method is allowed for accessing URI(For security)
-                
-                if(!in_array(self::$request->getMethod(), $methods)){                    
-                    $resp = $controllerObj->response->set([
-                        "status"=>false,
-                        "status_code"=>405,
-                        "error"=>"Methods allowed for the route '".$router->getRouteUrl()."' are: ".implode(', ',$methods).", but your request method is ".self::$request->getMethod()
-                    ]);
-                    echo $controllerObj->sendResponse($resp);
-                    exit();
-                }
-                
-                //check if method (action) exists for the controller class
-                if(!method_exists($controllerObj, $action)){
-                    $resp = $controllerObj->response->set([
-                        "status"=>false,
-                        "status_code"=>404,
-                        "msg"=>"Resource not found!"
-                    ]);
-                    echo $controllerObj->sendResponse($resp);
-                    exit();
-                }
-                $reflection = new ReflectionMethod($controllerObj, $action);
-                //ensuring only public method or action to be allowed to access
-                if (!$reflection->isPublic()) {
-                    $resp = $controllerObj->response->set([
-                        "status"=>false,
-                        "status_code"=>403,
-                        "msg"=>"Access is denied."
-                    ]);
-                    echo $controllerObj->sendResponse($resp);
-                    exit();
-                }                
-            }
-            else{   
-                
+            try{   
                 //checking whether the request method is allowed for accessing URI(For security)
                 if(!in_array(self::$request->getMethod(), $methods)){
                     $exc = new MyEasyException("Method not allowed.",405);
                     $exc->setDetails("Methods allowed for the route '".$router->getRouteUrl()."' :- ".implode(', ',$methods)." but your request method is ".self::$request->getMethod());
                     throw $exc;            
-                }
-                //check if method (action) exists for the controller class
-                if(!method_exists($controllerObj, $action)){
-                    
-                    $exc = new MyEasyException("The page you are looking for does not exist.",404);
-                    $exc->setDetails(" Action '".$action."' of controller class '"
-                            .$controller."' does not exist.");
-                    throw $exc;
+                }                              
+                //If the controller is not an api controller
+                if($controllerObj instanceof Controller){
+                    startSecureSession();
+                    //check if method (action) to be invoked is authorised for the user
+                    if(!Authorization::isAuthorized($controllerObj,$action)){
+                        $msg = "Unauthorize access. You are not allowed to access the page. <a href='".Config::get('host')."/Accounts/login'>Login</a> with "
+                                . "an authorized account. ";
+                        $exc = new MyEasyException($msg,403);              
+                        throw $exc;
+                    }
                 }
                 $reflection = new ReflectionMethod($controllerObj, $action);
-                //check if method (action) to be invoked is authorised for the user
-                if(!Authorization::isAuthorized($controllerObj,$action)){
-                    $msg = "Unauthorize access. You are not allowed to access the page. <a href='".Config::get('host')."/Accounts/login'>Login</a> with "
-                            . "an authorized account. ";
-                    $exc = new MyEasyException($msg,403);              
-                    throw $exc;
-                }
-                
-                //ensuring only public method or action to be allowed to access otherwise
-                //access will be denied.
-                if (!$reflection->isPublic()) {
-                    throw new MyEasyException("Access denied.",403);
-                }                
-                //If the controller is not an api controller
-                startSecureSession();
-            }  
+                $params = self::synchroniseParameters($reflection->getParameters(),array_values($params));
             
-            $params = self::synchroniseParameters($reflection->getParameters(),array_values($params));
-            
-            try{
                 ///checking whether parameter exists or not
                 $view = call_user_func_array([$controllerObj,$action], $params);
                 //Controller Action may returns view or json data depending upon whether the controller is api controller or just controller, and it is going to be printed
@@ -187,7 +134,8 @@ class Dispatcher {
                     $resp = $controllerObj->response->set([
                         "status"=>false,
                         "status_code"=>500,
-                        "msg"=>"Whoops! An error has occured."
+                        "msg"=>"Whoops! An error has occured.",
+                        "error"=>$error->getMessage()
                     ]);
                     echo $controllerObj->sendResponse($resp);
                     exit();
@@ -279,5 +227,5 @@ class Dispatcher {
         array_push($slice1,$item);
         $slice2 = array_slice($arr, $position, sizeof($arr)-$position,true);
         return array_merge($slice1,$slice2);
-    }    
+    }
 }
