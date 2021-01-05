@@ -82,8 +82,8 @@ class EasyEntityManager {
                     "data" => $entity,
                     "msg" => "Record inserted successfully.",
                     "status"=>true,
-                    "status_code"=>201/*,
-                    "rows_affected"=>$stmt->rowCount()*/
+                    "status_code"=>201,
+                    "rows_affected"=>$stmt->rowCount()
                 ]);
             }catch(Exception $e){
                 $this->response->set([
@@ -281,7 +281,6 @@ class EasyEntityManager {
                 ->from($table)
                 ->where($cond)
                 ->execute();
-        //$stmt = $this->read(" max(".$column.") as max_val")->execute();
         if($stmt->rowCount() == 0){
             return NULL;
         }
@@ -316,10 +315,10 @@ class EasyEntityManager {
     /*
      * Security Feature:
      * 
-     * Each property of an entity which has been declared public corresponds to the attribute
-     * of the database table. So, if an unknown new property which is not an attribute of the 
-     * table has been set at runtime accidentally by mistake or intensionally, then there might
-     * be an error while updating record or populalting a new record, because that property 
+     * Each property of an entity which has been declared public corresponds to each of the 
+     * attribute of the database table. So, if an unknown new property which is not an attribute  
+     * of the table has been set accidentally by mistake or intensionally, then there might
+     * be an error while updating record or populalting a new record, because that property (column) 
      * does not exist in the table. So such property has to be removed before adding a new 
      * record or updating an existing record. Romoving of such unwanted or undefined property 
      * of an entity class is done by the function removeUndefinedProperty(). 

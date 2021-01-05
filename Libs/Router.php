@@ -4,13 +4,23 @@ namespace MyEasyPHP\Libs;
 /*
  * How do MVC routers work
  * A MVC Router class inspects the URL of an HTTP request and attempts to match individual URL 
- * components to a Controller and a method defined in that controller, passing along any arguments to the method 
+ * components to a Controller and a method defined in that controller, passing along any arguments
+ * to the method 
  * defined.
  * Reference: https://www.codediesel.com/php/how-do-mvc-routers-work/
  * 
- * The purpose of this class is to maintain set of URIs. It checks whether the url requested by user is available 
- * in the set of routes or not, if found it breaks down thr url requested by user into three segments:-
- *  Controller, Action, and parameters.
+ * The purpose of this class is to maintain set of Routes, each route maps the URL of an HTTP 
+ * request with a function or with controller and action. It also means a url can determine, 
+ * what function to execute and which controller and action to execute. A router has a collection 
+ * of such route objects. 
+ * 
+ * Router also checks whether the url of an HTTP request is available in 
+ * the set of routes or not, if found router will get either the function or Controller name 
+ * and method name/Action name, and the parameters which will be passed as arguments to the function or method.
+ * Otherwise if not found it breaks down thr url requested by user into three segments:-
+ * Controller, Action, and parameters. 
+ * 
+ * Router is used by Dispatcher module to get the controller name and method name of a URL.
  * #Note: Routes object is a collection of  objects of class 'Route'
  
  * Examples: * 
@@ -39,7 +49,7 @@ class Router {
     protected $action;      //action method
     protected $params;      //Parameters passed in url
     protected $method;      //HTTP Verbs GET, POST, PUT, DELETE etc which are allowed for accessing the cuttent url
-    protected $routeUrl;    //Url for the route
+   
     ///////////////////////////////////////    
     
     ////////////////////////IF ROUTE CONTAINS EXECUTABLE FUNCTION INSTEAD OF CONTROLLER AND ACTION///////////
@@ -154,7 +164,7 @@ class Router {
             $paths =$uri_parts[0];
             $path_parts = explode('/', $paths);
 
-            if(count($path_parts)){
+            if(isset($path_parts)){
                 if(current($path_parts)){
                     //First part is considered as controller name
                     $this->controller = trim(htmlspecialchars(strip_tags(current($path_parts))));
@@ -166,10 +176,8 @@ class Router {
                     array_shift($path_parts);
                 }
                 $this->params = $path_parts;
-            } 
-            
+            }
         }
-        
     }// end of extractComponents
     
     //method return whether route has an executable function
@@ -179,7 +187,7 @@ class Router {
     
     //compare two urls, to decide whether they are equal or not
     private function areEqualURLs($first_url/*url set in route config*/, $second_url/*user requested url*/): bool{
-        $this->params = [];//reseting parameters
+        //$this->params = [];//reseting parameters
         
         $first_url_parts = explode('/',$first_url);
         $second_url_parts = explode('/', $second_url);
@@ -187,7 +195,8 @@ class Router {
             return false;
         }
         //Further go for checking for every corresponding element
-        for($i = 0; $i < sizeof($first_url_parts); $i++){
+        $limit = sizeof($first_url_parts);
+        for($i = 0; $i < $limit; $i++){
             $part=isset($second_url_parts[$i])?strtolower($second_url_parts[$i]):null;
             if(strtolower($first_url_parts[$i]) !== $part){
                 if(!$this->isParameter($first_url_parts[$i])){
@@ -201,8 +210,8 @@ class Router {
                 }
                 else{ 
                     if(strpos($index, ":optional")!==false){
-                    //This means that if user hits the url without an parameter, then 
-                    //the parameter will store value ":optional", this value will be again
+                    //This means that if user hits the url without an optional parameter, then 
+                    //the parameter will store string ":optional" as value, this value will be again
                     //checked at the Dispatcher class and set the default value according
                     //to the called function or method.
                         $this->params[str_replace(":optional", "", $index)] = ":optional";
@@ -210,6 +219,7 @@ class Router {
                 }
             }
         }//end of parsing every single corresponding element
+        unset($limit);
         return true;
     }
     

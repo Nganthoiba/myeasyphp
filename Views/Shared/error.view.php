@@ -1,9 +1,13 @@
 <?php 
 use MyEasyPHP\Libs\Config;
+use MyEasyPHP\Libs\Html;
+
 Config::set('page_title',$viewData->httpStatus);
+Html::setContainer("_masterPage");
 $css_class = $viewData->httpCode == 500?"text-danger":"text-warning";
 ?>
-<h1> <?= $viewData->httpCode." ".$viewData->httpStatus ?></h1>
+<div class="container">
+    <h1> <?= $viewData->httpCode." ".$viewData->httpStatus ?></h1>
 
 <?php
 if(Config::get("error_display")){
@@ -34,6 +38,7 @@ if(Config::get("error_display")){
     ?>
     </ol>
 </p>
+</div>
 <?php
 } 
 ?>

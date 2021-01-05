@@ -300,7 +300,7 @@ class EasyQueryBuilder {
         $this->qry = rtrim($this->qry,',');
         return $this;
     }
-    //this will be called just after update method
+    
     public function setValues($params = array()):EasyQueryBuilder{
         //$params (parameters) are set of key-value pairs where key represent the column 
         //and value represent the value to be set to the column while updating the table

@@ -20,9 +20,7 @@ abstract class Model {
     /*** method to set data to a model ***/
     public function setModelData(array $data){
         foreach($data as $key=>$value){
-            //if(property_exists($this, $key)){
-                $this->{$key} = $value;
-            //}
+            $this->{$key} = $value;
         }
     }
     //this function will be deprecated

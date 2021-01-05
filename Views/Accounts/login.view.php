@@ -1,7 +1,7 @@
 <?php
 use MyEasyPHP\Libs\Config;
 use MyEasyPHP\Libs\Html;
-Config::set("default_view_container","Shared/_masterPage");
+Html::setContainer('_masterPage');
 ?>
 <style type="text/css">
     .transparency{

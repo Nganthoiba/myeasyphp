@@ -1,5 +1,6 @@
 <?php
 use MyEasyPHP\Libs\Html;
+Html::setContainer('_masterPage');
 ?>
 <br/>
 <div class="container-fluid" >

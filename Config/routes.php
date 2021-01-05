@@ -41,10 +41,9 @@ $router->addRoute("/Contact", [
 ],'GET|POST');
 
 //an example for optional parameter
-$router->addRoute("/sum/{a:optional}/{b:optional}",[
-    "Controller"=>"Default",
-    "Action"=>"sum"
-]);
+$router->addRoute("/sum/{a}/{b}",function (int $a, int $b){
+    return $a+$b;
+});
 $router->addRoute("/parameters/{a}/{b}/{c}/{d}", [
     "Controller" => "Default",
     "Action" => "getParameters"
@@ -103,9 +102,3 @@ $router->group("/Accounts", function(Router $router){
 });
 
 /****** End Examples ******/
-
-
-
-
-
-

@@ -18,22 +18,15 @@ class DefaultController extends Controller{
     //as an api end point
     public function about(string $test=null){
         $this->viewData->teststring = $test;
-        return $this->view();
+        return view();
     }
     public function contact(ContactModel $model){
-        
-        /*$model->Name = "Nganthoiba";
-        $model->Email = "leecba@gmail.com";
-        $model->Body = "This is the body";
-        */
         if($this->request->isMethod("POST")){
-            $model->setModelData($this->request->getData());
-
             if($model->validate()){
                 return "Success"; 
             }
         }
-        return $this->view($model);
+        return view($model);
     }         
     public function home(){
         $this->viewData->test = "This is a text.";
@@ -61,11 +54,12 @@ class DefaultController extends Controller{
         return "<br/>Test Model";
     }
     
-    public function getParameters(array $args,int $a,int $b){
+    public function getParameters(int $a,int $b, array $args){
         echo "<pre>";  
         print_r($args);
         //print_r($b);
-        echo "</pre><br/> A = ".$a;
+        echo "</pre><br/> A = ",$a;
+        echo "<br/> B = ",$b;
         
     }
 }

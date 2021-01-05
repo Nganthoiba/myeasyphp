@@ -1,9 +1,7 @@
 <?php
 namespace MyEasyPHP\Libs;
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * ViewData is used to pass data (which are not a part of model) from controller to view 
  */
 
 /**

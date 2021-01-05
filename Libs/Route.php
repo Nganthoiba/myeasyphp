@@ -1,16 +1,12 @@
 <?php
 declare(strict_types=1);
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace MyEasyPHP\Libs;
 
 /**
  * Description of Route
- *
+ * Route is a class which maps the HTTP request url with the controller-action or with a
+ * function. It determines what function or controller-action to be called or invoked, when 
+ * a user requests a url. A list of such Route objects are stored in the Router class.
  * @author Nganthoiba
  */
 class Route {
@@ -23,6 +19,7 @@ class Route {
     
     
     public function __construct(string $path, $params, $methods) {
+        //mapping is done at constructor        
         $this->path = ($path);
         $this->isFunction = is_callable($params);
         if($this->isFunction){

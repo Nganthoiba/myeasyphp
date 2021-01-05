@@ -51,7 +51,7 @@ class Dispatcher {
             }
             $function = $router->getFunction();
             $reflectionFunc = new ReflectionFunction($function);
-            $params = self::synchroniseParameters($reflectionFunc->getParameters(), $params);
+            $params = self::synchroniseParameters($reflectionFunc->getParameters(), array_values($params));
             
             $res = call_user_func_array($function, $params);
             if(is_null($res)){
@@ -101,18 +101,17 @@ class Dispatcher {
             
                 ///checking whether parameter exists or not
                 $view = call_user_func_array([$controllerObj,$action], $params);
-                //Controller Action may returns view or json data depending upon whether the controller is api controller or just controller, and it is going to be printed
+                //Controller Action may returns view or json data depending upon whether the controller is api controller or just controller, 
+                //and it is going to print whatever value returned.
                 if(is_null($view)){
                     http_response_code(102);
                     exit();
                     //echo "Null";
                 } 
-                else if($view instanceof View){                           
-                    //if it is view object then render its contents
-                    header('X-Frame-Options: SAMEORIGIN');//preventing clickjacking as the page can only be displayed in a frame on the same origin as the page itself. 
-                    //header('X-Frame-Options: deny');
-                    //The page cannot be displayed in a frame, regardless of the site 
-                    //attempting to do so.
+                if($view instanceof View){                           
+                    //preventing clickjacking as the page can only be displayed in a frame 
+                    //on the same origin as the page itself.
+                    header('X-Frame-Options: SAMEORIGIN');                     
                 }
                 echo ($view);  
             }
@@ -173,7 +172,7 @@ class Dispatcher {
                             $arguments[$i] = $parameters[$i]->getDefaultValue();
                         }
                         else{
-                            $exc = new MyEasyException("Missing required parameters ...", 400);
+                            $exc = new MyEasyException("Missing required parameters ....", 400);
                             $exc->setDetails("Please check Config/routes.php file for the requested url "
                                     . "and the parameters in the action method of the respective "
                                     . "controller.");

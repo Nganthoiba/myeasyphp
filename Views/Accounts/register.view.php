@@ -2,7 +2,7 @@
 use MyEasyPHP\Libs\Html;
 use MyEasyPHP\Libs\Config;
 Config::set('page_title','Signup first');
-Config::set("default_view_container","Shared/_masterPage");
+Html::setContainer('_masterPage');
 ?>
 <style type="text/css">
     section{

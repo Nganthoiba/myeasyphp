@@ -28,9 +28,9 @@ class Validation {
             if(key_exists($item, $rules)){
                 foreach($rules[$item] as $rule => $rule_value){
 
-                    if(is_int($rule))
-                         $rule = $rule_value;
-
+                    if(is_int($rule)){
+                        $rule = $rule_value;
+                    }
                     switch ($rule){
                         case self::RULE_REQUIRED:
                             if(empty($item_value) && $rule_value){

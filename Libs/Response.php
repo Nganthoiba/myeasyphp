@@ -28,13 +28,6 @@ class Response {
         $this->msg = "";
     }
     public function set(array $data = []){
-        /*
-        $this->data = isset($data['data'])?$data['data']:$this->data;
-        $this->error = isset($data['error'])?$data['error']:$this->error;
-        $this->status = isset($data['status'])?$data['status']:$this->status;
-        $this->status_code = isset($data['status_code'])?$data['status_code']:$this->status_code;
-        $this->msg = isset($data['msg'])?$data['msg']:$this->msg;
-        */
         foreach($data as $key=>$val){
             $this->{$key} = $val;
         }
