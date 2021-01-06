@@ -209,15 +209,9 @@ function downloadFile($file_path,$flag=false){
 //2.    pass a single argument, this argument can be a path of a view page (string), 
 //      or a model object, or an entity object or simply an array or a view data.
 //3.    pass 2 argments, then the first argument must be a string which is view path,
-//      and the second argument is either a model object, or an entity object, or array
-//      or an object of ViewData.
-//4.    pass 3 arguments, then the first argument must be a string which is view path,
-//      and the second argument is either a model object, or an entity object or an array.
-//      And the third argument(last) must be an object of ViewData.
-//      
-//#Note: If the function is used in a method of a controller, then pass the view data of 
-//that controller.
+//      and the second argument is either a model object, or an entity object, or array.
 //
+// 
 
 function view():View{
     global $router,$controllerObj;
@@ -242,33 +236,13 @@ function view():View{
             else if(is_string($arg)){
                 $viewPath = $arg;
             }
-            else if($arg instanceof ViewData){
-                $viewData = $arg;
-            }
             unset($arg);
-            break;
-        case 2:
-            //first argument is assumed to be view path
-            $viewPath = func_get_arg(0);
-            //second argument is assumed to be an object of either Entity or a Model class
-            // or simply an object of ViewData   
-            $arg2 = func_get_arg(1);
-            if(is_object($arg2) or is_array($arg2)){
-                $dataModel = $arg2;
-            }
-            else if($arg2 instanceof ViewData){
-                $viewData = $arg2;
-            }
-            unset($arg2);            
             break;
         default:
             //first argument is view path
             $viewPath = func_get_arg(0);
             //second argument is assumed to be an object of either Entity or a Model class
             $dataModel = func_get_arg(1);
-            //third argument is the view data
-            $viewData = func_get_arg(2);       
-            
     }
     if($viewPath !== ""){        
         if(file_exists(VIEWS_PATH.$viewPath.'.view.php') && is_readable(VIEWS_PATH.$viewPath.'.view.php')){
@@ -301,7 +275,58 @@ function view():View{
     $layout_view_obj = new View($layout_path,$viewData);
     return $layout_view_obj; //return the whole view object with view container
 }
-
+//function to return partial view i.e. a view without its container view
+function partialView():View
+{
+    global $router,$controllerObj;
+    $viewPath = "";
+    $dataModel = null;
+    $viewData = new ViewData();
+    if($controllerObj instanceof Controller){
+        //view data will be set only when the is an instance of controller object
+        $viewData = $controllerObj->getViewData();
+    }
+    $numargs = func_num_args();
+    switch($numargs){
+        case 0:
+            $viewPath = "";
+            break;
+        case 1:
+            $arg = func_get_arg(0);
+            //if($arg instanceof Model or $arg instanceof EasyEntity or is_array($arg)){
+            if(is_object($arg) or is_array($arg)){
+                $dataModel = $arg;
+            }
+            else if(is_string($arg)){
+                $viewPath = $arg;
+            }
+            unset($arg);
+            break;
+        default:
+            //first argument is view path
+            $viewPath = func_get_arg(0);
+            //second argument is assumed to be an object of either Entity or a Model class
+            $dataModel = func_get_arg(1);     
+            
+    }
+    if($viewPath !== ""){        
+        if(file_exists(VIEWS_PATH.$viewPath.'.view.php') && is_readable(VIEWS_PATH.$viewPath.'.view.php')){
+            $viewPath = VIEWS_PATH.$viewPath.'.view.php';
+        }
+        else if(file_exists(VIEWS_PATH."Shared".DS.$viewPath.'.view.php') && is_readable(VIEWS_PATH."Shared".DS.$viewPath.'.view.php')){
+            $viewPath = VIEWS_PATH."Shared".DS.$viewPath.'.view.php';
+        }
+        else if($controllerObj instanceof Controller){
+            $controller_name = $router->getController();
+            $viewPath = VIEWS_PATH.$controller_name.DS.$viewPath.'.view.php';
+        }
+    }
+    $view_obj = new View($viewPath,$viewData);
+    if(!is_null($dataModel)){
+        $view_obj->setDataModel($dataModel);
+    }
+    return $view_obj;
+}
 //function to return a view that shows error details when any error occurs
 function errorView($httpCode,$errorMessage="",$errorDetails="",bool $isPartial = false) : View{
     
