@@ -155,38 +155,17 @@ class Dispatcher {
         //action method, then synchronisation must be done according to arguments
         $limit = sizeof($arguments)>sizeof($parameters)?sizeof($arguments):sizeof($parameters);
         
-        for($i = 0; $i < $limit; $i++){            
-            if(!isset($parameters[$i])){
-                //break the iteration if the function or method is not accepting 
-                //any further parameter
-                break;
-            }
+        for($i = 0; $i < $limit; $i++){  
+            //break the iteration if the function or method is not accepting 
+            //any further parameter
+            if(!isset($parameters[$i])){break;}
             //finding out the data type of each parameter
             $type = ($parameters[$i]->getType())==null?'NULL':$parameters[$i]->getType()->getName();
             switch($type){
-                case 'int':
-                case 'float':
-                case 'string':
-                    if(!isset($arguments[$i]) || $arguments[$i]==":optional"){
-                        if($parameters[$i]->isOptional()){
-                            $arguments[$i] = $parameters[$i]->getDefaultValue();
-                        }
-                        else{
-                            $exc = new MyEasyException("Missing required parameters ....", 400);
-                            $exc->setDetails("Please check Config/routes.php file for the requested url "
-                                    . "and the parameters in the action method of the respective "
-                                    . "controller.");
-                            throw ($exc);
-                        }
-                    }
+                case 'int': case 'float': case 'string': case 'NULL':
+                    $arguments = self::synchronizeOptionalArguments($arguments, $parameters, $i);
                     break;
-                case 'bool':    
-                case 'resource':
-                    break;
-                 case 'NULL':
-                    if(is_array($parameters[$i]->getDefaultValue())){
-                        $arguments = self::insertItemInArray($arguments,$router->getParams(),$i);
-                    }
+                case 'bool': case 'resource':
                     break;
                 case 'array':
                     /*
@@ -226,5 +205,27 @@ class Dispatcher {
         array_push($slice1,$item);
         $slice2 = array_slice($arr, $position, sizeof($arr)-$position,true);
         return array_merge($slice1,$slice2);
+    }
+    
+    private static function synchronizeOptionalArguments(array $arguments, array $parameters, int $i/*position*/):array
+    {
+        if(!isset($arguments[$i]) || $arguments[$i]==":optional"){
+            if($parameters[$i]->isOptional()){
+                if(is_array($parameters[$i]->getDefaultValue())){
+                    $arguments = self::insertItemInArray($arguments,$router->getParams(),$i);
+                }
+                else{
+                    $arguments[$i] = $parameters[$i]->getDefaultValue();
+                }
+            }
+            else{
+                $exc = new MyEasyException("Missing required parameters ....", 400);
+                $exc->setDetails("Please check Config/routes.php file for the requested url "
+                        . "and the parameters in the action method of the respective "
+                        . "controller.");
+                throw ($exc);
+            }
+        }
+        return $arguments;
     }
 }
