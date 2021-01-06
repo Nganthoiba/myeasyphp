@@ -11,13 +11,17 @@ use MyEasyPHP\Libs\ViewData;
  * @author Nganthoiba
  */
 class Html {
+    public static $View_Data = null;
+    public static $Model_Object = null;
+    
     //Directory webroot/Assets is the root of all css and js files. MyEasyPHP framework assumes that all your related 
     //js files are in the js directory and css files in css directory. So if you want to use a css file e.g. my_style.css,
     //place that file in this css folder and use the function loadCss('my_style.css'); or you can create as many as sub-folders
     //in the directory but you have to pass the path to that css files that you want to use, e.g loadCss('folder1/folder2/.../my_style.css') 
     //and the function will load the css in your html view file. The same thing goes for js files. 
     //Please note that the functions loadCss() and loadJs() will be used/invoked/called only in the view files only in the section
-    //of the page where you want to load.
+    //of the page where you want to load. You can also pass filename without extension in both the 
+    //functions. But in case of loadAssets() you must pass with file extension.
     
     //#Note: Before using any class file, make sure that you use the correct namespace of that file.
     public static function loadCss($path_to_css){
@@ -90,8 +94,9 @@ class Html {
         $output = NULL;
         if(trim($filepath)!==""){
             ob_start();//turns on output buffering
-            $viewData = $view_Data;
-            $model = $modelObj;
+            $viewData = is_null(self::$View_Data)?$view_Data:self::$View_Data;
+            $model = is_null(self::$Model_Object)?$modelObj:self::$Model_Object;
+            
             $data = is_object($model)?json_decode(json_encode($model),true):$model;        
             if(is_array($data)){
                 foreach ($data as $key=>$value){
@@ -149,11 +154,12 @@ class Html {
     }
     
     public static function textareaField(Model $model,string $name_attribute, int $rows=4, int $cols = 50, string $class=''){
+        $model->{$name_attribute} = is_null($model->{$name_attribute})?"":$model->{$name_attribute};
         echo sprintf("<textarea name='%s' class='%s'>%s</textarea>\r\n"
                 ."<div class='validation-error-msg'>%s</div>\r\n",
                 $name_attribute,
                 $class,
-                $model->{$name_attribute},
+                htmlspecialchars_decode($model->{$name_attribute}),
                 $model->getError($name_attribute));
     }
     
@@ -173,9 +179,13 @@ class Html {
     public static function radioButtons(Model $model,string $name_attribute,array $list=[],string $class=''){
         $btnList = "";
         foreach($list as $item){
-            $checked = ($model->{$name_attribute} == $item['value'])?"checked":"";
-            $btnList .= " <input type='radio' name='$name_attribute' value='".$item['value']."' $checked /> ".$item['name'];
+            $name = $item['name'];
+            $value = $item['value'];
+            $checked = ($model->{$name_attribute} == $value)?"checked":"";
+            $btnList .= " <input type='radio' id='$name' name='$name_attribute' value='".$item['value']."' $checked /> "."<label for='$name'>".$name."</label>";
         }
-        echo sprintf($btnList." <div class='validation-error-msg'>%s</div>\r\n",$model->getError($name_attribute));
+        unset($name);
+        unset($value);
+        echo sprintf($btnList."<div class='validation-error-msg'>%s</div> \r\n",$model->getError($name_attribute));
     }
 }
