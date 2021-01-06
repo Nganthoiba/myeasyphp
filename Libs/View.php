@@ -72,8 +72,8 @@ class View {
                 }
             }
         }
-        if(file_exists($this->path)){
-            include_once($this->path);
+        if(file_exists($this->path) && is_readable($this->path)){
+            require_once($this->path);
         }
         //Get current buffer contents and delete current output buffer.Returns the 
         //contents of the output buffer and end output buffering. 
