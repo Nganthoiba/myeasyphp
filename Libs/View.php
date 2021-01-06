@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace MyEasyPHP\Libs;
 use MyEasyPHP\Libs\ViewData;
 use MyEasyPHP\Libs\MyEasyException;
+use MyEasyPHP\Libs\Html;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -60,8 +61,8 @@ class View {
     //Randering view data
     public function render(){
         ob_start();//turns on output buffering        
-        $viewData = $this->viewData; 
-        $model = $this->model;
+        Html::$View_Data = $viewData = $this->viewData; 
+        Html::$Model_Object = $model = $this->model;
         $data = is_object($model)?json_decode(json_encode($model),true):$model;        
         if(is_array($data)){
             foreach ($data as $key=>$value){
