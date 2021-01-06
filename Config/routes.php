@@ -40,8 +40,24 @@ $router->addRoute("/Contact", [
     "Action" => "contact"
 ],'GET|POST');
 
+$router->group("/Student",function(Router $router){
+    $router->addRoute("/add", [
+        "Controller" => "Student",
+        "Action" => "add"
+    ],'GET|POST');
+    $router->addRoute("/edit/{id}", [
+        "Controller" => "Student",
+        "Action" => "edit"
+    ],'GET|POST');
+    $router->addRoute("/delete/{id}", [
+        "Controller" => "Student",
+        "Action" => "edit"
+    ],'GET|POST');
+});
+
+
 //an example for optional parameter
-$router->addRoute("/sum/{a}/{b}",function (int $a, int $b){
+$router->addRoute("/sum/{a}/{b:optional}",function (float $a, $b){
     return $a+$b;
 });
 $router->addRoute("/parameters/{a}/{b}/{c}/{d}", [

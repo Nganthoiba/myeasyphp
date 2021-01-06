@@ -46,7 +46,9 @@ Config::set('DB_CONFIG', [
     "PERSISTENT" => false
 ]);
 
-////For connecting to Microsoft SQL database server
+//
+//For connecting to Microsoft SQL database server
+//
 //Config::set('DB_CONFIG', [
 //    "DB_HOST" => "localhost",
 //    "DB_PORT" => 1433,
@@ -63,3 +65,4 @@ Config::set('DB_CONFIG', [
 //Beware that, when the code is in production server, it must be set
 //to false.
 Config::set('error_display',true);
+Config::set('development_mode',true);

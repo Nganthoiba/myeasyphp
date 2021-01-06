@@ -36,7 +36,7 @@ class DefaultController extends Controller{
         ]);
     }  
     
-    public function sum(int $a=0, int $b){
+    public function sum($a=0, $b=6){
         return "Sum of $a + $b =".($a+$b);
     }
     

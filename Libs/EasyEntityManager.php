@@ -35,16 +35,7 @@ class EasyEntityManager {
     }
     
     /********* START METHODS FOR CRUD OPERATIONS ********/
-    //Read records from a table
-    /*
-    public function read($table_name_or_entity) : EasyQueryBuilder{
-        if($table_name_or_entity instanceof EasyEntity){
-            return $this->readEntity($table_name_or_entity);
-        }
-        $this->queryBuilder->setEntityClassName($table_name_or_entity); 
-        return $this->queryBuilder->select()->from($table_name_or_entity);        
-    }
-    */
+    
     //Read records by passing entity object
     public function read(EasyEntity $entity) : EasyQueryBuilder{
         self::$queryBuilder->setEntityClassName(get_class($entity)); 
