@@ -13,7 +13,8 @@ use MyEasyPHP\Models\MyModel;
 use MyEasyPHP\Models\ContactModel;
 class DefaultController extends Controller{
     public function index(){
-        return $this->view();//returning view
+        $data = $this->request->getData();
+        return $this->view($data);//returning view
     }
     //as an api end point
     public function about(string $test=null){
