@@ -159,65 +159,52 @@ class EasyQueryBuilder {
     //method to get/read/load all data after executing the query
     //returns either null or set of data
     public function get(){
-        try{
-            $stmt = $this->execute();
-            if($stmt !== null){
-                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);//result
-                $this->data_list = $this->getRowsUptoLimit($rows);
-                return $this->data_list;
-            }
-        }catch(Exception $e){
-            throw $e;
+        $stmt = $this->execute();
+        if($stmt !== null){
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);//result
+            $this->data_list = $this->getRowsUptoLimit($rows);
+            return $this->data_list;
         }
         return null;
     }
     //method to get/read/load first row or data after executing the query.
     //it returns either null or object of the entity if record is found
     public function getFirst(){  
-        try{
-            $stmt = $this->execute();
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);//result
-            if($stmt !== null && $row == true){   
-                if($this->entiy_class_name==""){
-                    $temp_obj = new EmptyClass();
-                }
-                else{
-                    $class_name = ENTITY_NAMESPACE.$this->entiy_class_name;
-                    $temp_obj = class_exists($class_name)?new $class_name(): new EmptyClass(); 
-                }
-                foreach($row as $col_name=>$value){
-                    $temp_obj->{$col_name} = $value;
-                }
-                return $temp_obj;
+        $stmt = $this->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);//result
+        if($stmt !== null && $row == true){   
+            if($this->entiy_class_name==""){
+                $temp_obj = new EmptyClass();
             }
-        }catch(Exception $e){
-            throw $e;
+            else{
+                $class_name = ENTITY_NAMESPACE.$this->entiy_class_name;
+                $temp_obj = class_exists($class_name)?new $class_name(): new EmptyClass(); 
+            }
+            foreach($row as $col_name=>$value){
+                $temp_obj->{$col_name} = $value;
+            }
+            return $temp_obj;
         }
         return null;
     }
     //method to get/read/load last row or data after executing the query.
     //it returns either null or object of the entity if record is found
-    public function getLast(){
-        
-        try{
-            $stmt = $this->execute();
-            if($stmt !== null/* && $stmt->rowCount()>0*/){
-                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);//result
-                $row = $rows[$stmt->rowCount()-1];
-                if($this->entiy_class_name==""){
-                    $temp_obj = new EmptyClass();
-                }
-                else{
-                    $class_name = ENTITY_NAMESPACE.$this->entiy_class_name;
-                    $temp_obj = class_exists($class_name)?new $class_name(): new EmptyClass(); 
-                }
-                foreach($row as $col_name=>$value){
-                    $temp_obj->{$col_name} = $value;
-                }
-                return $temp_obj;
+    public function getLast(){        
+        $stmt = $this->execute();
+        if($stmt !== null/* && $stmt->rowCount()>0*/){
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);//result
+            $row = $rows[$stmt->rowCount()-1];
+            if($this->entiy_class_name==""){
+                $temp_obj = new EmptyClass();
             }
-        }catch(Exception $e){
-            //throw $e;
+            else{
+                $class_name = ENTITY_NAMESPACE.$this->entiy_class_name;
+                $temp_obj = class_exists($class_name)?new $class_name(): new EmptyClass(); 
+            }
+            foreach($row as $col_name=>$value){
+                $temp_obj->{$col_name} = $value;
+            }
+            return $temp_obj;
         }
         return null;
     }
@@ -228,31 +215,27 @@ class EasyQueryBuilder {
     public function toList(){
         //If there is no class name specified or if the class is not defined, 
         //then we give default an empty class
-        try{
-            $stmt = $this->execute();
-            if($stmt !== null){
-                $rows = $this->getRowsUptoLimit($stmt->fetchAll(PDO::FETCH_ASSOC));
-                if(sizeof($rows) == 0){
-                    return null;
-                }
-                $entity_array = [];
-                foreach ($rows as $row){
-                    if($this->entiy_class_name==""){
-                        $temp_obj = new EmptyClass();
-                    }
-                    else{
-                        $class_name = ENTITY_NAMESPACE.$this->entiy_class_name;
-                        $temp_obj = class_exists($class_name)?new $class_name(): new EmptyClass(); 
-                    }
-                    foreach($row as $col_name=>$value){
-                        $temp_obj->{$col_name} = $value;
-                    }
-                    array_push($entity_array,$temp_obj);
-                }
-                return $entity_array;
+        $stmt = $this->execute();
+        if($stmt !== null){
+            $rows = $this->getRowsUptoLimit($stmt->fetchAll(PDO::FETCH_ASSOC));
+            if(sizeof($rows) == 0){
+                return null;
             }
-        }catch(Exception $e){
-            throw $e;
+            $entity_array = [];
+            foreach ($rows as $row){
+                if($this->entiy_class_name==""){
+                    $temp_obj = new EmptyClass();
+                }
+                else{
+                    $class_name = ENTITY_NAMESPACE.$this->entiy_class_name;
+                    $temp_obj = class_exists($class_name,TRUE)?new $class_name(): new EmptyClass(); 
+                }
+                foreach($row as $col_name=>$value){
+                    $temp_obj->{$col_name} = $value;
+                }
+                array_push($entity_array,$temp_obj);
+            }
+            return $entity_array;
         }
         return null;
     }
