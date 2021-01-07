@@ -15,7 +15,7 @@ use Doctrine\Common\EventManager;
  */
 class DoctrineEntityManager extends EntityManager{
     /***Method to get Entity Manager for Doctrine ****/
-    public static function getEntityManager(): EntityManager{
+    public static function getEntityManager(): DoctrineEntityManager{
         //$isDevMode = Config::get('development_mode');
         $proxyDir = null;
         $cache = null;
@@ -40,7 +40,7 @@ class DoctrineEntityManager extends EntityManager{
         return self::create($db_param, $config);
     }
     
-    public static function create($connection, Configuration $config, EventManager $eventManager = null): EntityManager {
+    public static function create($connection, Configuration $config, EventManager $eventManager = null): DoctrineEntityManager {
         if ( ! $config->getMetadataDriverImpl()) {
             throw ORMException::missingMappingDriverImpl();
         }
