@@ -36,7 +36,10 @@ class DefaultController extends Controller{
         ]);
     }  
     
-    public function sum($a=0, $b=6){
+    public function sum(int $a,$args=[], float $b){
+        echo "<pre>";
+        print_r($args);
+        echo "</pre>";
         return "Sum of $a + $b =".($a+$b);
     }
     

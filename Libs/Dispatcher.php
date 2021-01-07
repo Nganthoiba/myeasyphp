@@ -7,6 +7,9 @@ namespace MyEasyPHP\Libs;
  * The main function of Dispatcher class is to grab the url from the client request, 
  * then find out the suitable controller name and action name from the list 
  * of routes with he help of router, then execute the action of the controller.
+ * 
+ * Dispatcher also synchronize the positions of the arguments w.r.t the parameters of the
+ * function
  * @author Nganthoiba
  */
 use MyEasyPHP\Libs\Request;
@@ -62,11 +65,8 @@ class Dispatcher {
         }
         else{            
             $controller = is_null($router->getController())?"Controller":ucfirst($router->getController())."Controller";
-            $action = $router->getAction();//Action name
-            if(is_null($action)){
-                $action = Config::get('default_action');
-            }
-			
+            $action = is_null($router->getAction())?Config::get('default_action'):$router->getAction();//Action name
+            
             //*** creating Controller Object ***
             $controller_class = CONTROLLER_NAMESPACE.$controller;
             if(!class_exists($controller_class, TRUE)){
@@ -143,7 +143,7 @@ class Dispatcher {
             }
         }
     }
-    //function to synchronise parameters and arguments
+    //function to synchronize the positions of the arguments w.r.t the parameters of the function
     public static function synchroniseParameters(array $parameters=[],array $arguments=[]):array
     {   
         global $router;
@@ -162,7 +162,7 @@ class Dispatcher {
             //finding out the data type of each parameter
             $type = ($parameters[$i]->getType())==null?'NULL':$parameters[$i]->getType()->getName();
             switch($type){
-                case 'int': case 'float': case 'string': case 'NULL':
+                case 'int': case 'float': case 'string': case 'NULL': 
                     $arguments = self::synchronizeOptionalArguments($arguments, $parameters, $i);
                     break;
                 case 'bool': case 'resource':
@@ -209,22 +209,34 @@ class Dispatcher {
     
     private static function synchronizeOptionalArguments(array $arguments, array $parameters, int $i/*position*/):array
     {
-        if(!isset($arguments[$i]) || $arguments[$i]==":optional"){
-            if($parameters[$i]->isOptional()){
-                if(is_array($parameters[$i]->getDefaultValue())){
-                    $arguments = self::insertItemInArray($arguments,$router->getParams(),$i);
-                }
-                else{
-                    $arguments[$i] = $parameters[$i]->getDefaultValue();
-                }
+        global $router,$controllerObj;
+        if($parameters[$i]->isDefaultValueAvailable()){
+            if(is_array($parameters[$i]->getDefaultValue()))
+            {
+                $arguments = self::insertItemInArray($arguments,$router->getParams(),$i);
             }
-            else{
+            else if(!isset($arguments[$i]) || $arguments[$i]===":optional"){
+                //:optional means the argument has been declared optional but its value of argument has not been set yet
+                //so the argument is going to be set the default value of the parameter
+                $arguments[$i] = $parameters[$i]->getDefaultValue();
+            }
+        }
+        else{
+            /*
+            if((!isset($arguments[$i]) || $arguments[$i]===":optional") && !is_null($controllerObj)){  
+                
+                $controller = get_class($controllerObj);
+                $action = is_null($router->getAction())?Config::get('default_action'):$router->getAction();//Action name
+
                 $exc = new MyEasyException("Missing required parameters ....", 400);
                 $exc->setDetails("Please check Config/routes.php file for the requested url "
                         . "and the parameters in the action method of the respective "
-                        . "controller.");
+                        . "controller. Parameter $".$parameters[$i]->getName()." of the method $controller::$action() is required, it "
+                        . "seems you have not passed the suitable argument.");
                 throw ($exc);
+                
             }
+            */
         }
         return $arguments;
     }
