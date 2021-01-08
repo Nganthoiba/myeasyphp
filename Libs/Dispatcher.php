@@ -127,18 +127,27 @@ class Dispatcher {
                 $arguments[$i] = $parameters[$i]->getDefaultValue();
             }
         }
+        else{
+            if(!isset($arguments[$i]) || $arguments[$i]===":optional"){
+                $exc = new MyEasyException("Missing required parameters ...", 400);
+                $exc->setDetails("Please check Config/routes.php file for the requested url "
+                        . "and please make sure you have also supplied the sufficient parameters required.");
+                throw ($exc);
+            }
+        }
         return $arguments;
     }
     
     //method to be called only when route has function
     private static function executeRouteFunction() {
         global $router;
-        
+        //senitising all input values via GET or POST methods
+        $params = self::$request->senitizeInputs($router->getParams());
         $function = $router->getFunction();
         $reflectionFunc = new ReflectionFunction($function);
-        $params = self::synchroniseParameters($reflectionFunc->getParameters(), array_values($params));
+        $syncParams = self::synchroniseParameters($reflectionFunc->getParameters(), array_values($params));
 
-        $res = call_user_func_array($function, $params);
+        $res = call_user_func_array($function, $syncParams);
         if(is_null($res)){
             http_response_code(102);
             exit();
@@ -158,7 +167,6 @@ class Dispatcher {
         $reflection = new ReflectionMethod($controllerObj, $action);
         $syncParams = self::synchroniseParameters($reflection->getParameters(),\array_values($params));
 
-        ///checking whether parameter exists or not
         $view = call_user_func_array([$controllerObj,$action], $syncParams);
         //Controller Action may returns view or json data depending upon whether the controller is api controller or just controller, 
         //and it is going to print whatever value returned.

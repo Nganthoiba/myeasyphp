@@ -37,10 +37,7 @@ class DefaultController extends Controller{
         ]);
     }  
     
-    public function sum(int $a,$args=[], float $b){
-        echo "<pre>";
-        print_r($args);
-        echo "</pre>";
+    public function sum(int $a,float $b){
         return "Sum of $a + $b =".($a+$b);
     }
     
@@ -58,7 +55,7 @@ class DefaultController extends Controller{
         return "<br/>Test Model";
     }
     
-    public function getParameters(int $a,int $b, array $args){
+    public function getParameters(array $args,int $a, int $b){
         echo "<pre>";  
         print_r($args);
         //print_r($b);
