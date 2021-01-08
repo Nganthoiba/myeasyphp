@@ -6,7 +6,6 @@ require_once LIBS_PATH.'global_variables.php';//loading global variables
 require_once CONFIG_PATH. 'routes.php';//Route Configuration file
 require_once LIBS_PATH. 'special_functions.php';
 
-// object $router is instantiated in the Config/routes.php file
 use MyEasyPHP\Libs\Dispatcher;
 use MyEasyPHP\Libs\Config;
 use MyEasyPHP\Libs\MyEasyException;
