@@ -54,7 +54,7 @@ class DoctrineEntityManager extends EntityManager{
         if(is_object($className)){
             $className = get_class($className);
         }
-        else if(strpos($className,ENTITY_NAMESPACE)===false){
+        else if(is_string($className) && strpos($className,ENTITY_NAMESPACE)===false){
             $className = ENTITY_NAMESPACE.$className;
         }
         return parent::find($className, $id, $lockMode, $lockVersion);
@@ -63,7 +63,7 @@ class DoctrineEntityManager extends EntityManager{
         if(is_object($entityName)){
             $entityName = get_class($entityName);
         }
-        else if(strpos($entityName,ENTITY_NAMESPACE)===false){
+        else if(is_string($entityName) && strpos($entityName,ENTITY_NAMESPACE)===false){
             $entityName = ENTITY_NAMESPACE.$entityName;
         }
         return parent::getRepository($entityName);
