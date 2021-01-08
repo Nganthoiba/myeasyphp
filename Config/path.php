@@ -11,6 +11,7 @@ define("CONFIG_PATH", ROOT.DS."Config".DS);                                     
 define("LIBS_PATH", ROOT.DS."Libs".DS);                                             //
 define("MODELS_PATH", ROOT.DS."Models".DS);                                         //
 define("VIEWS_PATH", ROOT.DS."Views".DS);                                           //
+define("CONTROLLERS_PATH", ROOT.DS."Controllers".DS);                               //
 define('ENTITY_PATH', MODELS_PATH.DS.'Entities'.DS);//Path for entities             //
                                                                                     //
 //NAMESPACES                                                                        //

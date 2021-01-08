@@ -28,119 +28,25 @@ class Dispatcher {
     public static $request;
     public static function dispatch(){
         global $router; //Router Object
-        global $controllerObj;//Controller Object
         //Getting user request information
         self::$request = new Request(); 
         //Getting uri requested by user
-        $uri = Request::getURI();
-		
-        if(!is_null($uri)){
-            $uri = (rtrim($uri,'/'));
-        }
+	$uri = 	!is_null(Request::getURI())?rtrim(Request::getURI(),'/'):Request::getURI();
         
         $router->setUri($uri);
         $router->extractComponents();//extract Controller and action wrt the request uri from the routes
-        
-        $methods = $router->getMethods();//getting HTTP verbs       
-        //senitising all input values via GET or POST methods
-        $params = self::$request->senitizeInputs($router->getParams());       
-        
+         
+        if(!in_array(self::$request->getMethod(), $router->getMethods()/*getting HTTP verbs*/)){                    
+            $exc = new MyEasyException("Method not allowed.",405);
+            $exc->setDetails("Methods allowed for the route '".$router->getRouteUrl()."' :- ".implode(', ',$methods)." but your request method is ".self::$request->getMethod());
+            throw $exc;
+        }
         //If router is only a function
         if($router->isOnlyFunction()){
-            if(!in_array(self::$request->getMethod(), $methods)){                    
-                $exc = new MyEasyException("Method not allowed.",405);
-                $exc->setDetails("Methods allowed for the route '".$router->getRouteUrl()."' :- ".implode(', ',$methods)." but your request method is ".self::$request->getMethod());
-                throw $exc;
-            }
-            $function = $router->getFunction();
-            $reflectionFunc = new ReflectionFunction($function);
-            $params = self::synchroniseParameters($reflectionFunc->getParameters(), array_values($params));
-            
-            $res = call_user_func_array($function, $params);
-            if(is_null($res)){
-                http_response_code(102);
-                exit();
-            }
-            echo $res;
+            self::executeRouteFunction();
         }
         else{            
-            $controller = is_null($router->getController())?"Controller":ucfirst($router->getController())."Controller";
-            $action = is_null($router->getAction())?Config::get('default_action'):$router->getAction();//Action name
-            
-            //*** creating Controller Object ***
-            $controller_class = CONTROLLER_NAMESPACE.$controller;
-            if(!class_exists($controller_class, TRUE)){
-                $exception = new MyEasyException("Sorry, the page you are looking for is not found.",404);
-                $exception->setDetails("Controller file ".$controller." class does not exist. Please check.");
-                throw $exception;
-            }
-            $controllerObj = new $controller_class();//instantiate a new controller object
-            
-            $controllerObj->setRequest(self::$request);//very much necessary
-            $controllerObj->setParams($params);//setting parameters is very much necessary
-            try{   
-                //checking whether the request method is allowed for accessing URI(For security)
-                if(!in_array(self::$request->getMethod(), $methods)){
-                    $exc = new MyEasyException("Method not allowed.",405);
-                    $exc->setDetails("Methods allowed for the route '".$router->getRouteUrl()."' :- ".implode(', ',$methods)." but your request method is ".self::$request->getMethod());
-                    throw $exc;            
-                }                              
-                //If the controller is not an api controller
-                if($controllerObj instanceof Controller){
-                    startSecureSession();
-                    //check if method (action) to be invoked is authorised for the user
-                    if(!Authorization::isAuthorized($controllerObj,$action)){
-                        $msg = "Unauthorize access. You are not allowed to access the page. <a href='".Config::get('host')."/Accounts/login'>Login</a> with "
-                                . "an authorized account. ";
-                        $exc = new MyEasyException($msg,403);              
-                        throw $exc;
-                    }
-                }
-                $reflection = new ReflectionMethod($controllerObj, $action);
-                $params = self::synchroniseParameters($reflection->getParameters(),array_values($params));
-            
-                ///checking whether parameter exists or not
-                $view = call_user_func_array([$controllerObj,$action], $params);
-                //Controller Action may returns view or json data depending upon whether the controller is api controller or just controller, 
-                //and it is going to print whatever value returned.
-                if(is_null($view)){
-                    http_response_code(102);
-                    exit();
-                    //echo "Null";
-                } 
-                if($view instanceof View){                           
-                    //preventing clickjacking as the page can only be displayed in a frame 
-                    //on the same origin as the page itself.
-                    header('X-Frame-Options: SAMEORIGIN');                     
-                }
-                echo ($view);  
-            }
-            catch(TypeError $error){
-                if($controllerObj instanceof ApiController){
-                    $resp = $controllerObj->response->set([
-                        "status"=>false,
-                        "status_code"=>500,
-                        "msg"=>"Whoops! An error has occured.",
-                        "error"=>$error->getMessage()
-                    ]);
-                    echo $controllerObj->sendResponse($resp);
-                    exit();
-                }
-                throw $error;
-            }
-            catch(Exception $e){
-                if($controllerObj instanceof ApiController){
-                    $resp = $controllerObj->response->set([
-                        "status"=>false,
-                        "status_code"=>500,
-                        "msg"=>"Whoops! An error has occured.",
-                        "error"=>$error->getMessage()
-                    ]);
-                    echo $controllerObj->sendResponse($resp);
-                    exit();
-                }
-                throw $e;
-            }
+            self::executeControllerAction();
         }
     }
     //function to synchronize the positions of the arguments w.r.t the parameters of the function
@@ -178,13 +84,13 @@ class Dispatcher {
                  * as ['a'=><<some_value1>>,'b'=>'<<some_value2>>'] and passed to the method or function. 
                  * And the variable $args has those parameters.
                  */
-                    $arguments = self::insertItemInArray($arguments,$router->getParams(),$i);
+                    $arguments = self::insertItemInArray($router->getParams(),$i,$arguments);
                     break;
                 default:                        
                     //putting object as argument in its correct position with respect to parameters
                     //of the function or method
                     $object = new $type(); 
-                    $arguments = self::insertItemInArray($arguments,self::setObjectData($object),$i);
+                    $arguments = self::insertItemInArray(self::setObjectData($object),$i,$arguments);
 
             }//end switch
         }//end foreach
@@ -199,21 +105,21 @@ class Dispatcher {
         return $object;
     }
     
-    private static function insertItemInArray(array $arr=[],$item,int $position):array
+    private static function insertItemInArray($item, int $position, array $arr = array ()):array
     {
-        $slice1 = array_slice($arr, 0, $position,true);
+        $slice1 = \array_slice($arr, 0, $position,true);
         array_push($slice1,$item);
-        $slice2 = array_slice($arr, $position, sizeof($arr)-$position,true);
+        $slice2 = \array_slice($arr, $position, sizeof($arr)-$position,true);
         return array_merge($slice1,$slice2);
     }
     
     private static function synchronizeOptionalArguments(array $arguments, array $parameters, int $i/*position*/):array
     {
-        global $router,$controllerObj;
+        global $router;
         if($parameters[$i]->isDefaultValueAvailable()){
             if(is_array($parameters[$i]->getDefaultValue()))
             {
-                $arguments = self::insertItemInArray($arguments,$router->getParams(),$i);
+                $arguments = self::insertItemInArray($router->getParams(),$i,$arguments);
             }
             else if(!isset($arguments[$i]) || $arguments[$i]===":optional"){
                 //:optional means the argument has been declared optional but its value of argument has not been set yet
@@ -221,23 +127,78 @@ class Dispatcher {
                 $arguments[$i] = $parameters[$i]->getDefaultValue();
             }
         }
-        else{
-            /*
-            if((!isset($arguments[$i]) || $arguments[$i]===":optional") && !is_null($controllerObj)){  
-                
-                $controller = get_class($controllerObj);
-                $action = is_null($router->getAction())?Config::get('default_action'):$router->getAction();//Action name
-
-                $exc = new MyEasyException("Missing required parameters ....", 400);
-                $exc->setDetails("Please check Config/routes.php file for the requested url "
-                        . "and the parameters in the action method of the respective "
-                        . "controller. Parameter $".$parameters[$i]->getName()." of the method $controller::$action() is required, it "
-                        . "seems you have not passed the suitable argument.");
-                throw ($exc);
-                
-            }
-            */
-        }
         return $arguments;
+    }
+    
+    //method to be called only when route has function
+    private static function executeRouteFunction() {
+        global $router;
+        
+        $function = $router->getFunction();
+        $reflectionFunc = new ReflectionFunction($function);
+        $params = self::synchroniseParameters($reflectionFunc->getParameters(), array_values($params));
+
+        $res = call_user_func_array($function, $params);
+        if(is_null($res)){
+            http_response_code(102);
+            exit();
+        }
+        echo $res;
+    }
+    //method to be called when route specifies 
+    //what Controller Class will be instantiated and what method to invoke
+    private static function executeControllerAction() {
+        global $router,$controllerObj;
+        //senitising all input values via GET or POST methods
+        $params = self::$request->senitizeInputs($router->getParams());  
+        $controller = is_null($router->getController())?"Controller":ucfirst($router->getController())."Controller";
+        $action = is_null($router->getAction())?Config::get('default_action'):$router->getAction();//Action name
+        self::initiateController($controller, $action, $params);
+        
+        $reflection = new ReflectionMethod($controllerObj, $action);
+        $syncParams = self::synchroniseParameters($reflection->getParameters(),\array_values($params));
+
+        ///checking whether parameter exists or not
+        $view = call_user_func_array([$controllerObj,$action], $syncParams);
+        //Controller Action may returns view or json data depending upon whether the controller is api controller or just controller, 
+        //and it is going to print whatever value returned.
+        if(is_null($view)){
+            http_response_code(102);
+            exit();
+            //echo "Null";
+        } 
+        if($view instanceof View){                           
+            //preventing clickjacking as the page can only be displayed in a frame 
+            //on the same origin as the page itself.
+            header('X-Frame-Options: SAMEORIGIN');                     
+        }
+        echo ($view); 
+    }
+    
+    //function to initiate controller
+    private static function initiateController(string $controller,string $action,array $params){
+        global $controllerObj;
+        //*** creating Controller Object ***
+        $controller_class = CONTROLLER_NAMESPACE.$controller;
+        if(!class_exists($controller_class, TRUE)){
+            $exception = new MyEasyException("Sorry, the page you are looking for is not found.",404);
+            $exception->setDetails("Please check whether the request url is registered in route configuration file Config/route.php."
+                    . "##**Or make sure that controller file ".$controller." exists in the directory ".CONTROLLERS_PATH);
+            throw $exception;
+        }
+        $controllerObj = new $controller_class();//instantiate a new controller object
+        $controllerObj->setRequest(self::$request);//very much necessary
+        $controllerObj->setParams($params);//setting parameters is very much necessary
+        //If the controller is not an api controller then check if the user is authorized
+        if($controllerObj instanceof Controller){
+            startSecureSession();
+            //check if method (action) to be invoked is authorised for the user
+            if(!Authorization::isAuthorized($controllerObj,$action)){
+                $msg = "Unauthorize access. You are not allowed to access the page. <a href='".Config::get('host')."/Accounts/login'>Login</a> with "
+                        . "an authorized account. ";
+                $exc = new MyEasyException($msg,403);              
+                throw $exc;
+            }
+        } 
     }
 }
