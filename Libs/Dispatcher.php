@@ -11,6 +11,9 @@ namespace MyEasyPHP\Libs;
  * Dispatcher also synchronize the positions of the arguments w.r.t the parameters of the
  * function
  * @author Nganthoiba
+ * 
+ *  $request        :   HTTP Request object
+ *  $routeParams    :   Route parameters
  */
 use MyEasyPHP\Libs\Request;
 use MyEasyPHP\Libs\Config;
@@ -24,6 +27,7 @@ use ReflectionFunction;
 
 class Dispatcher {    
     public static $request;
+    private static $routeParams;//route parameters
     public static function dispatch(){
         global $router; //Router Object
         //Getting user request information
@@ -33,7 +37,9 @@ class Dispatcher {
         
         $router->setUri($uri);
         $router->extractComponents();//extract Controller and action wrt the request uri from the routes
-         
+        //senitising and filtering vulnerable and risky characters from all input values via GET or POST methods
+        self::$routeParams = self::$request->cleanInputs($router->getParams());  
+        
         if(!in_array(self::$request->getMethod(), $router->getMethods()/*getting HTTP verbs*/)){                    
             $exc = new MyEasyException("Method not allowed.",405);
             $exc->setDetails("Methods allowed for the route '".$router->getRouteUrl()."' :- ".implode(', ',$methods)." but your request method is ".self::$request->getMethod());
@@ -81,7 +87,7 @@ class Dispatcher {
                  * as ['a'=><<some_value1>>,'b'=>'<<some_value2>>'] and passed to the method or function. 
                  * And the variable $args has those parameters.
                  */
-                    $arguments = self::insertItemInArray($router->getParams(),$i,$arguments);
+                    $arguments = self::insertItemInArray(self::$routeParams,$i,$arguments);
                     break;
                 default:                        
                     //putting object as argument in its correct position with respect to parameters
@@ -112,11 +118,10 @@ class Dispatcher {
     
     private static function synchronizeOptionalArguments(array $arguments, array $parameters, int $i/*position*/):array
     {
-        global $router;
         if($parameters[$i]->isDefaultValueAvailable()){
             if(is_array($parameters[$i]->getDefaultValue()))
             {
-                $arguments = self::insertItemInArray($router->getParams(),$i,$arguments);
+                $arguments = self::insertItemInArray(self::$routeParams,$i,$arguments);
             }
             else if(!isset($arguments[$i]) || $arguments[$i]===":optional"){
                 //:optional means the argument has been declared optional but its value of argument has not been set yet
@@ -141,15 +146,13 @@ class Dispatcher {
     //method to be called only when route url has mapped with a function
     private static function executeRouteFunction() {
         global $router;
-        //senitising all input values via GET or POST methods
-        $params = self::$request->cleanInputs($router->getParams());
+                
         $function = $router->getFunction();
         $reflectionFunc = new ReflectionFunction($function);
-        $syncParams = self::synchroniseParameters($reflectionFunc->getParameters(), array_values($params));
+        $syncParams = self::synchroniseParameters($reflectionFunc->getParameters(), array_values(self::$routeParams));
 
         $res = call_user_func_array($function, $syncParams);
         if(is_null($res)){
-            http_response_code(102);
             exit();
         }
         echo $res;
@@ -158,14 +161,11 @@ class Dispatcher {
     //what Controller Class will be instantiated and what method to invoke
     private static function executeControllerAction() {
         global $router,$controllerObj;
-        //senitising all input values via GET or POST methods
-        $params = self::$request->cleanInputs($router->getParams());  
         $controller = is_null($router->getController())?"Controller":ucfirst($router->getController())."Controller";
         $action = is_null($router->getAction())?Config::get('default_action'):$router->getAction();//Action name
-        self::initiateController($controller, $action, $params);
-        
+        self::initiateController($controller, $action);        
         $reflectionMethod = new ReflectionMethod($controllerObj, $action);
-        $syncParams = self::synchroniseParameters($reflectionMethod->getParameters(),\array_values($params));
+        $syncParams = self::synchroniseParameters($reflectionMethod->getParameters(),\array_values(self::$routeParams));
 
         $view = call_user_func_array([$controllerObj,$action], $syncParams);
         //Controller Action may returns view or json data depending upon whether the controller is api controller or just controller, 
@@ -182,7 +182,7 @@ class Dispatcher {
     }
     
     //function to instantiate a controller object
-    private static function initiateController(string $controller,string $action,array $params){
+    private static function initiateController(string $controller,string $action){
         global $controllerObj;
         //*** creating Controller Object ***
         $controller_class = CONTROLLER_NAMESPACE.$controller;
@@ -194,7 +194,7 @@ class Dispatcher {
         }
         $controllerObj = new $controller_class();//instantiate a new controller object
         $controllerObj->setRequest(self::$request);
-        $controllerObj->setParams($params);//setting parameters
+        $controllerObj->setParams(self::$routeParams);//setting parameters
         //If the controller is not an api controller then check if the user is authorized
         if($controllerObj instanceof Controller){
             startSecureSession();
