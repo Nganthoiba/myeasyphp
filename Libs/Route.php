@@ -3,10 +3,13 @@ declare(strict_types=1);
 namespace MyEasyPHP\Libs;
 
 /**
- * Description of Route
- * Route is a class which maps the HTTP request url with the controller-action or with a
- * function. It determines what function or controller-action to be called or invoked, when 
+ * Description of Route:
+ * 
+ * Route is a class responsible for mapping the incoming HTTP request url to the specified 
+ * MVC controller-action or with a function. 
+ * It determines what function or controller-action to be called or invoked, when 
  * a user requests a url. A list of such Route objects are stored in the Router class.
+ * 
  * @author Nganthoiba
  */
 class Route {

@@ -4,12 +4,16 @@ namespace MyEasyPHP\Libs;
 
 /**
  * Description of Dispatcher
- * The main function of Dispatcher class is to grab the url from the client request, 
- * then find out the suitable controller name and action name from the list 
- * of routes with he help of router, then execute the action of the controller.
+ * The main function of Dispatcher class is to get the controller, 
+ * action and the parameters with the help of router, when the router found that 
+ * HTTP request's URL matches any of the registered route patterns in the route table 
+ * then the router forwards the request to the appropriate handler (which can be 
+ * Controller and Action or just a function) for that request. 
  * 
- * Dispatcher also synchronize the positions of the arguments w.r.t the parameters of the
- * function
+ * Dispatcher also synchronizes the positions of the arguments w.r.t the parameters 
+ * of the function or action of the controller, because dispatch will call that function 
+ * or action of the controller by passing those arguments.
+ * 
  * @author Nganthoiba
  * 
  *  $request        :   HTTP Request object

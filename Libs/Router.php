@@ -5,21 +5,21 @@ namespace MyEasyPHP\Libs;
  * How do MVC routers work
  * A MVC Router class inspects the URL of an HTTP request and attempts to match individual URL 
  * components to a Controller and a method defined in that controller, passing along any arguments
- * to the method 
- * defined.
+ * to the method defined.
+ * 
  * Reference: https://www.codediesel.com/php/how-do-mvc-routers-work/
  * 
- * The purpose of this class is to maintain set of Routes, each route maps the URL of an HTTP 
+ * The purpose of this class is to maintain set of Routes called route table, each route maps the URL of an HTTP 
  * request with a function or with controller and action. It also means a url can determine, 
  * what function to execute and which controller and action to execute. A router has a collection 
  * of such route objects. 
  * 
- * Router also checks whether the url of an HTTP request is available in 
- * the set of routes or not, if found router will get either the function or Controller name 
+ * Router also checks whether the url of an HTTP request is available or if there is any match found in 
+ * the set of routes or not, if found, router will get either the function or Controller name 
  * and method name/Action name, and the parameters which will be passed as arguments to the function or method.
  * Otherwise if not found it breaks down thr url requested by user into three segments:-
  * Controller, Action, and parameters. 
- * 
+ *  
  * Router is used by Dispatcher module to get the controller name and method name of a URL.
  * #Note: Routes object is a collection of  objects of class 'Route'
  
@@ -73,7 +73,7 @@ class Router {
         $this->group_name = "";
     }
     
-    /* The methods adds each route defined to the $routes array */
+    /* The methods adds each route to the $routes array */
     //callable: means $parameters can be just a function
     public function addRoute($url, /*callable*/ $parameters, $methods=[]/*HTTP Verbs in array*/){
         if(!is_null($this->group_name) && $this->group_name!== ""){
