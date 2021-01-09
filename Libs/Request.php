@@ -77,8 +77,8 @@ class Request {
         return $this->cleanInputs($data);
     }
     
-    //method to check if request method is allowed
-    public function isMethod($verbs = array()){
+    //method to check if request method is same as the argument passed
+    public function isMethod($verbs = array()): bool{
         if(is_string($verbs)){
             return (trim($verbs) === $this->method);
         }
@@ -88,6 +88,23 @@ class Request {
         return false;
     }
     
+    public function isPost():bool{
+        return ($this->method === "POST");
+    }
+    public function isGet():bool{
+        return ($this->method === "GET");
+    }
+    public function isPut():bool{
+        return ($this->method === "PUT");
+    }
+    public function isPatch():bool{
+        return ($this->method === "PATCH");
+    }
+    public function isDelete():bool{
+        return ($this->method === "DELETE");
+    }
+
+
     public function getMethod(){
         return $this->method;
     }
@@ -95,11 +112,7 @@ class Request {
     public function getSourceIP(){
         return $this->source;
     }
-    
-//    public function getRequestHeaders(){
-//        return apache_request_headers();
-//    }
-    
+        
     function getRequestHeaders() {
         $headers = array();
         $headers['Content-Type'] = $_SERVER['CONTENT_TYPE']??"";
@@ -110,6 +123,7 @@ class Request {
             $header = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
             $headers[$header] = $value;            
         }
+        //return apache_request_headers();
         return $headers;
     }
     //returns domain
@@ -145,8 +159,9 @@ class Request {
         }
         return $data;
     }
-    
-    /* Method for recursively removing risky elements to avoid Cross Site Scripting (xss)*/
+    /* Method for recursively senitizing risky elements and 
+     * thereby converting predefined html characters to HTML entities to 
+     * avoid Cross Site Scripting (xss)*/
     public function cleanInputs($data) {
         $clean_input = Array();
         if (is_array($data)) {
