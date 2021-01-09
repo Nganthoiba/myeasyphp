@@ -32,7 +32,7 @@ class Request {
         }
         $this->header = $this->getRequestHeaders();
         $this->content_type = $_SERVER['CONTENT_TYPE']??"";//get_data_from_array("Content-Type",$this->header);
-        $this->source = get_client_ip();
+        $this->source = get_client_ip();//defined in special_functions.php
         $this->device = filter_input(INPUT_SERVER,'HTTP_USER_AGENT');
     }
     //method to get data sent from client
@@ -74,8 +74,7 @@ class Request {
                 break;
         }
         //filtering and senitizing whatever input data is accepted
-        $data = $this->senitizeInputs($data);
-        return $data;
+        return $this->cleanInputs($data);
     }
     
     //method to check if request method is allowed
@@ -124,6 +123,10 @@ class Request {
     public function getDevice(){
         return $this->device;
     }
+    
+    /*
+     * Method for removing special characters
+     */
     public function filterSpecialChars(array $data=array(),string $method = 'GET'){
         if(sizeof($data) == 0){
             return $data;
@@ -133,29 +136,30 @@ class Request {
             if(is_array($value)){
                 $data[$key] = $this->filterSpecialChars($value,$method);
             }
-            else{
-                if(!is_numeric($key)){                    
-                    $type = $method=="POST"?INPUT_POST:INPUT_GET;
-                    $string = filter_input($type, $key, FILTER_SANITIZE_SPECIAL_CHARS);                  
-                    //removing special characters
-                    $data[$key] = $string;//preg_replace('/[^A-Za-z0-9]/', '', $string);
-                }            
+            else if(!is_numeric($key)){                    
+                $type = ($method=="POST")?INPUT_POST:INPUT_GET;
+                $string = filter_input($type, $key, FILTER_SANITIZE_SPECIAL_CHARS);                  
+                //removing special characters
+                $data[$key] = $string;            
             }
         }
         return $data;
     }
-    public function senitizeInputs($data) {
+    
+    /* Method for recursively removing risky elements to avoid Cross Site Scripting (xss)*/
+    public function cleanInputs($data) {
         $clean_input = Array();
         if (is_array($data)) {
             foreach ($data as $k => $v) {
-                $clean_input[$k] = $this->senitizeInputs($v);
+                $clean_input[$k] = $this->cleanInputs($v);
             }
         } else {
             if(is_null($data)){
                 $clean_input = "";
             }
-            else{                
-                $clean_input = trim(htmlspecialchars(strip_tags(stripslashes("".$data))));                
+            else{   
+                $string = filter_var("".$data, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+                $clean_input = trim(htmlspecialchars(strip_tags(stripslashes($string)),ENT_QUOTES, 'UTF-8'));           
             }
         }
         return $clean_input;

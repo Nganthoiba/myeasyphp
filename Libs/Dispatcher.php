@@ -14,10 +14,8 @@ namespace MyEasyPHP\Libs;
  */
 use MyEasyPHP\Libs\Request;
 use MyEasyPHP\Libs\Config;
-use Exception;
 use MyEasyPHP\Libs\MyEasyException;
 use MyEasyPHP\Libs\Authorization;
-use MyEasyPHP\Libs\ApiController;
 use MyEasyPHP\Libs\Model;
 use MyEasyPHP\Libs\EasyEntity;
 
@@ -41,11 +39,12 @@ class Dispatcher {
             $exc->setDetails("Methods allowed for the route '".$router->getRouteUrl()."' :- ".implode(', ',$methods)." but your request method is ".self::$request->getMethod());
             throw $exc;
         }
-        //If router is only a function
+        //If route is mapped to only a function
         if($router->isOnlyFunction()){
             self::executeRouteFunction();
         }
-        else{            
+        else{ 
+            //If route is mapped to only a Controller and action
             self::executeControllerAction();
         }
     }
@@ -54,12 +53,10 @@ class Dispatcher {
     {   
         global $router;
         /*
-         * $parameters is the array of parameters acceptable by the action method of the controller
+         * $parameters are those defined in the action method of the controller
          * and the $arguments is the array of arguments that will be passed to that action method
          */
-        //if number of arguments is more than the number of parameters to be accepted by the 
-        //action method, then synchronisation must be done according to arguments
-        $limit = sizeof($arguments)>sizeof($parameters)?sizeof($arguments):sizeof($parameters);
+        $limit = sizeof($parameters);
         
         for($i = 0; $i < $limit; $i++){  
             //break the iteration if the function or method is not accepting 
@@ -127,22 +124,25 @@ class Dispatcher {
                 $arguments[$i] = $parameters[$i]->getDefaultValue();
             }
         }
+        
         else{
             if(!isset($arguments[$i]) || $arguments[$i]===":optional"){
-                $exc = new MyEasyException("Missing required parameters ...", 400);
-                $exc->setDetails("Please check Config/routes.php file for the requested url "
-                        . "and please make sure you have also supplied the sufficient parameters required.");
+                $exc = new MyEasyException("Missing required arguments ...", 400);
+                $exc->setDetails("Please check route configuration Config/routes.php file for the requested url "
+                        . "and please also make sure you have supplied the sufficient arguments "
+                        . "required for the function or method of the controller class.");
                 throw ($exc);
             }
         }
+        
         return $arguments;
     }
     
-    //method to be called only when route has function
+    //method to be called only when route url has mapped with a function
     private static function executeRouteFunction() {
         global $router;
         //senitising all input values via GET or POST methods
-        $params = self::$request->senitizeInputs($router->getParams());
+        $params = self::$request->cleanInputs($router->getParams());
         $function = $router->getFunction();
         $reflectionFunc = new ReflectionFunction($function);
         $syncParams = self::synchroniseParameters($reflectionFunc->getParameters(), array_values($params));
@@ -159,21 +159,19 @@ class Dispatcher {
     private static function executeControllerAction() {
         global $router,$controllerObj;
         //senitising all input values via GET or POST methods
-        $params = self::$request->senitizeInputs($router->getParams());  
+        $params = self::$request->cleanInputs($router->getParams());  
         $controller = is_null($router->getController())?"Controller":ucfirst($router->getController())."Controller";
         $action = is_null($router->getAction())?Config::get('default_action'):$router->getAction();//Action name
         self::initiateController($controller, $action, $params);
         
-        $reflection = new ReflectionMethod($controllerObj, $action);
-        $syncParams = self::synchroniseParameters($reflection->getParameters(),\array_values($params));
+        $reflectionMethod = new ReflectionMethod($controllerObj, $action);
+        $syncParams = self::synchroniseParameters($reflectionMethod->getParameters(),\array_values($params));
 
         $view = call_user_func_array([$controllerObj,$action], $syncParams);
         //Controller Action may returns view or json data depending upon whether the controller is api controller or just controller, 
         //and it is going to print whatever value returned.
         if(is_null($view)){
-            http_response_code(102);
             exit();
-            //echo "Null";
         } 
         if($view instanceof View){                           
             //preventing clickjacking as the page can only be displayed in a frame 
@@ -183,7 +181,7 @@ class Dispatcher {
         echo ($view); 
     }
     
-    //function to initiate controller
+    //function to instantiate a controller object
     private static function initiateController(string $controller,string $action,array $params){
         global $controllerObj;
         //*** creating Controller Object ***
@@ -195,8 +193,8 @@ class Dispatcher {
             throw $exception;
         }
         $controllerObj = new $controller_class();//instantiate a new controller object
-        $controllerObj->setRequest(self::$request);//very much necessary
-        $controllerObj->setParams($params);//setting parameters is very much necessary
+        $controllerObj->setRequest(self::$request);
+        $controllerObj->setParams($params);//setting parameters
         //If the controller is not an api controller then check if the user is authorized
         if($controllerObj instanceof Controller){
             startSecureSession();
