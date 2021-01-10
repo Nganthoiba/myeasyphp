@@ -610,7 +610,7 @@ class EasyQueryBuilder {
     /**** Unset hidden fields of an entity, we have to filter those hidden fields from showing
      * to users. We don't want to disclose sensitive information like password, security stamps
      * even if they are encrypted.  ***/
-    private function unsetHiddenFields($entity,array $retrievedData): EasyEntity{
+    private function unsetHiddenFields($entity,array $retrievedData){
         if($entity instanceof EasyEntity){
             foreach ($entity->getHiddenFields() as $field){
                 if(!isset($retrievedData[$field])){
