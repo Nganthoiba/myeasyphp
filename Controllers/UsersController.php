@@ -23,13 +23,15 @@ class UsersController extends ApiController{
     
     //Overriding
     protected function GET($id = null) {
+        $users = new Users();
+        //$users->clearHiddenFields();
         if(is_null($id)){
             $this->response->status = true;
             $this->response->status_code = 200;
-            $this->response->data = $this->em->read(new Users())->toList();            
+            $this->response->data = $this->em->read($users)->toList();            
         }
         else{            
-            $this->response->data = $this->em->find(new Users(), $id);
+            $this->response->data = $this->em->find($users, $id);
             $this->response->status = is_null($this->response->data)?false:true;
             $this->response->status_code = is_null($this->response->data)?404:200;
             $this->response->msg = is_null($this->response->data)?"Person is not found.":"";
