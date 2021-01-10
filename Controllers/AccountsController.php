@@ -100,10 +100,18 @@ class AccountsController extends Controller{
         if($this->response->status){
             //if model is valid
             $this->em = new EntityManager();
-            $user = $this->em->read(new Users())->where([
+            $entity = new Users();
+            /*
+             * $entity->clearHiddenFields();
+             * Hidden fields/attributes have to be cleared,so that we can retrieve 
+             * password, and security timestamp which are very much required for 
+             * authentication otherwise we won't be able to retrieve those credentials.
+             */
+            $entity->clearHiddenFields();
+            
+            $user = $this->em->read($entity)->where([
                 "email"=>["=",$loginViewModel->Email]
             ])->getFirst();
-            
             
             if(is_null($user)){
                 $this->response->set([

@@ -55,11 +55,7 @@ $router->group("/Student",function(Router $router){
     ],'GET|POST');
 });
 
-
 //an example for optional parameter
-$router->addRoute("/sum/{a}/{b:optional}",function (float $a, $b){
-    return $a+$b;
-});
 $router->addRoute("/parameters/{a}/{b}/{c}/{d}", [
     "Controller" => "Default",
     "Action" => "getParameters"

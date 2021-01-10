@@ -37,9 +37,12 @@ class EasyEntityManager {
     /********* START METHODS FOR CRUD OPERATIONS ********/
     
     //Read records by passing entity object
-    public function read(EasyEntity $entity) : EasyQueryBuilder{
+    public function read(EasyEntity $entity, array $fields=array()) : EasyQueryBuilder{
         self::$queryBuilder->setEntityClassName(get_class($entity)); 
-        return self::$queryBuilder->select()->from($entity->getTable());
+        if(empty($fields)){
+            $fields = $entity->getReadableFields();
+        }
+        return self::$queryBuilder->select($fields)->from($entity->getTable());
     }
     //Entity Manager to read data from a table/relation
     public function readTable(string $table_name,$fields=[]): EasyQueryBuilder{
@@ -253,7 +256,7 @@ class EasyEntityManager {
             throw new Exception(get_class($entity)." is not a valid entity class, please make sure "
                     . "that you have set table name and primary key attribute of this entity.",500);
         }
-        $stmt = self::$queryBuilder->select()->from($entity->getTable())->where([
+        $stmt = self::$queryBuilder->select($entity->getReadableFields())->from($entity->getTable())->where([
             $entity->getKey() => ['=',$id]
         ])->execute();
         if($stmt->rowCount() == 0){
@@ -262,6 +265,12 @@ class EasyEntityManager {
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
         foreach ($res as $col_name=>$val){
             $entity->{$col_name} = $val;
+        }
+        /***Removing hidden fields***/
+        foreach ($entity->getHiddenFields() as $field){
+            if(!isset($res[$field])){
+                unset($entity->{$field});
+            }
         }
         return $entity;
     }

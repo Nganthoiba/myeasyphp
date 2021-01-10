@@ -1,11 +1,4 @@
 <?php
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace MyEasyPHP\Models\Entities;
 
 /**
@@ -31,6 +24,9 @@ class Users extends Entity{
             $profile_image,  
             $aadhaar,        
             $update_by;
+    protected $hiddenFields = [
+        "user_password","security_stamp",'phone_number'
+    ];
     public function __construct() {
         parent::__construct();
         $this->setKey("user_id");
@@ -44,5 +40,8 @@ class Users extends Entity{
         //user password must be in plain text at the time of submission. The password is 
         //then encrypted with security stam as below:
         $this->user_password = hash('sha256', $this->user_password.$this->security_stamp);
+    }    
+    public function setModelData(array $data) {
+        $this->setEntityData($data);
     }
 }

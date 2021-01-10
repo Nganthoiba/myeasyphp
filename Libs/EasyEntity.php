@@ -32,6 +32,18 @@ class EasyEntity extends Model{
     private $key;//primary key
     private $queryBuilder;
     private $response;
+    /*
+     * $hiddenFields is an array or set of attributes/fields in the database table which will be excluded
+     * from retrieving records from the database table. Empty array will mean that all records 
+     * for all the fields are to be retrieved, and no fields will be excluded.
+     * 
+     * This is important because when we don't want to disclose data for some specific attributes/fields/columns 
+     * for example, password field and other security related informations, we can hide/exclude those 
+     * attributes/columns/fields from showing to end users, by setting those fields in the variable $hiddenFields 
+     * in the form of array.
+     */
+    protected $hiddenFields = [];
+    
     public function __construct() {
         /* Entity name should be same as the table name that exists in database */
         $class_name = get_class($this);//class name contains namespaces
@@ -128,9 +140,12 @@ class EasyEntity extends Model{
         return $this->response;
     }
     //to read record
-    public function read($columns = array()): EasyQueryBuilder{
+    public function read($fields = array()): EasyQueryBuilder{
         $this->queryBuilder->setEntityClassName(get_class($this));
-        return $this->queryBuilder->select($columns)->from($this->table_name);
+        if((is_array($fields) && empty($fields)) || (is_string($fields) && trim($fields)==="")){
+            $fields = $this->getReadableFields();
+        }
+        return $this->queryBuilder->select($fields)->from($this->table_name);
     }
     //to update and save record
     public function save(): Response{
@@ -231,7 +246,7 @@ class EasyEntity extends Model{
             throw new Exception(get_class($this)." is not a valid entity class, please make sure "
                     . "that you have set table name and primary key attribute of this entity.",500);
         }
-        $stmt = $this->queryBuilder->select()->from($this->table_name)->where([
+        $stmt = $this->queryBuilder->select($this->getReadableFields())->from($this->table_name)->where([
             $this->key => ['=',$id]
         ])->execute();
         if($stmt->rowCount()==0){
@@ -240,6 +255,9 @@ class EasyEntity extends Model{
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
         foreach ($res as $col_name=>$val){
             $this->{$col_name} = $val;
+        }
+        foreach($this->hiddenFields as $field){
+            unset($this->{$field});
         }
         return $this;        
     }
@@ -251,7 +269,6 @@ class EasyEntity extends Model{
                 ->from($this->getTable())
                 ->where($cond)
                 ->execute();
-        //$stmt = $this->read(" max(".$column.") as max_val")->execute();
         if($stmt->rowCount() == 0){
             return 0;
         }
@@ -295,5 +312,31 @@ class EasyEntity extends Model{
         if(property_exists($this, $name)){
             $this->{$name} = $value;
         }
+    }
+    
+    /*
+     * Method to get only readable fields after excluding some hidden fields.
+     * Hidden Fields: In some case, when we don't want to disclose data for some 
+     * fields, we can set those attributes/fields/columns in the variable $hiddenFields
+     * as an array.
+     * 
+     * Readable Fields: are those whose values are allowed for retrieving. 
+     */
+    public function getReadableFields(){
+        $fields = array_keys($this->toArray());
+        $readableFields = array_diff($fields, $this->hiddenFields);
+        return $readableFields;
+    }
+    /*
+     *
+     * Method to get hidden fields     */
+    public function getHiddenFields():array{
+        return $this->hiddenFields;
+    }
+    /*
+     * Method to empty hidden fields to show all fields when records are retrieved.
+     */
+    public function clearHiddenFields():void{
+        $this->hiddenFields = [];
     }
 }

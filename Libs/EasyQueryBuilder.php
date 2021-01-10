@@ -158,7 +158,7 @@ class EasyQueryBuilder {
     
     //method to get/read/load all data after executing the query
     //returns either null or set of data
-    public function get(){
+    public function getAll(){
         $stmt = $this->execute();
         if($stmt !== null){
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);//result
@@ -183,6 +183,7 @@ class EasyQueryBuilder {
             foreach($row as $col_name=>$value){
                 $temp_obj->{$col_name} = $value;
             }
+            $temp_obj = $this->unsetHiddenFields($temp_obj,$row);
             return $temp_obj;
         }
         return null;
@@ -204,6 +205,7 @@ class EasyQueryBuilder {
             foreach($row as $col_name=>$value){
                 $temp_obj->{$col_name} = $value;
             }
+            $temp_obj = $this->unsetHiddenFields($temp_obj,$row);
             return $temp_obj;
         }
         return null;
@@ -233,6 +235,7 @@ class EasyQueryBuilder {
                 foreach($row as $col_name=>$value){
                     $temp_obj->{$col_name} = $value;
                 }
+                $temp_obj = $this->unsetHiddenFields($temp_obj,$row);
                 array_push($entity_array,$temp_obj);
             }
             return $entity_array;
@@ -604,5 +607,17 @@ class EasyQueryBuilder {
     public function getConnection(){
         return self::$conn;
     }    
-    
+    /**** Unset hidden fields of an entity, we have to filter those hidden fields from showing
+     * to users. We don't want to disclose sensitive information like password, security stamps
+     * even if they are encrypted.  ***/
+    private function unsetHiddenFields($entity,array $retrievedData): EasyEntity{
+        if($entity instanceof EasyEntity){
+            foreach ($entity->getHiddenFields() as $field){
+                if(!isset($retrievedData[$field])){
+                    unset($entity->{$field});
+                }
+            }
+        }
+        return $entity;
+    }
 }
