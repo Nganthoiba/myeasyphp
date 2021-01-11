@@ -51,7 +51,7 @@ class DefaultController extends Controller{
         echo "</pre>";
         /**/
         echo "a = ".$a." and b = ".$b;
-        
+        echo "Base class: ".basename(get_class($model));
         return "<br/>Test Model";
     }
     
