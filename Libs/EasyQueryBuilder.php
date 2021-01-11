@@ -258,9 +258,9 @@ class EasyQueryBuilder {
     }
     
     //method for delete clause
-    public function delete():EasyQueryBuilder{
+    public function delete($table_name=""):EasyQueryBuilder{
         $this->values = [];//clearing existing values, because new values will be set by where() method
-        $this->qry = "delete ";
+        $this->qry = ($table_name==="")?"delete ":"delete from $table_name ";
         return $this;
     }
     
