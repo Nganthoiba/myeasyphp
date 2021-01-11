@@ -122,7 +122,7 @@ class EasyEntity extends Model{
                     $this->{$this->getKey()} = $this->queryBuilder::$conn->lastInsertId();
                 }
                 $this->response->set([
-                    "msg" => "Record saved successfully.",
+                    "msg" => "Record created successfully.",
                     "status"=>true,
                     "status_code"=>200,
                     "data"=>$this
@@ -148,7 +148,23 @@ class EasyEntity extends Model{
         return $this->queryBuilder->select($fields)->from($this->table_name);
     }
     //to update and save record
-    public function save(): Response{
+    //Method save will work for both insertion if record does not exist and 
+    //updation if record already exist
+    
+    public function save():Response{
+        $temp = $this->toArray();//current data to be saved will be lost and replaced
+        //if entity/record already exists, so we are temporarily storing current data
+        if(is_null($this->find($this->{$this->key}))){
+            //go for adding/creating new record
+            return $this->add();
+        }
+        //record found so set the new record
+        $this->setEntityData($temp);
+        unset($temp);
+        return $this->update();
+    }
+    
+    public function update(): Response{
         if(!$this->isValidEntity()) {
             $this->response->set([
                 "msg" => "Invalid entity: either table name or key is not set.",
@@ -160,11 +176,11 @@ class EasyEntity extends Model{
             try{
                 $this->removeUndefinedProperty();
                 $data = ($this->toArray());
-                unset($data[$this->key]);//key will not be updated
                 $cond = [
                     //primary key attribute = value
                     $this->key => ['=',$this->{$this->key}]
                 ];
+                unset($data[$this->key]);//key will not be updated
                 $stmt = $this->queryBuilder
                         ->update($this->table_name)
                         ->set($data)
@@ -175,7 +191,7 @@ class EasyEntity extends Model{
                         "msg" => "Record updated successfully.",
                         "status"=>true,
                         "status_code"=>200,
-                        "data"=>$this
+                        "data"=>$data
                     ]);
                 $this->queryBuilder->clear();
             }catch(Exception $e){
