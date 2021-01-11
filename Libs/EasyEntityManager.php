@@ -9,8 +9,9 @@ namespace MyEasyPHP\Libs;
  * 
  *      add     :-  for (C)creating/inserting a new (entity)record into a database table, 
  *      read    :-  for (R)reading/retrieving records form table, 
- *      save    :-  for (U)updating an (entity) existing record and 
+ *      update  :-  for (U)updating an (entity) existing record and 
  *      remove  :-  for (D)deleting a record(entity) from table
+ *      save    :-  for both insertion if record does not exist and update if record already exist
  * 
  *      All these methods has return type of Response class, except read method returns an
  *      object of EasyQueryBuilder class.
@@ -92,7 +93,7 @@ class EasyEntityManager {
         return $this->response;
     }
     
-    //terminology save will mean both insertion if record does not exist and updation if record already exist
+    //Method save will work for both insertion if record does not exist and updation if record already exist
     public function save(EasyEntity $entity = null): Response{
         if(is_null($entity) || !$entity->isValidEntity()) {
             $this->response->set([
@@ -224,8 +225,7 @@ class EasyEntityManager {
                     $entity->getKey() => ['=',$entity->{$entity->getKey()}]
                 ];
                 $stmt = self::$queryBuilder
-                        ->delete()
-                        ->from($entity->getTable())
+                        ->delete($entity->getTable())
                         ->where($cond)
                         ->execute();
                 $this->response->set([
