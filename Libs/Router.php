@@ -21,7 +21,7 @@ namespace MyEasyPHP\Libs;
  * Controller, Action, and parameters. 
  *  
  * Router is used by Dispatcher module to get the controller name and method name of a URL.
- * #Note: Routes object is a collection of  objects of class 'Route'
+ * #Note: Router object is a collection of  objects of class 'Route'
  
  * Examples: * 
  * 
@@ -61,7 +61,7 @@ class Router {
     protected $group_name;
 
 
-    public function __construct($uri="") {
+    public function __construct() {
         //Setting default values
         $this->routes = [];
         $this->controller = Config::get('default_controller');
@@ -86,11 +86,10 @@ class Router {
     
     //function for Grouping Routes
     public function group(string $group_name="", callable $func /*function*/){ 
-        global $router;
         $old_group_name = $this->group_name;
         if(!is_null($group_name) && $group_name!== ""){
             $this->group_name = trim($this->group_name,'/').'/'.trim($group_name,'/');
-            call_user_func($func,$router);
+            call_user_func($func,$this);
         }
         //resetting group name to the earlier one, because group functions can be nested
         //that is one group inside another group.
