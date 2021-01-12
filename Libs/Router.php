@@ -106,9 +106,8 @@ class Router {
         return $this->uri;
     }
     /* method to set uri */
-    public function setUri($uri):void{
-        $this->uri = (is_null($uri) || trim($uri)=="")?(filter_input(INPUT_GET, "uri", FILTER_SANITIZE_SPECIAL_CHARS)):trim($uri);
-        //$this->uri = rtrim($this->uri,'/');        
+    public function setUri($uri = null):void{
+        $this->uri = (is_null($uri) || trim($uri)=="")?(filter_input(INPUT_GET, "uri", FILTER_SANITIZE_SPECIAL_CHARS)):trim($uri);               
     }
     public function getController():string{
         return $this->controller;

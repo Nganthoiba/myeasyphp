@@ -31,7 +31,7 @@ class Request {
             }
         }
         $this->header = $this->getRequestHeaders();
-        $this->content_type = $_SERVER['CONTENT_TYPE']??"";//get_data_from_array("Content-Type",$this->header);
+        $this->content_type = $_SERVER['CONTENT_TYPE']??"";
         $this->source = get_client_ip();//defined in special_functions.php
         $this->device = filter_input(INPUT_SERVER,'HTTP_USER_AGENT');
     }
