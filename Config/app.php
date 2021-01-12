@@ -42,7 +42,7 @@ Config::set('DB_CONFIG', [
     "DB_DRIVER"=>"pgsql", //Database driver
     "DB_NAME" => "myeasyphp",
     "DB_USERNAME" => "postgres",
-    "DB_PASSWORD" => "postgres",//postgres
+    "DB_PASSWORD" => "postgresew",//postgres
     "PERSISTENT" => false
 ]);
 

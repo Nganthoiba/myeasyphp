@@ -16,7 +16,7 @@ class Database {
         self::$conn_error = "";
         /***** Retrieving Database Configurations *****/
         if($db_config == null){
-            $db_config = Config::get("DB_CONFIG");
+            $db_config = $_ENV;//Config::get("DB_CONFIG");
         }
         self::$db_server = $db_driver = $db_config["DB_DRIVER"];
         $db_host = $db_config["DB_HOST"];
