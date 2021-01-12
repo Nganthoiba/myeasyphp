@@ -1,20 +1,23 @@
 <?php
 require_once dirname(__DIR__) . '../Config/path.php';//path configuration
 require_once VENDOR_PATH. 'autoload.php';
-require_once CONFIG_PATH. 'app.php';// Application configuration file
 require_once LIBS_PATH.'global_variables.php';//loading global variables
 require_once LIBS_PATH. 'special_functions.php';//loading global functions
 use MyEasyPHP\Libs\Dispatcher;
 use MyEasyPHP\Libs\Config;
 use MyEasyPHP\Libs\MyEasyException;
-
+//Load ENV parser
+use Dotenv\Dotenv;
 set_error_handler("handleMyEasyPHPError");
 /*
  * handleMyEasyPHPError is a php function defined in file special_functions.php 
  */
-try{   
-    require_once CONFIG_PATH. 'routes.php';//Route Configuration file
-    date_default_timezone_set(Config::get('default_time_zone'));
+try{
+    $env = Dotenv::createUnsafeImmutable(ROOT);
+    $env->load();
+    require_once CONFIG_PATH. 'app.php';// Application configuration file
+    require_once CONFIG_PATH. 'routes.php';//Route Configuration file 
+    date_default_timezone_set(Config::get('default_time_zone'));    
     Dispatcher::dispatch();
 }
 catch(Error $error){

@@ -45,6 +45,8 @@ final class Versions
   'doctrine/lexer' => '1.2.1@e864bbf5904cb8f5bb334f99209b48018522f042',
   'doctrine/orm' => '2.8.1@242cf1a33df1b8bc5e1b86c3ebd01db07851c833',
   'doctrine/persistence' => '2.1.0@9899c16934053880876b920a3b8b02ed2337ac1d',
+  'graham-campbell/result-type' => 'v1.0.1@7e279d2cd5d7fbb156ce46daada972355cea27bb',
+  'phpoption/phpoption' => '1.7.5@994ecccd8f3283ecf5ac33254543eb0ac946d525',
   'psr/container' => '1.0.0@b7ce3b176482dbbc1245ebf52b181af44c2cf55f',
   'symfony/console' => 'v5.2.1@47c02526c532fb381374dab26df05e7313978976',
   'symfony/polyfill-ctype' => 'v1.20.0@f4ba089a5b6366e453971d3aad5fe8e897b37f41',
@@ -55,7 +57,8 @@ final class Versions
   'symfony/polyfill-php80' => 'v1.20.0@e70aa8b064c5b72d3df2abd5ab1e90464ad009de',
   'symfony/service-contracts' => 'v2.2.0@d15da7ba4957ffb8f1747218be9e1a121fd298a1',
   'symfony/string' => 'v5.2.1@5bd67751d2e3f7d6f770c9154b8fbcb2aa05f7ed',
-  'nganthoiba/myeasyphp' => 'dev-master@f4a80f0d784c6fa51c9f00298e279494c8d600a2',
+  'vlucas/phpdotenv' => 'v5.2.0@fba64139db67123c7a57072e5f8d3db10d160b66',
+  'nganthoiba/myeasyphp' => 'dev-master@d1661af886592cb1332cba194e8d183f50040fec',
 );
 
     private function __construct()

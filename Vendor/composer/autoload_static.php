@@ -32,14 +32,20 @@ class ComposerStaticInit4fffb8d3e718ead3f470145b19ac5461
         'P' => 
         array (
             'Psr\\Container\\' => 14,
+            'PhpOption\\' => 10,
             'PackageVersions\\' => 16,
         ),
         'M' => 
         array (
             'MyEasyPHP\\' => 10,
         ),
+        'G' => 
+        array (
+            'GrahamCampbell\\ResultType\\' => 26,
+        ),
         'D' => 
         array (
+            'Dotenv\\' => 7,
             'Doctrine\\Persistence\\' => 21,
             'Doctrine\\ORM\\' => 13,
             'Doctrine\\Instantiator\\' => 22,
@@ -94,6 +100,10 @@ class ComposerStaticInit4fffb8d3e718ead3f470145b19ac5461
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
+        'PhpOption\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption',
+        ),
         'PackageVersions\\' => 
         array (
             0 => __DIR__ . '/..' . '/composer/package-versions-deprecated/src/PackageVersions',
@@ -101,6 +111,14 @@ class ComposerStaticInit4fffb8d3e718ead3f470145b19ac5461
         'MyEasyPHP\\' => 
         array (
             0 => __DIR__ . '/../..' . '/',
+        ),
+        'GrahamCampbell\\ResultType\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/graham-campbell/result-type/src',
+        ),
+        'Dotenv\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/vlucas/phpdotenv/src',
         ),
         'Doctrine\\Persistence\\' => 
         array (

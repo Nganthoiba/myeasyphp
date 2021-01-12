@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => '0cb55f9844d8de058d7ce55eb5609748cda74b56',
+    'reference' => 'd1661af886592cb1332cba194e8d183f50040fec',
     'name' => 'nganthoiba/myeasyphp',
   ),
   'versions' => 
@@ -119,6 +119,15 @@
       ),
       'reference' => '9899c16934053880876b920a3b8b02ed2337ac1d',
     ),
+    'graham-campbell/result-type' => 
+    array (
+      'pretty_version' => 'v1.0.1',
+      'version' => '1.0.1.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '7e279d2cd5d7fbb156ce46daada972355cea27bb',
+    ),
     'nganthoiba/myeasyphp' => 
     array (
       'pretty_version' => 'dev-master',
@@ -126,7 +135,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => '0cb55f9844d8de058d7ce55eb5609748cda74b56',
+      'reference' => 'd1661af886592cb1332cba194e8d183f50040fec',
     ),
     'ocramius/package-versions' => 
     array (
@@ -134,6 +143,15 @@
       array (
         0 => '1.11.99',
       ),
+    ),
+    'phpoption/phpoption' => 
+    array (
+      'pretty_version' => '1.7.5',
+      'version' => '1.7.5.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '994ecccd8f3283ecf5ac33254543eb0ac946d525',
     ),
     'psr/container' => 
     array (
@@ -231,6 +249,15 @@
       array (
       ),
       'reference' => '5bd67751d2e3f7d6f770c9154b8fbcb2aa05f7ed',
+    ),
+    'vlucas/phpdotenv' => 
+    array (
+      'pretty_version' => 'v5.2.0',
+      'version' => '5.2.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'fba64139db67123c7a57072e5f8d3db10d160b66',
     ),
   ),
 );
