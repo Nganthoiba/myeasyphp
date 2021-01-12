@@ -1,6 +1,6 @@
 # myeasyphp
 This is a php framework developed by myself, just in the interest of developing a very light weighted, an easiest, fully secured PHP framework.
-This framework follows MVC(Model View Controller) architecture. I have also developed an ORM also for used in this framework.
+This framework follows MVC(Model View Controller) architecture. Doctrine ORM has been introduced in this framework.
 This framework is not complete yet, but the whole thing that can be in a framework is under development, I am very closely working on it.
 
 Users' guideline will be published very soon.
