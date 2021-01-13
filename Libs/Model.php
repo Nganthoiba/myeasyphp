@@ -112,19 +112,7 @@ abstract class Model {
     }
     public function __set($key, $value) {
         if(property_exists($this, $key)){
-            //$this->{$key} = $value;
-            $type = gettype($this->{$key});
-            switch($type){
-                case 'int':
-                case 'float':
-                    $this->{$key} = number_format($value);
-                    break;
-                case 'bool':
-                    $this->{$key} = ($value==='true')?true:false;
-                    break;
-                default:
-                    $this->{$key} = $value;
-            }
+            $this->{$key} = $value;
         }
     }
     
