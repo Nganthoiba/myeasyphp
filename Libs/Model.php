@@ -21,27 +21,23 @@ abstract class Model {
     
     /*** method to set data to a model ***/
     public function setModelData(array $data) {
-        
         $reflectionClass = new ReflectionClass($this);
         $reflectionProperties = $reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC);
         foreach ($reflectionProperties as $property){
-            $propertyType = $property->getType();
-            $propertyName = $property->getName();
-            
+            $propertyName = $property->getName();            
             if(isset($data[$propertyName])){
-                $value = $data[$propertyName];
-                switch ($propertyType){
+                switch ($property->getType()){
                     case 'int':
-                        $this->{$propertyName} = (int)($value);
+                        $this->{$propertyName} = (int)($data[$propertyName]);
                         break;
                     case 'float':
-                        $this->{$propertyName} = (float)$value;
+                        $this->{$propertyName} = (float)$data[$propertyName];
                         break;
                     case 'bool':
-                        $this->{$propertyName} = ($value==='true')?true:false;
+                        $this->{$propertyName} = ($data[$propertyName]==='true')?true:false;
                         break;
                     default:
-                        $this->{$propertyName} = $value;
+                        $this->{$propertyName} = $data[$propertyName];
                 }
             }
         }
