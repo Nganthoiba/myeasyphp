@@ -15,8 +15,8 @@ namespace MyEasyPHP\Models;
  */
 #[MyAttribute(value: 1234)]
 class MyModel extends \MyEasyPHP\Libs\Model{
-    public $x;
-    public $y;
+    public int $x;
+    public int $y;
     public function sum(){
         return ($this->x+$this->y);
     }    
