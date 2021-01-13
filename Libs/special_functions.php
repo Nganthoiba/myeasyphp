@@ -414,8 +414,13 @@ function handleMyEasyPHPError($errNo, $errMsg, $errFile, $errLine,$errTypes=null
     if($errNo!=E_NOTICE){
         http_response_code(500);
         $errDetails = "**Please check line no. ".$errLine." of the file ".$errFile;
-        $view = errorView(500, "[{$errNo}]".$errMsg.'.',$errDetails);
-        echo $view->render();
+        try{
+            $view = errorView(500, "[{$errNo}]".$errMsg.'.',$errDetails);
+            echo $view->render();
+        }
+        catch(Exception $e){
+            echo $e->getMessage();
+        }
         exit();
     }
 }

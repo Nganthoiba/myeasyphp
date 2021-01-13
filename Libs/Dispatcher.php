@@ -135,15 +135,14 @@ class Dispatcher {
         }
         
         else{
-            if(!isset($arguments[$i]) || $arguments[$i]===":optional"){
-                $exc = new MyEasyException("Missing required arguments ...", 400);
+            /*if(!isset($arguments[$i]) || $arguments[$i]===":optional"){
+                $exc = new MyEasyException("Missing argument for the required parameter $".$parameters[$i]->getName()."...", 400);
                 $exc->setDetails("Please check route configuration Config/routes.php file for the requested url "
                         . "and please also make sure you have supplied the sufficient arguments "
                         . "required for the function or method of the controller class.");
                 throw ($exc);
-            }
+            }*/
         }
-        
         return $arguments;
     }
     
