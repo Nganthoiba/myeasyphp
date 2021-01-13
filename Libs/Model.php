@@ -9,6 +9,8 @@ namespace MyEasyPHP\Libs;
  */
 use MyEasyPHP\Libs\Response;
 use MyEasyPHP\Libs\Validation;
+use ReflectionClass;
+use ReflectionProperty;
 abstract class Model {
        
     protected $errors = [];//set of error for different attributes
@@ -18,10 +20,32 @@ abstract class Model {
     }
     
     /*** method to set data to a model ***/
-    public function setModelData(array $data){
-        foreach($data as $key=>$value){
-            $this->{$key} = $value;
+    public function setModelData(array $data) {
+        
+        $reflectionClass = new ReflectionClass($this);
+        $reflectionProperties = $reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC);
+        foreach ($reflectionProperties as $property){
+            $propertyType = $property->getType();
+            $propertyName = $property->getName();
+            
+            if(isset($data[$propertyName])){
+                $value = $data[$propertyName];
+                switch ($propertyType){
+                    case 'int':
+                        $this->{$propertyName} = (int)($value);
+                        break;
+                    case 'float':
+                        $this->{$propertyName} = (float)$value;
+                        break;
+                    case 'bool':
+                        $this->{$propertyName} = ($value==='true')?true:false;
+                        break;
+                    default:
+                        $this->{$propertyName} = $value;
+                }
+            }
         }
+        
     }
     //this function will be deprecated
     public function isValidModel(): Response{
@@ -86,9 +110,21 @@ abstract class Model {
         }
         return $this->{$name};
     }
-    public function __set($name, $value) {
-        if(property_exists($this, $name)){
-            $this->{$name} = $value;
+    public function __set($key, $value) {
+        if(property_exists($this, $key)){
+            //$this->{$key} = $value;
+            $type = gettype($this->{$key});
+            switch($type){
+                case 'int':
+                case 'float':
+                    $this->{$key} = number_format($value);
+                    break;
+                case 'bool':
+                    $this->{$key} = ($value==='true')?true:false;
+                    break;
+                default:
+                    $this->{$key} = $value;
+            }
         }
     }
     
