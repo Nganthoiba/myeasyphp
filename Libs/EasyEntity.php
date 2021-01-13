@@ -45,11 +45,12 @@ class EasyEntity extends Model{
     protected $hiddenFields = [];
     
     public function __construct() {
-        /* Entity name should be same as the table name that exists in database */
-        $class_name = get_class($this);//class name contains namespaces
-        $paths = explode("\\", $class_name);
-        $size = sizeof($paths); 
-        $this->table_name = $paths[$size-1];//by default, the table name is set same as that of the entity class name
+        /*By convention, an entity class name should be same as the table name 
+         * that exists in database, otherwise you have to override the constructor and 
+         * use $this->setTable() method to set table name */
+        $class_name = get_class($this);//class name contains namespaces        
+        $this->table_name = basename($class_name);//by default, the table name is set 
+        //same as that of the entity class name
         $this->queryBuilder = new EasyQueryBuilder();
         $this->queryBuilder->setEntityClassName($class_name);//by default
         $this->response = new Response();
@@ -95,10 +96,9 @@ class EasyEntity extends Model{
     
     /*** method to set data to an entity ***/
     public function setEntityData(array $data){
-        $obj_data = $this->toArray();
-        foreach($obj_data as $key=>$val){
-            if(isset($data[$key])){
-                $this->{$key} = $data[$key];
+        foreach ($data as $key=>$value){
+            if(property_exists($this, $key)){
+                $this->{$key} = $value;
             }
         }
     }
@@ -222,8 +222,7 @@ class EasyEntity extends Model{
                     $this->key => ['=',$this->{$this->key}]
                 ];
                 $stmt = $this->queryBuilder
-                        ->delete()
-                        ->from($this->table_name)
+                        ->delete($this->table_name)
                         ->where($cond)
                         ->execute();
                 $this->response->set([
@@ -246,12 +245,8 @@ class EasyEntity extends Model{
     /*** Entity Data Validation ***/
     //This method needs to be overridden in every extended entity class according to the purpose
     //otherwise this default validation method will be executed.
-    public function validate(): Response{
-        return $this->response->set([
-                        "msg" => "Validated",
-                        "status"=>true,
-                        "status_code"=>200
-                    ]);
+    public function validate(){
+        return parent::validate();
     }
     
     

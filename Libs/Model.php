@@ -50,7 +50,7 @@ abstract class Model {
         return  $response;
     }   
     public function rules():array{
-        //this method must be overridden in the based class
+        //this method must be overridden in the derived class
         return [];
     }
     public function validate(){

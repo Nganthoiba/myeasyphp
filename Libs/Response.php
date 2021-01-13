@@ -23,7 +23,7 @@ class Response {
         $this->data = null;
         $this->error = null;
         $this->status = false;
-        $this->status_code = 0;
+        $this->status_code = 0;//http status code
         $this->sqlErrorCode=0;
         $this->msg = "";
     }
