@@ -139,14 +139,9 @@ class EasyQueryBuilder {
         $columns = "";//strings of names of the columns
         $param = "";//parameters
         foreach($data as $column => $value){
-            if(is_null($value)){
+            if(is_null($value) || (is_string($value) && (strlen($value)===0 ||  $value ==="NULL"))){
                 //blank or null values will not be inserted
                 continue;
-            }
-            else if(is_string($value)){
-                if( strlen($value)==0 ||  $value ==="NULL"){
-                    continue;
-                }
             }
             $columns .= $column.",";
             $param .= "?,";
