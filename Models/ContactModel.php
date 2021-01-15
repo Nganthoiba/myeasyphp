@@ -7,7 +7,6 @@ namespace MyEasyPHP\Models;
  * @author Nganthoiba
  */
 use MyEasyPHP\Libs\Model;
-use MyEasyPHP\Libs\Validation;
 use MyEasyPHP\Libs\Attributes\Display;
 use MyEasyPHP\Libs\Attributes\Validations\Email;
 use MyEasyPHP\Libs\Attributes\Validations\Minlength;

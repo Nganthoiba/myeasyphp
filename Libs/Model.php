@@ -8,7 +8,6 @@ namespace MyEasyPHP\Libs;
  * @author Nganthoiba
  */
 use MyEasyPHP\Libs\Response;
-use MyEasyPHP\Libs\Validation;
 use ReflectionClass;
 use ReflectionProperty;
 
