@@ -1,7 +1,6 @@
 <?php
 declare(strict_types=1);
 namespace MyEasyPHP\Libs;
-
 /**
  * Description of Route:
  * 
@@ -21,7 +20,7 @@ class Route {
     private $function;
     
     
-    public function __construct(string $path, $params, $methods) {
+    public function __construct(string $path,array|callable $params, string|array $methods=['GET']) {
         //mapping is done at constructor        
         $this->path = ($path);
         $this->isFunction = is_callable($params);

@@ -200,23 +200,22 @@ function downloadFile($file_path,$flag=false){
         die("File not found.");
     }
 }
-/*-------------------------------- VIEW FUNCTIONS ----------------------------------*/
-//function to return view
+/*-------------------------------- VIEW FUNCTIONS ----------------------------------
+//Function to return view
 //HOW TO USE:-
 //The function can consume up to 3 parameters, so there are 4 ways how this function 
 //can be accessed:
-//1.    pass no argument i.e. simply view(). This will return a default view object
-//2.    pass a single argument, this argument can be a path of a view page (string), 
-//      or a model object, or an entity object or simply an array or a view data.
-//3.    pass 2 argments, then the first argument must be a string which is view path,
-//      and the second argument is either a model object, or an entity object, or array
-//      or an object of ViewData.
-//4.    pass 3 arguments, then the first argument must be a string which is view path,
-//      and the second argument is either a model object, or an entity object or an array.
-//      And the third argument(last) must be an object of ViewData.
-//  
-//
-
+ * ---------------------------------------------------------------------------------
+1.    pass no argument i.e. simply view(). This will return a default view object
+2.    pass a single argument, this argument can be a path of a view page (string), 
+      or a model object, or an entity object or simply an array or a view data.
+3.    pass 2 argments, then the first argument must be a string which is view path,
+      and the second argument is either a model object, or an entity object, or array
+      or an object of ViewData.
+4.    pass 3 arguments, then the first argument must be a string which is view path,
+      and the second argument is either a model object, or an entity object or an array.
+      And the third argument(last) must be an object of ViewData.  
+*/
 function view():View{
     global $router,$controllerObj;
     $viewPath = "";
@@ -366,7 +365,7 @@ function errorView($httpCode,$errorMessage="",$errorDetails="",bool $isPartial =
 /*************************************-------*****************************************/
 
 
-/*---------------------------- ACCOUNTS RELATED FUNCTIONS -----------------------*/
+/*---------------------------- USER ACCOUNTS RELATED FUNCTIONS -----------------------*/
 
 //function to get roles assigned to a user 
 function getRoles(string $userId):array{
@@ -413,7 +412,7 @@ function getLoginInfo(){
 function handleMyEasyPHPError($errNo, $errMsg, $errFile, $errLine,$errTypes=null) {
     if($errNo!=E_NOTICE){
         http_response_code(500);
-        $errDetails = "**Please check line no. ".$errLine." of the file ".$errFile;
+        $errDetails = "#**Please check line no. ".$errLine." of the file ".$errFile;
         try{
             $view = errorView(500, "[{$errNo}]".$errMsg.'.',$errDetails);
             echo $view->render();
@@ -423,5 +422,13 @@ function handleMyEasyPHPError($errNo, $errMsg, $errFile, $errLine,$errTypes=null
         }
         exit();
     }
+}
+
+//display content and die
+function displayAndDie($anything){
+    echo "<pre>";
+    print_r($anything);
+    echo "</pre>";
+    exit();
 }
 

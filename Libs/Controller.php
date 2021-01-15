@@ -38,9 +38,6 @@ class Controller {
     
     public $request;
     
-    /* $router is the one which parses the uri, and obtain the controller, action and perameters from the uri.*/
-    private $router;
-    
     protected $entityManager,$easyEntityManager;
     
     protected $_annonymousActions;//an array of actions which can be accessed 
@@ -132,7 +129,7 @@ class Controller {
     }
     
     /** For sending response to client **/
-    public function sendResponse(Response $resp){
+    protected function sendResponse(Response $resp){
         header("Content-Type: application/json");
         header("HTTP/1.1 " . $resp->status_code . " " . $this->_requestStatus($resp->status_code));
         if(is_null($resp->msg) || $resp->msg == ""){
@@ -142,7 +139,7 @@ class Controller {
         return json_encode($resp);
     }
     
-    public function redirect($controller,$action="",$params = ""){
+    protected function redirect($controller,$action="",$params = ""){
         $link = trim($controller)==""?Config::get('host')."/":Config::get('host')."/".$controller."/".$action;
         if((is_string($params) && trim($params) !== "") || is_numeric($params)){
             $link .= "/".$params;
@@ -209,11 +206,7 @@ class Controller {
                 break;            
         }
         
-        if($view_path !== ""){
-            $class_name = get_class($this);
-            $parts_class_name = explode("\\",$class_name);
-            $controller_name = $parts_class_name[sizeof($parts_class_name)-1];
-            $controller_name = str_replace("Controller","",$controller_name);
+        if($view_path !== ""){            
             //all the view pages have file extension ".view.php" as a convension of this framework
             if(file_exists(VIEWS_PATH.$view_path.'.view.php')){
                 $view_path = VIEWS_PATH.$view_path.'.view.php';
@@ -223,6 +216,7 @@ class Controller {
                 $view_path = VIEWS_PATH."Shared".DS.$view_path.'.view.php';
             }
             else{
+                $controller_name = str_replace("Controller","",basename(get_class($this)));
                 $view_path = VIEWS_PATH.$controller_name.DS.$view_path.'.view.php';   
             }
         }
@@ -249,7 +243,7 @@ class Controller {
         return $layout_view_obj; //return the whole view object with view container
     }
     
-    public function partialView(): View{
+    protected function partialView(): View{
         ///By Default, view path is an empty string, and data model is null
         //$this->dataModel = null;
         $view_path="";
@@ -302,7 +296,7 @@ class Controller {
         return $view_obj; //return without container view
     }
     //For displaying error informations
-    public function error($viewPage){
+    protected function error($viewPage){
         //$this->viewData->detail = "This is an error page.";
         return $this->view($viewPage);
     }

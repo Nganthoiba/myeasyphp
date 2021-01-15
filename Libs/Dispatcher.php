@@ -43,10 +43,10 @@ class Dispatcher {
         $router->extractComponents();//extract Controller and action wrt the request uri from the routes
         //senitising and filtering vulnerable and risky characters from all input values via GET or POST methods
         self::$routeParams = self::$request->cleanInputs($router->getParams());  
-        
-        if(!in_array(self::$request->getMethod(), $router->getMethods()/*getting HTTP verbs*/)){                    
+        $http_methods = $router->getMethods();
+        if(!in_array(self::$request->getMethod(), $http_methods/*getting HTTP verbs*/)){                    
             $exc = new MyEasyException("Method not allowed.",405);
-            $exc->setDetails("Methods allowed for the route '".$router->getRouteUrl()."' :- ".implode(', ',$methods)." but your request method is ".self::$request->getMethod());
+            $exc->setDetails("Methods allowed for the route '".$router->getRouteUrl()."' :- ".implode(', ',$http_methods).", but your request method is ".self::$request->getMethod());
             throw $exc;
         }
         //If route is mapped to only a function
@@ -166,7 +166,8 @@ class Dispatcher {
         global $router,$controllerObj;
         $controller = is_null($router->getController())?"Controller":ucfirst($router->getController())."Controller";
         $action = is_null($router->getAction())?Config::get('default_action'):$router->getAction();//Action name
-        self::initiateController($controller, $action);        
+        self::initiateController($controller, $action);   
+        
         $reflectionMethod = new ReflectionMethod($controllerObj, $action);
         $syncParams = self::synchroniseParameters($reflectionMethod->getParameters(),\array_values(self::$routeParams));
 

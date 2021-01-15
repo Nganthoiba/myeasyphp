@@ -65,7 +65,7 @@ class Authorization {
                     ->join("roles R")->on("U.role_id = R.role_id")
                     ->where([
                         "U.user_id" => $userId
-                    ])->get();
+                    ])->getAll();
             $userRoles = [];
             foreach ($list as $row){
                 $userRoles[] = strtolower($row['role_name']);

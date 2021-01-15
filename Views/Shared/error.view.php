@@ -24,15 +24,15 @@ if(Config::get("error_display")){
         <p><h4>Details:</h4>
             <ol>
             <?php
-                $Errors = explode("#", $viewData->ErrorDetail);
+                $Errors = explode("#", $viewData->ErrorDetail);                
                 $i=0;
                 foreach($Errors as $error){            
                     if(trim($error) == ""){
                         continue;
                     }        
-                    if($i < sizeof($Errors)-2){
+                    //if($i < sizeof($Errors)-2){
                         echo "<li>".substr($error,2)."</li>";
-                    }            
+                    //}            
                     $i++;
                 }
             }

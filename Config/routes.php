@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use MyEasyPHP\Libs\Router;
+use MyEasyPHP\Libs\Routing\RouteRegister;
 
 /*
  * Important Note: Don't change variable name for $route because it is global for the
@@ -10,7 +11,7 @@ use MyEasyPHP\Libs\Router;
  */
 $router = new Router();//Don't change it
 /******************************************************/
-
+RouteRegister::collectRoutesAndRegister();
 /*
  * Reference: https://www.codediesel.com/php/how-do-mvc-routers-work/
  * $router = new Router();
@@ -65,7 +66,7 @@ $router->addRoute("/Default/testModel/{a}/{b}", [
     "Action" => "testModel"
 ],'GET|POST');
 //Listing of available routes
-$router->addRoute("/show_routes", function(){
+$router->addRoute("/routes", function(){
     global $router;
     return view('Shared/route',['routes'=>$router->getRoutes(),'app_name'=>'MyEasyPHP']);
 });
@@ -73,7 +74,7 @@ $router->addRoute("/show_routes", function(){
 $router->addRoute("/test/{i}/{j}", function(int $i,MyEasyPHP\Models\MyModel $obj, int $j){
     echo "i= ".$i. " j = $j"."<br/>";
     //echo "i= ".$i."<br/>";
-    echo "Object: ".json_encode($obj);
+    echo "MyModel Object: ".json_encode($obj);
 });
 
 //An example of grouping routes

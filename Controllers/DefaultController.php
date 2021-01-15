@@ -11,12 +11,14 @@ use MyEasyPHP\Libs\Controller;
 use MyEasyPHP\Models\LoginModel;
 use MyEasyPHP\Models\MyModel;
 use MyEasyPHP\Models\ContactModel;
+use MyEasyPHP\Libs\Attributes\Route;
+
 class DefaultController extends Controller{
     public function index(){
         $data = $this->request->getData();
         return $this->view($data);//returning view
     }
-    //as an api end point
+    #[Route(url:'/about/{test}')]
     public function about(string $test=null){
         $this->viewData->teststring = $test;
         return view();

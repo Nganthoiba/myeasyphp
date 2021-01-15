@@ -167,6 +167,11 @@ class EasyQueryBuilder {
         }
         return null;
     }
+    //deprecated method
+    public function get(){
+        return $this->getAll();
+    }
+    
     //method to get/read/load first row or data after executing the query.
     //it returns either null or object of the entity if record is found
     public function getFirst(){  
