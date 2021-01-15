@@ -11,9 +11,15 @@ use MyEasyPHP\Libs\Response;
 use MyEasyPHP\Libs\Validation;
 use ReflectionClass;
 use ReflectionProperty;
+
 abstract class Model {
        
     protected $errors = [];//set of error for different attributes
+    protected $propertyDisplayNames = [];//How data members (properties) will be displayed in the View File (Form)
+    
+    public function __construct() {
+        $this->setDisplayName();
+    }
     /*Convert self object to array*/
     public function toArray(){
         return json_decode(json_encode($this),true);
@@ -68,15 +74,22 @@ abstract class Model {
         }
         $response->data = $this;
         return  $response;
-    }   
-    public function rules():array{
-        //this method must be overridden in the derived class
-        return [];
     }
     public function validate(){
+        /*
         $validator = new Validation();
-        $validator->validate($this->toArray(), $this->rules());
-        $this->errors = $validator->error();
+        $validator->validate($this, $this->rules());
+        $this->errors = $validator->error();*/
+        $reflectionClass = new ReflectionClass($this);
+        $memberData = $reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC);
+        foreach ($memberData as $property){
+            foreach($property->getAttributes() as $attribute){ 
+                $obj = $attribute->newInstance();
+                if(is_callable($obj)){
+                    $obj($this,$property->getName());
+                }
+            }
+        }
         return empty($this->errors);
     }
     
@@ -84,8 +97,19 @@ abstract class Model {
         return json_encode($this);
     }
     
-    public function addError(string $attribute, string $message){
-        $this->errors[$attribute][] = $message;
+    public function addPropertyDisplayName(string $property, string $message){
+        $this->propertyDisplayNames[$property] = $message;
+    }
+    public function getPropertyDisplayName(string $property){
+        return ($this->propertyDisplayNames[$property])??$property;
+    }
+    
+    public function getAllDisplayNames(){
+        return $this->propertyDisplayNames;
+    }
+    
+    public function addError(string $property, string $message){
+        $this->errors[$property][] = $message;
     }
     public function getError(string $attribute){
         return (isset($this->errors[$attribute]))?$this->errors[$attribute][0]:"";
@@ -112,4 +136,16 @@ abstract class Model {
         }
     }
     
+    //Method to read and set display names for all the public properties in the class
+    protected function setDisplayName(){
+        $reflectionClass = new ReflectionClass($this);
+        $memberData = $reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC);
+        foreach ($memberData as $property){
+            foreach($property->getAttributes() as $attribute){
+                if(basename($attribute->getName())==="Display"){
+                    $this->addPropertyDisplayName($property->getName(), $attribute->newInstance()->Name);                
+                }
+            }
+        }
+    }    
 }

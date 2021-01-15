@@ -54,6 +54,7 @@ class EasyEntity extends Model{
         $this->queryBuilder = new EasyQueryBuilder();
         $this->queryBuilder->setEntityClassName($class_name);//by default
         $this->response = new Response();
+        parent::__construct();
     }
     //method to set table name of the enity
     protected function setTable($table_name){

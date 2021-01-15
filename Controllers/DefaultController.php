@@ -26,7 +26,7 @@ class DefaultController extends Controller{
     public function contact(ContactModel $model){
         if($this->request->isMethod("POST")){
             if($model->validate()){
-                return "Success"; 
+                //return "Success"; 
             }
         }
         return view($model);
@@ -64,5 +64,18 @@ class DefaultController extends Controller{
         echo "</pre><br/> A = ",$a;
         echo "<br/> B = ",$num2;
         
+    }
+    #[Route(url:'/test/attribute',methods:'GET')]
+    public function testAttribute(){
+        $reflectionClass = new \ReflectionClass(ContactModel::class);
+        $memberData = $reflectionClass->getProperties(\ReflectionProperty::IS_PUBLIC);
+        foreach ($memberData as $property){
+            $attributes = $property->getAttributes();
+            foreach($attributes as $attribute){
+                echo $property->getName().'----';
+                $instance = $attribute->newInstance();
+                echo $instance->Name.'<br/>';
+            }
+        }
     }
 }

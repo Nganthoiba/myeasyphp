@@ -8,18 +8,26 @@ namespace MyEasyPHP\Models;
  */
 use MyEasyPHP\Libs\Model;
 use MyEasyPHP\Libs\Validation;
+use MyEasyPHP\Libs\Attributes\Display;
+use MyEasyPHP\Libs\Attributes\Validations\Email;
+use MyEasyPHP\Libs\Attributes\Validations\Minlength;
+use MyEasyPHP\Libs\Attributes\Validations\Required;
+use MyEasyPHP\Libs\Attributes\Validations\Pattern;
+
 class ContactModel extends Model{
+    #[Display(Name: 'Your Name')]
+    #[Required(ErrorMessage:'You must enter your name')]
     public $Name;
-    public $Email;
-    public $Body; 
-    public $Sex; 
     
-    public function rules(): array {
-        return [
-            'Name' => [Validation::RULE_REQUIRED],
-            'Email' => [Validation::RULE_REQUIRED, Validation::RULE_EMAIL],
-            'Body' => [Validation::RULE_REQUIRED, Validation::RULE_MIN=>5],
-            'Sex' => [Validation::RULE_REQUIRED]
-        ];
-    }
+    #[Display(Name: 'Your Email')]  
+    #[Required]
+    #[Email(ErrorMessage:'Enter your email properly')]
+    public $Email;
+    
+    #[Display(Name: 'Body Content')]
+    #[Required]
+    #[Minlength(size:35,ErrorMessage:'Yam tenmanle')]
+    public $Body; 
+    #[Required('Please choose an option')]
+    public $Sex;
 }
