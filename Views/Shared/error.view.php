@@ -30,9 +30,9 @@ if(Config::get("error_display")){
                     if(trim($error) == ""){
                         continue;
                     }        
-                    if($i < sizeof($Errors)-2){
+                    //if($i < sizeof($Errors)-2){
                         echo "<li>".substr($error,2)."</li>";
-                    }            
+                    //}            
                     $i++;
                 }
             }

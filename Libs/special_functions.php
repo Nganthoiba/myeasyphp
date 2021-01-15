@@ -410,7 +410,7 @@ function getLoginInfo(){
 /*********************------------**********************************/
 
 /*----------------------- ERROR HANDLING FUNCTION -------------------------*/
-function handleMyEasyPHPError($errNo, $errMsg, $errFile, $errLine,$errTypes) {
+function handleMyEasyPHPError($errNo, $errMsg, $errFile, $errLine,$errTypes=null) {
     if($errNo!=E_NOTICE){
         http_response_code(500);
         $errDetails = "**Please check line no. ".$errLine." of the file ".$errFile;

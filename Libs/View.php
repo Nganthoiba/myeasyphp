@@ -31,7 +31,7 @@ class View {
         return VIEWS_PATH.$controller.DS.$template_name;
     }
 
-    public function __construct($path = null, ViewData $viewData) {
+    public function __construct($path, ViewData $viewData) {
         
         if(!$path || ($path==null) || trim($path)==""){
             $this->path = self::getDefaultViewPath();  
