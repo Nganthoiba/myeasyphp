@@ -18,7 +18,7 @@ class DefaultController extends Controller{
         $data = $this->request->getData();
         return $this->view($data);//returning view
     }
-    #[Route(url:'/about/{test}')]
+    #[Route(url:'/about/{test}',methods:'GET')]
     public function about(string $test=null){
         $this->viewData->teststring = $test;
         return view();
