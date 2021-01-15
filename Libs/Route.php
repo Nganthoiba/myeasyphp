@@ -34,7 +34,7 @@ class Route {
             $this->action = $params['Action']??"";            
         }
         if(is_string($methods) && trim($methods) !== ""){
-            $this->methods = explode("|", $methods);            
+            $this->methods = preg_split("/[,|]/", $methods);            
         }
         else if(is_array($methods)){
             $this->methods = sizeof($methods)==0?['GET']:$methods;//by default set to GET method
