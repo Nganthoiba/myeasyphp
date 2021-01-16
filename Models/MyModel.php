@@ -14,7 +14,7 @@ namespace MyEasyPHP\Models;
  * @author Nganthoiba
  */
 class MyModel extends \MyEasyPHP\Libs\Model{
-    public $x, $y;
+    public int $x, $y;
     public function sum(){
         return ($this->x+$this->y);
     }    
