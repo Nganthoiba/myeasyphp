@@ -75,16 +75,13 @@ abstract class Model {
         return  $response;
     }
     public function validate(){
-        /*
-        $validator = new Validation();
-        $validator->validate($this, $this->rules());
-        $this->errors = $validator->error();*/
+        
         $reflectionClass = new ReflectionClass($this);
         $memberData = $reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC);
         foreach ($memberData as $property){
             foreach($property->getAttributes() as $attribute){ 
                 $obj = $attribute->newInstance();
-                if(is_callable($obj)){
+                if($obj instanceof Attributes\Validations\Validator){
                     $obj($this,$property->getName());
                 }
             }
@@ -116,8 +113,7 @@ abstract class Model {
     public function getAllErrors():array{
         return $this->errors;
     }    
-    //abstract public function rules():array;
-    
+        
     /*
      * For security reason, restriction is made from accessing non-existing
      * properties of the class. With this feature, any non-existing property 

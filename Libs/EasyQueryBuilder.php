@@ -76,7 +76,7 @@ class EasyQueryBuilder {
         if($this->qry === ""){
             return null;
         }
-        //self::$conn = (self::$conn==null)?Database::connect():self::$conn;//connecting database
+        
         $stmt = self::$conn->prepare($this->qry);       
         try{
             $res = $stmt->execute($this->values);            
