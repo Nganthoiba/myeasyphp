@@ -14,9 +14,9 @@ class Maxlength extends Validator{
         $this->size = $size;
         $this->ErrorMessage = $ErrorMessage;
     }
-    public function __invoke(\MyEasyPHP\Libs\Model $object,string $property){
+    public function validate(\MyEasyPHP\Libs\Model $object,string $property){
         if(strlen($object->{$property}) > $this->size){
-            $message = !is_null($this->ErrorMessage)?$this->ErrorMessage:$object->getPropertyDisplayName($property).' should not be mor than '. $this->size.' characters length';
+            $message = !is_null($this->ErrorMessage)?$this->ErrorMessage:$object->getPropertyDisplayName($property).' should not be more than '. $this->size.' characters length';
             $object->addError($property, $message);
         }
     }

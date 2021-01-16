@@ -74,15 +74,14 @@ abstract class Model {
         $response->data = $this;
         return  $response;
     }
-    public function validate(){
-        
+    public function validate():bool{
         $reflectionClass = new ReflectionClass($this);
         $memberData = $reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC);
         foreach ($memberData as $property){
             foreach($property->getAttributes() as $attribute){ 
-                $obj = $attribute->newInstance();
-                if($obj instanceof Attributes\Validations\Validator){
-                    $obj($this,$property->getName());
+                $validator = $attribute->newInstance();
+                if($validator instanceof Attributes\Validations\Validator){
+                    $validator->validate($this,$property->getName());
                 }
             }
         }

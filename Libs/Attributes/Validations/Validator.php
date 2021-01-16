@@ -7,9 +7,10 @@ use Attribute;
  * @author Nganthoiba
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class Validator {
+abstract class Validator {
     public string|null $ErrorMessage;    
-    public function __invoke(\MyEasyPHP\Libs\Model $object,string $property){       
+    abstract public function validate(\MyEasyPHP\Libs\Model $object,string $property);
+    //{       
         /***
          * Implement your own validation in your derived class
         if(anything unwanted happens){
@@ -17,5 +18,5 @@ class Validator {
             $object->addError($property, $message);
         }
          */
-    }
+    //}
 }

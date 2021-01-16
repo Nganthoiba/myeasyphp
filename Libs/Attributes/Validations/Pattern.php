@@ -16,7 +16,7 @@ class Pattern extends Validator{
         $this->pattern = $pattern;
         $this->ErrorMessage = $ErrorMessage;
     }
-    public function __invoke(\MyEasyPHP\Libs\Model $object,string $property){
+    public function validate(\MyEasyPHP\Libs\Model $object,string $property){
         if(preg_match($this->pattern,$object->{$property})===false){
             $message = !is_null($this->ErrorMessage)?$this->ErrorMessage:$object->getPropertyDisplayName($property).' pattern not match.';
             $object->addError($property, $message);

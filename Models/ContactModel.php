@@ -15,17 +15,17 @@ use MyEasyPHP\Libs\Attributes\Validations\Pattern;
 
 class ContactModel extends Model{
     #[Display(Name: 'Your Name')]
-    #[Required(ErrorMessage:'You must enter your name')]
+    #[Required]
     public $Name;
     
     #[Display(Name: 'Your Email')]  
     #[Required]
-    #[Email(ErrorMessage:'Enter your email properly')]
+    #[Email]
     public $Email;
     
     #[Display(Name: 'Body Content')]
     #[Required]
-    #[Minlength(size:35,ErrorMessage:'Characters 35 tagi taba yade')]
+    #[Minlength(size:35)]
     public $Body; 
     #[Required('Please choose an option')]
     public $Sex;
