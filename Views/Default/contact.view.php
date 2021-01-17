@@ -8,23 +8,23 @@ Html::setContainer('_masterPage');
     <div>
         <?php Html::beginForm(Config::get('host').'/Contact','POST'); ?>
         <div class="form-group">
-            <label><?= $model->getPropertyDisplayName('Name') ?>:</label>
-            <?php Html::textField($model, 'Name','form-control'); ?>
+            <?php Html::label($model, 'Name') ?>
+            <?php Html::textField($model, 'Name',['class'=>'form-control']); ?>
         </div>
         <div class="form-group">
-            <label><?= $model->getPropertyDisplayName('Email') ?></label>
-            <?php Html::textField($model, 'Email','form-control'); ?>
+            <?php Html::label($model, 'Email') ?>
+            <?php Html::textField($model, 'Email',['class'=>'form-control']); ?>
         </div>
         <div class="form-group">
-            <label><?= $model->getPropertyDisplayName('Sex') ?>:</label>
+            <?php Html::label($model, 'Sex') ?>
             <?php Html::radioButtons($model, 'Sex', [
                 ["name"=>"Male","value"=>"M"],
                 ["name"=>"Female","value"=>"F"],
             ]); ?>
         </div> 
         <div class="form-group">
-            <label><?= $model->getPropertyDisplayName('Body') ?>:</label>
-            <?php Html::textareaField($model, 'Body', 5, 50, 'form-control'); ?>
+            <?php Html::label($model, 'Body') ?>
+            <?php Html::textareaField($model, 'Body', ['class'=>'form-control']); ?>
         </div> 
         
         <button type="submit" class="btn btn-success">Submit</button>

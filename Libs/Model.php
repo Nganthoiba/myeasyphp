@@ -29,52 +29,25 @@ abstract class Model {
         $reflectionClass = new ReflectionClass($this);
         $reflectionProperties = $reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC);
         foreach ($reflectionProperties as $property){
-            $propertyName = $property->getName();
-            if(isset($data[$propertyName])){
-                switch ($property->getType()){
-                    case 'int':
-                        $this->{$propertyName} = (int)($data[$propertyName]);
-                        break;
-                    case 'float':
-                        $this->{$propertyName} = (float)$data[$propertyName];
-                        break;
-                    case 'bool':
-                        $this->{$propertyName} = ($data[$propertyName]==='true')?true:false;
-                        break;
-                    default:
-                        $this->{$propertyName} = $data[$propertyName];
-                }
+            $propertyName = $property->getName();            
+            switch ($property->getType()){
+                case 'int':
+                    $this->{$propertyName} = (int)($data[$propertyName]);
+                    break;
+                case 'float':
+                    $this->{$propertyName} = (float)$data[$propertyName];
+                    break;
+                case 'bool':
+                    $this->{$propertyName} = (isset($data[$propertyName]) && $data[$propertyName]==='true')?true:false;
+                    break;
+                default:
+                    $this->{$propertyName} = $data[$propertyName]??"";
             }
+            
         }
         
     }
-    //this function will be deprecated
-    public function isValidModel(): Response{
-        $response = new Response();
-        $response->set([
-            "status"=>true,
-            "status_code"=>200,
-            "msg"=>""
-        ]);
-        $obj_data = $this->toArray();
-        $flag=0;
-        $form_element="";
-        foreach($obj_data as $key=>$val){
-            if(is_null($val) || trim($val) === ""){                
-                $flag = 1;
-                $form_element = $key;
-                break;
-            }
-        }
-        if($flag){
-            $response->msg = "Found null or blank value for the element with name '".$form_element."' in your input request form.";
-            $response->status= false;
-            $response->status_code = 400;          
-        }
-        $response->data = $this;
-        return  $response;
-    }
-    public function validate():bool{
+    public function isValidated():bool{
         $reflectionClass = new ReflectionClass($this);
         $memberData = $reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC);
         foreach ($memberData as $property){

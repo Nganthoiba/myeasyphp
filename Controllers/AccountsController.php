@@ -14,7 +14,6 @@ namespace MyEasyPHP\Controllers;
  * @author Nganthoiba
  */
 use MyEasyPHP\Libs\Controller;
-use MyEasyPHP\Libs\Request;
 use MyEasyPHP\Models\Entities\Users;
 use MyEasyPHP\Models\RegisterModel;
 use MyEasyPHP\Models\LoginModel;
@@ -31,7 +30,7 @@ use SimpleRoleProvider\RoleProvider;
 class AccountsController extends Controller{
     private $em;//entity manager
     
-    public function login(){
+    public function login(LoginViewModel $loginViewModel){
         if(LoginModel::isAuthenticated()){
             $this->redirect("Dashboard", "index");
         }
@@ -40,13 +39,14 @@ class AccountsController extends Controller{
             "status_code"=>200,
             "msg"=>""
         ]);
-        $this->viewData->Email = "";
-        $this->viewData->Password = "";
         $this->viewData->response = $this->response;
-        if($this->request->isMethod("POST")){
-            $this->authenticate();
+                
+        if($this->request->isMethod("POST")){            
+            if($loginViewModel->isValidated()){
+                $this->authenticate($loginViewModel);            
+            }
         }
-        return view();
+        return view($loginViewModel);
     }
     
     public function register(){
@@ -81,21 +81,14 @@ class AccountsController extends Controller{
         return $this->view();
     }
     
-    private function authenticate(){
+    private function authenticate(LoginViewModel $loginViewModel){
         
-        $data = $this->request->getData();
-        $loginViewModel = new LoginViewModel();
-        $loginViewModel->setModelData($data);
-        $this->viewData->Email = $loginViewModel->Email;
-        $this->viewData->Password = $loginViewModel->Password;
         //verify csrf token
         $this->response = verifyCSRFToken();
         if(!$this->response->status){
             $this->viewData->response = $this->response;
             return;
         }
-        
-        $this->response = $loginViewModel->isValidModel();
         
         if($this->response->status){
             //if model is valid
@@ -129,7 +122,7 @@ class AccountsController extends Controller{
                 $this->response->set([
                     "status"=>false,
                     "status_code"=>404,
-                    "msg"=>"Wrong email or password."
+                    "msg"=>"You have entered wrong password."
                 ]);
                 $this->viewData->response = $this->response;
                 return;
@@ -137,21 +130,8 @@ class AccountsController extends Controller{
             //Now everything is found correct and the user is authenticated saving a login details in session, then redirected
             //to the dashboard page
             $this->setLoginSession($user);
-            $this->redirect("Default","home");
-            
-            /*
-            $this->roleProvider = new RoleProvider();
-            if ($this->roleProvider->IsUserInRole($user->full_name, "Admin")){
-                //redirect to dashboard page
-                $this->redirect("Dashboard","index");
-            }
-            else {
-                $this->redirect("UserProfile","Index");
-            }
-            */
-            
+            $this->redirect("Default","home");            
         }
-        
         $this->viewData->response = $this->response;
     }
     

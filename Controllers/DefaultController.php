@@ -23,13 +23,15 @@ class DefaultController extends Controller{
         $this->viewData->teststring = $test;
         return view();
     }
+    
     public function contact(ContactModel $model){
         if($this->request->isMethod("POST")){
-            if($model->validate()){
+            if($model->isValidated()){
                 //return "Success"; 
             }
         }
         return view($model);
+        //displayAndDie($model);
     }         
     public function home(){
         $this->viewData->test = "This is a text.";

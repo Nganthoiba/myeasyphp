@@ -37,15 +37,22 @@ Html::setContainer('_masterPage');
                     <!-- Email -->
                     <div class="md-form">
                         <i class="fa fa-envelope prefix"></i>
-                        <input type="text" id="email" autocomplete="false" name="Email" value="<?= $viewData->Email ?>" class="form-control">
-                        <label for="email">Your email</label>
+                        <?php Html::textField($model, 'Email',['class'=>'form-control','autocomplete'=>'false', 'required']); ?>
+                        <?php Html::label($model, 'Email') ?>
                     </div>
 
                     <!-- Password -->
                     <div class="md-form">
                         <i class="fa fa-lock prefix"></i>
-                        <input type="password" id="password" autocomplete="new-password" name="Password" value="<?= $viewData->Password ?>" class="form-control">
-                        <label for="password">Password</label>
+                        <?php 
+                            Html::passwordField($model, 'Password',
+                                [
+                                    'class'=>'form-control',
+                                    'autocomplete'=>'new-password',
+                                    'required'
+                                ]); 
+                            Html::label($model, 'Password');
+                        ?>                        
                     </div>
 
                     <div class="d-flex justify-content-around">

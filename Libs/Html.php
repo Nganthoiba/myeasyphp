@@ -143,28 +143,61 @@ class Html {
         echo "</form>\r\n";
     }
     
+    //output a label
+    public static function label(Model $model,string $property,array $htmlAttributes = []){
+        $attr = self::stringifyAttributes($htmlAttributes);
+        echo sprintf("<label for='%s' {$attr}>%s</label>\r\n",
+                $property, 
+                $model->getPropertyDisplayName($property));
+    }
     //output a text field
-    public static function textField(Model $model,string $name_attribute,string $class=''){
-        echo sprintf("<input type='text' name='%s' value='%s' class='%s'/>\r\n"
+    public static function textField(Model $model,string $property,array $htmlAttributes = []){
+        $attr = self::stringifyAttributes($htmlAttributes);
+        echo sprintf("<input type='text' name='%s' id='%s' value='%s' {$attr} />\r\n"
                 . "<div class='validation-error-msg'>%s</div>\r\n",
-                $name_attribute, 
-                $model->{$name_attribute},
-                $class,
-                $model->getError($name_attribute));
+                $property, 
+                $property, 
+                $model->{$property},
+                $model->getError($property));
     }
     
-    public static function textareaField(Model $model,string $name_attribute, int $rows=4, int $cols = 50, string $class=''){
-        $model->{$name_attribute} = is_null($model->{$name_attribute})?"":$model->{$name_attribute};
-        echo sprintf("<textarea name='%s' class='%s'>%s</textarea>\r\n"
+    
+    public static function passwordField(Model $model,string $property, array $htmlAttributes = []){
+        $attr = self::stringifyAttributes($htmlAttributes);        
+        echo sprintf("<input type='password' name='%s' id='%s' value='%s' {$attr}/>\r\n"
+                . "<div class='validation-error-msg'>%s</div>\r\n",
+                $property, 
+                $property, 
+                $model->{$property},
+                $model->getError($property));
+    }
+    private static function stringifyAttributes(array $htmlAttributes):string{
+        $attr = '';
+        foreach ($htmlAttributes as $attribute=>$value){
+            if(is_int($attribute)){
+                $attr .= ' '.$value.' ';
+            }
+            else{
+                $attr .= ' '.$attribute.'="'.$value.'" ';
+            }
+        }
+        return $attr;
+    }
+    
+    public static function textareaField(Model $model,string $property, array $htmlAttributes = []){
+        $model->{$property} = is_null($model->{$property})?"":$model->{$property};
+        $attr = self::stringifyAttributes($htmlAttributes);
+        echo sprintf("<textarea name='%s' id='%s' {$attr}>%s</textarea>\r\n"
                 ."<div class='validation-error-msg'>%s</div>\r\n",
-                $name_attribute,
-                $class,
-                htmlspecialchars_decode($model->{$name_attribute}),
-                $model->getError($name_attribute));
+                $property,
+                $property,
+                htmlspecialchars_decode($model->{$property}),
+                $model->getError($property));
     }
     
-    public static function optionField(Model $model,string $name_attribute,array $list=[],string $class=''){
-        $options = "<select name='%s' class='%s'>\r\n";
+    public static function optionField(Model $model,string $name_attribute,array $list=[],array $htmlAttributes = []){
+        $attr = self::stringifyAttributes($htmlAttributes);
+        $options = "<select name='%s' {$attr}>\r\n";
         foreach ($list as $item){
             $selected = ($model->{$name_attribute} == $item['value'])?"selected":"";
             $option .= "<option value='".$item['value']."' $selected>".$item['name']."</option>\r\n";

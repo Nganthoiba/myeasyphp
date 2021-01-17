@@ -54,6 +54,9 @@ class EasyEntity extends Model{
         $this->queryBuilder = new EasyQueryBuilder();
         $this->queryBuilder->setEntityClassName($class_name);//by default
         $this->response = new Response();
+        
+        //setting hidden fields if property found declared Hidden
+        $this->setHiddenFields();
         parent::__construct();
     }
     //method to set table name of the enity
@@ -92,7 +95,8 @@ class EasyEntity extends Model{
         if(trim($this->table_name) == "" || trim($this->key) == "" || $this->table_name == "EasyEntity"){
             return false;//entity is invalid
         }
-        return true;//entity is valid
+        parent::isValidated();
+        //return true;//entity is valid
     }
     
     /*** method to set data to an entity ***/
@@ -246,8 +250,8 @@ class EasyEntity extends Model{
     /*** Entity Data Validation ***/
     //This method needs to be overridden in every extended entity class according to the purpose
     //otherwise this default validation method will be executed.
-    public function validate(){
-        return parent::validate();
+    public function isValidated():bool{
+        return parent::isValidated();
     }
     
     
@@ -341,14 +345,49 @@ class EasyEntity extends Model{
     }
     /*
      *
+     * Method to add hidden fields     */
+    public function addHiddenField(string $field_name){
+        if(trim($field_name) !== ""){
+            $this->hiddenFields[]=$field_name;
+        }
+    }
+    /*
+     *
      * Method to get hidden fields     */
     public function getHiddenFields():array{
         return $this->hiddenFields;
+    }
+    /*
+     *
+     * Method to remove hidden fields     */
+    public function removeHiddenField(array|string $field_name=[]){
+        if(is_string($field_name)){
+            unset($this->hiddenFields[$field_name]);
+        }
+        else{
+            foreach ($field_name as $field){
+                unset($this->hiddenFields[$field]);
+            }
+        }
     }
     /*
      * Method to empty hidden fields to show all fields when records are retrieved.
      */
     public function clearHiddenFields():void{
         $this->hiddenFields = [];
+    }
+    /*
+     * This method will set those properties which have been declared [Hidden] will be
+     * pushed into $hiddenFields variable. This method will be called from the constructor
+     */
+    protected function setHiddenFields(){
+        $reflection  = new \ReflectionClass($this);
+        foreach($reflection->getProperties() as $property){
+            foreach($property->getAttributes() as $attribute){
+                if(basename($attribute->getName()) === "Hidden"){
+                    $attribute->newInstance()->hide($this,$property->getName());
+                }
+            }
+        }
     }
 }

@@ -14,44 +14,19 @@ namespace MyEasyPHP\Models;
  * @author Nganthoiba
  */
 use MyEasyPHP\Libs\Model;
-use MyEasyPHP\Libs\Response;
+use MyEasyPHP\Libs\Attributes\Display;
+use MyEasyPHP\Libs\Attributes\Validations\Email;
+use MyEasyPHP\Libs\Attributes\Validations\Required;
 
 class LoginViewModel extends Model{
     //put your code here
-    
+    #[Display(Name:'Your email')]
+    #[Required]
+    #[Email]
     public $Email;
+    
+    #[Display(Name:'Your password')]
+    #[Required]
     public $Password;
-
-    public function isValidModel(): Response
-    {
-        $response = new Response;
-        $response->set([
-            "status"=>true,
-            "status_code"=>200,
-            "msg"=>""
-        ]);
-        if(is_null($this->Email) || trim($this->Email)==""){
-            $response->set([
-                "status"=>false,
-                "status_code"=>400,
-                "msg"=>"Missing your email."
-            ]);
-        }
-        else if(!filter_var($this->Email, FILTER_VALIDATE_EMAIL)){
-            $response->set([
-                "status"=>false,
-                "status_code"=>400,
-                "msg"=>"Your email is invalid."
-            ]);
-        }
-        else if(is_null($this->Password) || trim($this->Password)==""){
-            $response->set([
-                "status"=>false,
-                "status_code"=>400,
-                "msg"=>"Your password is empty."
-            ]);
-        }
-        $response->data = $this;
-        return $response;
-    }
+    
 }
