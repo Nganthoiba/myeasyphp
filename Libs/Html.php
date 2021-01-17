@@ -195,7 +195,7 @@ class Html {
                 $model->getError($property));
     }
     
-    public static function optionField(Model $model,string $name_attribute,array $list=[],array $htmlAttributes = []){
+    public static function selectField(Model $model,string $name_attribute,array $list=[],array $htmlAttributes = []){
         $attr = self::stringifyAttributes($htmlAttributes);
         $options = "<select name='%s' {$attr}>\r\n";
         foreach ($list as $item){
