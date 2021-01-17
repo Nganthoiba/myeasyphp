@@ -1,11 +1,4 @@
 <?php
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace MyEasyPHP\Controllers;
 
 /**
@@ -49,11 +42,11 @@ class AccountsController extends Controller{
         return view($loginViewModel);
     }
     
-    public function register(){
+    public function register(RegisterModel $reg_model){
         if(LoginModel::isAuthenticated()){
             $this->redirect("Dashboard", "index");
         }
-        $reg_model = new RegisterModel();
+        
         $this->response->set([
             "status_code"=>200,
             "status"=>true,
@@ -65,20 +58,17 @@ class AccountsController extends Controller{
             $this->response = verifyCSRFToken();
             if(!$this->response->status){
                 $this->viewData->response = $this->response;
-                $this->viewData->RegisterModel = $reg_model;
-                return $this->view();
+                return $this->view($reg_model);
             }
-            
-            $data = $this->request->getData();
-            $reg_model->setModelData($data);
-            $this->submitRegistration($reg_model);
-            if($this->response->status){
-                $this->redirect("Default", "home");
+            if($reg_model->isValidated()){
+                $this->submitRegistration($reg_model);
+                if($this->response->status){
+                    $this->redirect("Default", "home");
+                }
             }
         }
         $this->viewData->response = $this->response;
-        $this->viewData->RegisterModel = $reg_model;
-        return $this->view();
+        return $this->view($reg_model);
     }
     
     private function authenticate(LoginViewModel $loginViewModel){
@@ -137,34 +127,31 @@ class AccountsController extends Controller{
     
     private function submitRegistration(RegisterModel $reg_model){
         $this->em = new EntityManager();
-        $this->response = $reg_model->isValidModel();
-        if($this->response->status){        
-            $user = new Users();
-            $user->user_id = UUID::v4();
-            $user->email = $reg_model->Email;            
-            $user->create_at = date('Y-m-d H:i:s');
-            $user->full_name = $reg_model->UserName;
-            $user->phone_number = $reg_model->PhoneNumber;
-            $user->security_stamp = UUID::v4();            
-            $user->user_password = hash('sha256', $reg_model->Password.$user->security_stamp);
-            $user->role_id=1;
-            
-            if($this->isEmailExist($user->email)){
-                $this->response->set([
-                    "status"=>false,
-                    "msg"=>"Email already exist. Try another",
-                    "status_code"=>403
-                ]);
-            }
-            else{
-                //inserting a new record in the users table
-                $this->response = $this->em->add($user);
-                if($this->response->status){
-                    $this->setLoginSession($user);
-                }
+                
+        $user = new Users();
+        $user->user_id = UUID::v4();
+        $user->email = $reg_model->Email;            
+        $user->create_at = date('Y-m-d H:i:s');
+        $user->full_name = $reg_model->UserName;
+        $user->phone_number = $reg_model->PhoneNumber;
+        $user->security_stamp = UUID::v4();            
+        $user->user_password = hash('sha256', $reg_model->Password.$user->security_stamp);
+        $user->role_id=1;
+
+        if($this->isEmailExist($user->email)){
+            $this->response->set([
+                "status"=>false,
+                "msg"=>"Email already exist. Try another",
+                "status_code"=>403
+            ]);
+        }
+        else{
+            //inserting a new record in the users table
+            $this->response = $this->em->add($user);
+            if($this->response->status){
+                $this->setLoginSession($user);
             }
         }
-        $this->response->data = $reg_model;
     }
 
     private function isUserNameValid($username){

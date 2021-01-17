@@ -43,40 +43,44 @@ Html::setContainer('_masterPage');
                     <?= writeCSRFToken() ?>
                     <!-- Email -->
                     <div class="md-form">
-                        <i class="fa fa-user prefix"></i>
-                        <input type="text" class="form-control" id="UserName" name="UserName" 
-                             value="<?= $viewData->RegisterModel->UserName ?>"
-                             required/>
-                        <label for="UserName">Full Name</label>
+                        <i class="fa fa-user prefix"></i>                        
+                        <?php 
+                        Html::textField($model, 'UserName',['class'=>'form-control']);
+                        Html::label($model, 'UserName');                                
+                        ?>
                     </div>
                     
                     <div class="md-form">
                         <i class="fa fa-envelope prefix"></i>
-                        <input type="text" id="email" autocomplete="new-password"
-                               name="Email" value="<?= $viewData->RegisterModel->Email ?>" class="form-control">
-                        <label for="email">Your email</label>
+                        <?php 
+                        Html::textField($model, 'Email',['class'=>'form-control','autocomplete'=>'new-password']);
+                        Html::label($model, 'Email');                                
+                        ?>
                     </div>
                     
                     <div class="md-form">
                         <i class="fa fa-phone prefix"></i>
-                        <input type="text" id="PhoneNumber" autocomplete="new-password"
-                               name="PhoneNumber" value="<?= $viewData->RegisterModel->PhoneNumber ?>" class="form-control">
-                        <label for="PhoneNumber">Your Contact Number</label>
+                        <?php 
+                        Html::textField($model, 'PhoneNumber',['class'=>'form-control','autocomplete'=>'new-password']);
+                        Html::label($model, 'PhoneNumber');                                
+                        ?>
                     </div>
 
                     <!-- Password -->
                     <div class="md-form">
                         <i class="fa fa-lock prefix"></i>
-                        <input type="password" id="password" autocomplete="new-password"
-                               name="Password" value="<?= $viewData->RegisterModel->Password ?>" class="form-control">
-                        <label for="password">Password</label>
+                        <?php
+                        Html::passwordField($model, 'Password',['class'=>'form-control','autocomplete'=>'new-password']);
+                        Html::label($model, 'Password'); 
+                        ?>
                     </div>
                     <!-- Confirm Password -->
                     <div class="md-form">
                         <i class="fa fa-lock prefix"></i>
-                        <input type="password" id="Confirm_password" autocomplete="new-password"
-                               name="Confirm_password" value="<?= $viewData->RegisterModel->Confirm_password ?>" class="form-control">
-                        <label for="Confirm_password">Confirm Password</label>
+                        <?php
+                        Html::passwordField($model, 'ConfirmPassword',['class'=>'form-control','autocomplete'=>'new-password']);
+                        Html::label($model, 'ConfirmPassword'); 
+                        ?>
                     </div>
                     <!-- Sign in button -->
                     <button class="btn btn-outline-primary btn-rounded btn-block my-4 waves-effect rounded-pill" type="submit">Submit</button>
@@ -84,7 +88,7 @@ Html::setContainer('_masterPage');
                 </form>
                 <!-- Form -->
                 <p class="mb-0" style="text-align:center;color: red">
-                    <strong><?= $viewData->response->msg ?></strong>
+                    <strong><?= $viewData->response->status==false?$viewData->response->msg:"" ?></strong>
                 </p>
           </div>
 

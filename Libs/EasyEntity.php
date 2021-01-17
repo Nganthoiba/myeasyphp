@@ -95,8 +95,7 @@ class EasyEntity extends Model{
         if(trim($this->table_name) == "" || trim($this->key) == "" || $this->table_name == "EasyEntity"){
             return false;//entity is invalid
         }
-        parent::isValidated();
-        //return true;//entity is valid
+        return true;//entity is valid
     }
     
     /*** method to set data to an entity ***/
