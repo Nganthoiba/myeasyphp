@@ -10,10 +10,10 @@ use MyEasyPHP\Libs\Attributes\Validations\Validator;
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
 class Between extends Validator{
-    public int|float $lowerBound, $upperBound;
-    public function __construct(int|float $lowerBound,int|float $upperBound, ?string $ErrorMessage = null) {
-        $this->lowerBound = $lowerBound;
-        $this->upperBound = $upperBound;
+    public int|float $LowerBound, $UpperBound;
+    public function __construct(int|float $LowerBound,int|float $UpperBound, ?string $ErrorMessage = null) {
+        $this->LowerBound = $LowerBound;
+        $this->UpperBound = $UpperBound;
         $this->ErrorMessage = $ErrorMessage;
     }
     public function validate(\MyEasyPHP\Libs\Model $object,string $property){
@@ -24,8 +24,8 @@ class Between extends Validator{
             return;
         }
         
-        if(($object->{$property})<$this->lowerBound || ($object->{$property})>$this->upperBound){
-            $message = !is_null($this->ErrorMessage)?$this->ErrorMessage:$object->getPropertyDisplayName($property).' should be between '. $this->lowerBound.' and '.$this->upperBound;
+        if(($object->{$property})<$this->LowerBound || ($object->{$property})>$this->UpperBound){
+            $message = !is_null($this->ErrorMessage)?$this->ErrorMessage:$object->getPropertyDisplayName($property).' should be between '. $this->LowerBound.' and '.$this->UpperBound;
             $object->addError($property, $message);
         }
     }
