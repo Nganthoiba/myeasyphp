@@ -4,7 +4,7 @@ use MyEasyPHP\Libs\Config;
 $isAuthenticated = isAuthenticated();
 $user_info = getLoginInfo();
 ?>
-<nav class="navbar navbar-expand-lg navbar-dark custom-nav-grey fixed-top">            
+<nav class="navbar navbar-expand-lg navbar-dark custom-nav-grey">            
     <div class="container-fluid">
 
         <!-- Navbar brand -->
