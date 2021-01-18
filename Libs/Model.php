@@ -24,21 +24,19 @@ abstract class Model {
         $reflectionClass = new ReflectionClass($this);
         $reflectionProperties = $reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC);
         foreach ($reflectionProperties as $property){
-            $propertyName = $property->getName();            
-            if(isset($data[$propertyName])){
-                switch ($property->getType()){
-                    case 'int':
-                        $this->{$propertyName} = (int)($data[$propertyName]);
-                        break;
-                    case 'float':
-                        $this->{$propertyName} = (float)$data[$propertyName];
-                        break;
-                    case 'bool':
-                        $this->{$propertyName} = ($data[$propertyName]==='true')?true:false;
-                        break;
-                    default:
-                        $this->{$propertyName} = $data[$propertyName];
-                }
+            $propertyName = $property->getName();  
+            switch ($property->getType()){
+                case 'int':
+                    $this->{$propertyName} = (int)($data[$propertyName]);
+                    break;
+                case 'float':
+                    $this->{$propertyName} = (float)$data[$propertyName];
+                    break;
+                case 'bool':
+                    $this->{$propertyName} = ($data[$propertyName]==='true')?true:false;
+                    break;
+                default:
+                    $this->{$propertyName} = $data[$propertyName]??"";
             }
         }
         
