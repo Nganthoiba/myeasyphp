@@ -65,7 +65,7 @@ $router->addRoute("/Default/testModel/{a}/{b}", [
     "Action" => "testModel"
 ],'GET|POST');
 //Listing of available routes
-$router->addRoute("/show_routes", function(){
+$router->addRoute("/routes", function(){
     global $router;
     return view('Shared/route',['routes'=>$router->getRoutes(),'app_name'=>'MyEasyPHP']);
 });
