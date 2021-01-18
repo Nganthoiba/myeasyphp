@@ -25,8 +25,7 @@ Html::setContainer('_masterPage');
         <div class="form-group">
             <?php Html::label($model, 'Body') ?>
             <?php Html::textareaField($model, 'Body', ['class'=>'form-control']); ?>
-        </div> 
-        
+        </div>         
         <button type="submit" class="btn btn-success">Submit</button>
         <?php Html::endForm(); ?>
     </div>

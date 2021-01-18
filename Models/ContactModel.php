@@ -11,8 +11,6 @@ use MyEasyPHP\Libs\Attributes\Display;
 use MyEasyPHP\Libs\Attributes\Validations\Email;
 use MyEasyPHP\Libs\Attributes\Validations\Minlength;
 use MyEasyPHP\Libs\Attributes\Validations\Required;
-use MyEasyPHP\Libs\Attributes\Validations\Pattern;
-
 class ContactModel extends Model{
     #[Display(Name: 'Your Name')]
     #[Required]

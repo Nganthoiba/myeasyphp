@@ -13,6 +13,7 @@ class Date extends Validator{
     public string $Format;
     public function __construct(string $Format = 'd-m-Y', ?string $ErrorMessage = null) {
         $this->Format = $Format;
+        $this->ErrorMessage = $ErrorMessage;
     }
     
     public function validate(\MyEasyPHP\Libs\Model $object, string $property) {

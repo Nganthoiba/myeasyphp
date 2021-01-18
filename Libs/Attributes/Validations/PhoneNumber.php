@@ -9,10 +9,7 @@ use MyEasyPHP\Libs\Attributes\Validations\Validator;
  * @author Nganthoiba
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class PhoneNumber extends Validator{
-    public function __construct(?string $ErrorMessage = null) {
-        $this->ErrorMessage = $ErrorMessage;
-    }
+class PhoneNumber extends Validator{    
     public function validate(\MyEasyPHP\Libs\Model $object,string $property){       
         if($this->isValidPhoneNumber($object->{$property})===false){
             $message = !is_null($this->ErrorMessage)?$this->ErrorMessage:$object->getPropertyDisplayName($property).' is not a valid phone number.';

@@ -187,11 +187,12 @@ class Html {
     public static function textareaField(Model $model,string $property, array $htmlAttributes = []){
         $model->{$property} = is_null($model->{$property})?"":$model->{$property};
         $attr = self::stringifyAttributes($htmlAttributes);
+        $content = is_null($model->{$property})?"":htmlspecialchars_decode($model->{$property});
         echo sprintf("<textarea name='%s' id='%s' {$attr}>%s</textarea>\r\n"
                 ."<div class='validation-error-msg'>%s</div>\r\n",
                 $property,
                 $property,
-                htmlspecialchars_decode($model->{$property}),
+                $content,
                 $model->getError($property));
     }
     

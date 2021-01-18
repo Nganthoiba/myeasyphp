@@ -8,7 +8,10 @@ use Attribute;
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
 abstract class Validator {
-    public string|null $ErrorMessage;    
+    public string|null $ErrorMessage;  
+    public function __construct(?string $ErrorMessage = null/*Input message*/){
+        $this->ErrorMessage = $ErrorMessage;
+    }
     abstract public function validate(\MyEasyPHP\Libs\Model $object,string $property);
     //{       
         /***
