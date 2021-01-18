@@ -80,7 +80,7 @@ class Router {
             $url = '/'.trim($this->group_name, '/').'/'.trim($url,'/');
         }
         $url = (trim($url)=='/' || trim($url)=="")?'/':rtrim($url,'/');
-        $this->routes[] = new Route($url, $parameters, $methods);
+        $this->routes[$url] = new Route($url, $parameters, $methods);
         return $this;
     }
     
@@ -232,9 +232,12 @@ class Router {
         if(is_null($url)){
             return null;
         }
-        $routes = $this->routes;        
-        foreach($routes as $route){
-            if($url == $route->getPath() || $this->areEqualURLs($route->getPath(), $url)){
+        //to improve finding route
+        if(isset($this->routes[$url])){
+            return $this->routes[$url];
+        }
+        foreach($this->routes as $route){
+            if($this->areEqualURLs($route->getPath(), $url)){
                 return $route;
             }
         }

@@ -7,9 +7,10 @@ namespace MyEasyPHP\Libs;
  * 
  * @author Nganthoiba
  */
-use MyEasyPHP\Libs\Response;
 use ReflectionClass;
 use ReflectionProperty;
+use MyEasyPHP\Libs\Attributes\Validations\Validator;
+use MyEasyPHP\Libs\Attributes\Display;
 
 abstract class Model {
        
@@ -53,7 +54,7 @@ abstract class Model {
         foreach ($memberData as $property){
             foreach($property->getAttributes() as $attribute){ 
                 $validator = $attribute->newInstance();
-                if($validator instanceof Attributes\Validations\Validator){
+                if($validator instanceof Validator){
                     $validator->validate($this,$property->getName());
                 }
             }
@@ -108,10 +109,9 @@ abstract class Model {
         $reflectionClass = new ReflectionClass($this);
         $memberData = $reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC);
         foreach ($memberData as $property){
-            foreach($property->getAttributes() as $attribute){
-                if(basename($attribute->getName())==="Display"){
-                    $this->addPropertyDisplayName($property->getName(), $attribute->newInstance()->Name);                
-                }
+            foreach($property->getAttributes(Display::class) as $attribute){                
+                $this->addPropertyDisplayName($property->getName(), 
+                        $attribute->newInstance()->Name);  
             }
         }
     }    

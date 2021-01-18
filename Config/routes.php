@@ -56,26 +56,13 @@ $router->group("/Student",function(Router $router){
     ],'GET|POST');
 });
 
-//an example for optional parameter
-$router->addRoute("/parameters/{a}/{b}/{c}/{d}", [
-    "Controller" => "Default",
-    "Action" => "getParameters"
-],'GET|POST');
-$router->addRoute("/Default/testModel/{a}/{b}", [
-    "Controller" => "Default",
-    "Action" => "testModel"
-],'GET|POST');
+
 //Listing of available routes
 $router->addRoute("/routes", function(){
     global $router;
     return view('Shared/route',['routes'=>$router->getRoutes(),'app_name'=>'MyEasyPHP']);
 });
 
-$router->addRoute("/test/{i}/{j}", function(int $i,MyEasyPHP\Models\MyModel $obj, int $j){
-    echo "i= ".$i. " j = $j"."<br/>";
-    //echo "i= ".$i."<br/>";
-    echo "MyModel Object: ".json_encode($obj);
-});
 
 //An example of grouping routes
 //Routes for api

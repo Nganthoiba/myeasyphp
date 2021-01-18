@@ -25,7 +25,7 @@ class ContactModel extends Model{
     
     #[Display(Name: 'Body Content')]
     #[Required]
-    #[Minlength(size:35)]
+    #[Minlength(Size:35)]
     public $Body; 
     #[Required('Please choose an option')]
     public string $Sex;

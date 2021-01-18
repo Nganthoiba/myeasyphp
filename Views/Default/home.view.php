@@ -1,9 +1,7 @@
 <?php 
 use MyEasyPHP\Libs\Html;
 Html::setContainer("_masterPage");
-?>
 
-<p>Below Nav bar</p>
-<P>
-    <?= $viewData->test ?>
-</P>
+//highlight_file(CONTROLLERS_PATH.'DefaultController.php');
+highlight_string(show_source(CONTROLLERS_PATH.'DefaultController.php', false),false);
+?>
