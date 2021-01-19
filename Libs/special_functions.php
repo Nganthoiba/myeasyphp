@@ -331,36 +331,24 @@ function partialView():View
     return $view_obj;
 }
 //function to return a view that shows error details when any error occurs
-function errorView($httpCode,$errorMessage="",$errorDetails="",bool $isPartial = false) : View{
+/*
+ * $filePath is the file where error occurs.
+ * $filePath="" will mean it is not going to any lines of source codes where error occurs
+ * $lineNo=-1 will mean it is not going to detect the line where error occurs.
+ */
+function errorView($httpCode,$errorMessage="",$errorDetails="",$filePath="", $lineNo=-1) : View{
     
     $viewData = new ViewData();
     $viewData->httpCode = $httpCode;
     $viewData->httpStatus = HttpStatus::getStatus($httpCode);
     $viewData->ErrorMessage = $errorMessage;
     $viewData->ErrorDetail = $errorDetails;
+    $viewData->filePath = $filePath;
+    $viewData->lineNo = $lineNo;
     //path to error page
     $path = VIEWS_PATH."Shared".DS."error.view.php";
     $view = new View($path,$viewData);
-    if($isPartial  == true){
-        return $view;
-    }
-    
-    $viewData->content = $view->render();
-    
-    $layout = Config::get('default_view_container');//$this->router->getRoute();
-    //$layout_path = VIEWS_PATH."Shared".DS.$layout.'.view.php';
-    //Finding container view
-    if(file_exists(VIEWS_PATH.$layout.'.view.php')){
-        $layout_path = VIEWS_PATH.$layout.'.view.php';
-    }
-    else if(file_exists(VIEWS_PATH."Shared".DS.$layout.'.view.php')){
-        $layout_path = VIEWS_PATH."Shared".DS.$layout.'.view.php';
-    }
-    else{
-        $layout_path="";
-    }
-    $layout_view_obj = new View($layout_path,$viewData);
-    return $layout_view_obj;
+    return $view;    
 }
 /*************************************-------*****************************************/
 
@@ -414,7 +402,7 @@ function handleMyEasyPHPError($errNo, $errMsg, $errFile, $errLine,$errTypes=null
         http_response_code(500);
         $errDetails = "#**Please check line no. ".$errLine." of the file ".$errFile;
         try{
-            $view = errorView(500, "[{$errNo}]".$errMsg.'.',$errDetails);
+            $view = errorView(500, "[{$errNo}]".$errMsg.'.',$errDetails,$errFile,$errLine);
             echo $view->render();
         }
         catch(Exception $e){
@@ -425,7 +413,7 @@ function handleMyEasyPHPError($errNo, $errMsg, $errFile, $errLine,$errTypes=null
 }
 
 //display content and die
-function displayAndDie($anything){
+function dd($anything){
     echo "<pre>";
     print_r($anything);
     echo "</pre>";

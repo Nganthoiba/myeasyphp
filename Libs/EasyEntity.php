@@ -382,10 +382,8 @@ class EasyEntity extends Model{
     protected function setHiddenFields(){
         $reflection  = new \ReflectionClass($this);
         foreach($reflection->getProperties() as $property){
-            foreach($property->getAttributes() as $attribute){
-                if(basename($attribute->getName()) === "Hidden"){
-                    $attribute->newInstance()->hide($this,$property->getName());
-                }
+            foreach($property->getAttributes(Attributes\Hidden::class) as $attribute){
+                $attribute->newInstance()->hide($this,$property->getName());                
             }
         }
     }

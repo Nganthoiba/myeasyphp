@@ -1,7 +1,8 @@
 <?php 
 use MyEasyPHP\Libs\Html;
+use MyEasyPHP\Libs\Debugging\DisplaySourceCode;
 Html::setContainer("_masterPage");
-
-//highlight_file(CONTROLLERS_PATH.'DefaultController.php');
-highlight_string(show_source(CONTROLLERS_PATH.'DefaultController.php', false),false);
 ?>
+<div class="container">
+    <h1>This is the home page.</h1>
+</div>

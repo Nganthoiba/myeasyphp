@@ -1,9 +1,22 @@
 <?php 
 use MyEasyPHP\Libs\Config;
 use MyEasyPHP\Libs\Html;
+use MyEasyPHP\Libs\Debugging\DisplaySourceCode;
 
 Config::set('page_title',$viewData->httpStatus);
-Html::setContainer("_masterPage");
+
+//Loading CSS and JS files using loadAssets()
+Html::loadCss([
+    "bootstrap",
+    "mdb",
+    "style"
+]);
+Html::loadAssets("font_awesome/css/all.css");
+Html::loadAssets("font_awesome/css/font-awesome.css");
+Html::loadJs([
+    "jquery"
+]);
+Html::include('Shared/mdbNavbar');
 $css_class = $viewData->httpCode == 500?"text-danger":"text-warning";
 ?>
 <div class="container">
@@ -22,22 +35,28 @@ if(Config::get("error_display")){
             if($viewData->ErrorDetail!=""){
             ?>
         <p><h4>Details:</h4>
+            
+        
             <ol>
             <?php
-                $Errors = explode("#", $viewData->ErrorDetail);                
-                $i=0;
+                $Errors = explode("#", $viewData->ErrorDetail);        
                 foreach($Errors as $error){            
                     if(trim($error) == ""){
                         continue;
-                    }        
-                    //if($i < sizeof($Errors)-2){
-                        echo "<li>".substr($error,2)."</li>";
-                    //}            
-                    $i++;
+                    }
+                    echo "<li>".substr($error,2)."</li>";                    
                 }
             }
             ?>
             </ol>
+            <?php
+            echo "<H5>Error Line:</H5>";
+            if(trim($viewData->filePath)!==""){
+                $startLine = ($viewData->lineNo-3)<1?1:$viewData->lineNo-3;
+                $endLine = ($viewData->lineNo+3);
+                DisplaySourceCode::display($viewData->filePath,$startLine,$endLine,$viewData->lineNo);
+            }
+            ?>
         </p>
     </div>
 </div>

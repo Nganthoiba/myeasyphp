@@ -1,6 +1,10 @@
 <IfModule mod_headers.c>
     RequestHeader unset Proxy
 </IfModule>
+Options +Indexes
+# START - Disable server signature #
+ServerSignature Off
+# END - Disable server signature #
 <ifModule mod_rewrite.c>
     RewriteEngine on
     RewriteCond %{REQUEST_URI} !\.(?:css|js|jp?g|gif|png)$ [NC]

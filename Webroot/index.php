@@ -25,7 +25,7 @@ catch(Error $error){
     $errorMsg = "Please check line number ".$error->getLine().
             " of the file ".$error->getFile(). ". ";
     http_response_code(500);
-    $view = errorView(500,$error->getMessage().". ".$errorMsg,$errorDetails);
+    $view = errorView(500,$error->getMessage().". ".$errorMsg,$errorDetails,$error->getFile(),$error->getLine());
     echo $view->render();
 }
 catch(TypeError $error){
@@ -33,7 +33,7 @@ catch(TypeError $error){
     http_response_code(500);
     $errorMsg = "Found an error in data type. Please check line number ".$error->getLine().
             " of the file ".$error->getFile(). ".";
-    $view = errorView(500,$error->getMessage().". ".$errorMsg,$errorDetails);
+    $view = errorView(500,$error->getMessage().". ".$errorMsg,$errorDetails,$error->getFile(),$error->getLine());
     echo $view->render();
 }
 catch(MyEasyException $e){
