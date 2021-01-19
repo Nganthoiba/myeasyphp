@@ -8,8 +8,6 @@ namespace MyEasyPHP\Controllers;
  * @author Nganthoiba
  */
 use MyEasyPHP\Libs\Controller;
-use MyEasyPHP\Models\LoginModel;
-use MyEasyPHP\Models\MyModel;
 use MyEasyPHP\Models\ContactModel;
 use MyEasyPHP\Libs\Attributes\Route;
 

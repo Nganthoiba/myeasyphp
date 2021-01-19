@@ -18,7 +18,7 @@ abstract class Model {
     protected $propertyDisplayNames = [];//How data members (properties) will be displayed in the View File (Form)
     
     public function __construct() {
-        $this->setDisplayName();
+        $this->setPropertyDisplayNames();
     }
     /*Convert self object to array*/
     public function toArray(){
@@ -105,7 +105,7 @@ abstract class Model {
     }
     
     //Method to read and set display names for all the public properties in the class
-    protected function setDisplayName(){
+    protected function setPropertyDisplayNames(){
         $reflectionClass = new ReflectionClass($this);
         $memberData = $reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC);
         foreach ($memberData as $property){

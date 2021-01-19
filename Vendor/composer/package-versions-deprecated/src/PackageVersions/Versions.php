@@ -58,7 +58,7 @@ final class Versions
   'symfony/service-contracts' => 'v2.2.0@d15da7ba4957ffb8f1747218be9e1a121fd298a1',
   'symfony/string' => 'v5.2.1@5bd67751d2e3f7d6f770c9154b8fbcb2aa05f7ed',
   'vlucas/phpdotenv' => 'v5.2.0@fba64139db67123c7a57072e5f8d3db10d160b66',
-  'nganthoiba/myeasyphp' => 'dev-master@ed45a73e2a9536e73e6206854904344a9ecd8d3b',
+  'nganthoiba/myeasyphp' => 'dev-master@ce14ec677249b494fd1cdec30964dead01365d8f',
 );
 
     private function __construct()

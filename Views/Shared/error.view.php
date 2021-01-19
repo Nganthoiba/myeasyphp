@@ -49,9 +49,9 @@ if(Config::get("error_display")){
             }
             ?>
             </ol>
-            <?php
-            echo "<H5>Error Line:</H5>";
+            <?php            
             if(trim($viewData->filePath)!==""){
+                echo "<H5>Error Line:</H5>";
                 $startLine = ($viewData->lineNo-3)<1?1:$viewData->lineNo-3;
                 $endLine = ($viewData->lineNo+3);
                 DisplaySourceCode::display($viewData->filePath,$startLine,$endLine,$viewData->lineNo);

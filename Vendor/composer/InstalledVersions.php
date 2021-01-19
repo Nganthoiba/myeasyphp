@@ -29,7 +29,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => 'ed45a73e2a9536e73e6206854904344a9ecd8d3b',
+    'reference' => 'ce14ec677249b494fd1cdec30964dead01365d8f',
     'name' => 'nganthoiba/myeasyphp',
   ),
   'versions' => 
@@ -158,7 +158,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => 'ed45a73e2a9536e73e6206854904344a9ecd8d3b',
+      'reference' => 'ce14ec677249b494fd1cdec30964dead01365d8f',
     ),
     'ocramius/package-versions' => 
     array (
