@@ -8,6 +8,7 @@ namespace MyEasyPHP\Libs;
 use MyEasyPHP\Libs\Config;
 use PDO;
 use Exception;
+use MyEasyPHP\Libs\MyEasyException;
 
 class Database {
     public static $conn_error;//Database connection error
@@ -24,7 +25,7 @@ class Database {
         $db_name = $db_config["DB_NAME"];
         $db_username = $db_config["DB_USERNAME"];
         $db_password = $db_config["DB_PASSWORD"];
-        $persistent = isset($db_config["PERSISTENT"])?$db_config["PERSISTENT"]:false;
+        $persistent = $db_config["PERSISTENT"]??false;
         
         /*Data Source Name, database connection string*/
         
@@ -58,7 +59,12 @@ class Database {
             return $conn;
         }catch(Exception $e){
             self::$conn_error = $e->getMessage();
-            throw $e;
+            $easyExcp = new MyEasyException("Unable to connect database. Please check your database configuration.", $e->getCode());
+            $easyExcp->setDetails($e->getMessage());
+            $easyExcp->setLine(0);
+            $easyExcp->setFile("");
+            $easyExcp->httpCode = 503;
+            throw $easyExcp;
         }
         return null;
     }

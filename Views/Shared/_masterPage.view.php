@@ -35,7 +35,7 @@ use MyEasyPHP\Libs\Html;
         <?php
         Html::include('Shared/mdbNavbar');
         ?>
-        <div style="padding-top: 60px">
+        <div style="padding-top: 10px">
             <?= $viewData->content; ?>
         </div>
     

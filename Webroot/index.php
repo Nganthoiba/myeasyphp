@@ -37,12 +37,13 @@ catch(TypeError $error){
     echo $view->render();
 }
 catch(MyEasyException $e){
-    http_response_code($e->getCode());
-    $view = errorView($e->getCode(), $e->getMessage(),$e->getDetails());
+    http_response_code($e->httpCode);
+    $view = errorView($e->httpCode, $e->getMessage(),$e->getDetails(),$e->getFile(),$e->getLine());
     echo $view->render();
 }
 catch(Exception $e){
     http_response_code(500);
-    $view = errorView(500, $e->getMessage());
-    echo $view->render();
+    $view = errorView(500, $e->getMessage(),'',$e->getFile(),$e->getLine());
+    echo $view;
+    //dd($e);
 }

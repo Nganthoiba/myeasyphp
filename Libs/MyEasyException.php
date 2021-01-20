@@ -14,11 +14,20 @@ namespace MyEasyPHP\Libs;
 use \Exception as Excp;
 class MyEasyException extends Excp{
     private $details;
+    protected $file;
+    protected $line;
+    public int $httpCode;
     public function __construct(string $message = "", int $code = 0, \Throwable $previous = NULL) {
         parent::__construct($message, $code, $previous);
         $this->details="";
+        $this->httpCode = $code==0?200:500;
     }
-    
+    public function setLine($lineNo){
+        $this->line = $lineNo;
+    }
+    public function setFile($file){
+        $this->file = $file;
+    }
     public function setDetails(string $details){
         $this->details = $details;
     }

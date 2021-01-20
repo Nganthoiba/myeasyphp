@@ -30,9 +30,10 @@ class DoctrineEntityManager extends EntityManager{
             'driver' => "pdo_".$db_config['DB_DRIVER'],
             'port'=>$db_config['DB_PORT']??""
         );
+        $dev_mode = isset($_ENV['DEVELOPMENT_MODE'])&&$_ENV['DEVELOPMENT_MODE']==='ON'?true:false;
         $config = Setup::createAnnotationMetadataConfiguration(
                 array(ENTITY_PATH), 
-                Config::get('development_mode'), 
+                $dev_mode, 
                 $proxyDir, 
                 $cache, 
                 $useSimpleAnnotationReader

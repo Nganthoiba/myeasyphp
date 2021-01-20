@@ -23,7 +23,7 @@ Config::set('default_action', 'index');
 //Domain configuration
 Config::set('host', '/MyEasyPHP');
 //Assets Configuration
-Config::set('Assets', Config::get('host').'/Webroot/Assets');
+Config::set('Assets', Config::get('host').'/Assets');
 
 
 /*** Database Configuration ***/

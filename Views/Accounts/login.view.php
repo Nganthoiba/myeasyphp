@@ -15,14 +15,17 @@ Html::setContainer('_masterPage');
         margin-left: auto;
         margin-right: auto;
     }
+    /*
     body{        
         background-image: url("<?= Config::get('host') ?>/Assets/images/notebook.jpg");
         background-repeat: repeat-y;
         background-origin: content-box;
         background-size: cover;
     }
+    */
 </style>
-<div class="vertical-center">
+<!-- vertical-center -->
+<div class="">
     <div class="col-md-4 mb-4 login_layout">
         <!-- Material form login -->
         <div class="card transparency">

@@ -29,7 +29,8 @@ use Exception;
 
 class EasyEntity extends Model{
     private $table_name;//name of the table in the database
-    private $key;//primary key
+    private $key;//for only one primary key
+    private $keys;//for compound primary keys, i.e. two or more attributes together forming as a primary key
     private $queryBuilder;
     private $response;
     /*
@@ -100,11 +101,7 @@ class EasyEntity extends Model{
     
     /*** method to set data to an entity ***/
     public function setEntityData(array $data){
-        foreach ($data as $key=>$value){
-            if(property_exists($this, $key)){
-                $this->{$key} = $value;
-            }
-        }
+        parent::setModelData($data);
     }
     
     /********* START METHODS FOR CRUD OPERATIONS ********/
