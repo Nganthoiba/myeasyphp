@@ -26,11 +26,14 @@ use MyEasyPHP\Libs\Model;
 use MyEasyPHP\Libs\Response;
 use PDO;
 use Exception;
+use MyEasyPHP\Libs\Attributes\Key;
+use ReflectionClass;
+use ReflectionProperty;
 
 class EasyEntity extends Model{
     private $table_name;//name of the table in the database
-    private $key;//for only one primary key
-    private $keys;//for compound primary keys, i.e. two or more attributes together forming as a primary key
+    protected $keys = [];//it can be one primary key or compound primary keys, i.e. two or more 
+    //attributes together forming  primary key
     private $queryBuilder;
     private $response;
     /*
@@ -58,6 +61,8 @@ class EasyEntity extends Model{
         
         //setting hidden fields if property found declared Hidden
         $this->setHiddenFields();
+        //setting keys of the table
+        $this->setKeyFields();
         parent::__construct();
     }
     //method to set table name of the enity
@@ -66,18 +71,27 @@ class EasyEntity extends Model{
         return $this;
     }    
     //method to set key of the enity
-    protected function setKey($key){
-        $this->key = $key;
+    protected function setKey(){
+        $this->keys = func_get_args();
         return $this;
+    }
+    
+    public function addKey($key){
+        if(!in_array($key, $this->keys)){
+            $this->keys[] = $key;
+        }
     }
     
     //method to get table name of an entity
     public function getTable(){
         return $this->table_name;
     }
-    //method to get key of the enity
+    //method to get key of the entity
+    public function getKeys():array{
+        return $this->keys;
+    }
     public function getKey(){
-        return $this->key;
+        return $this->keys[0]??"";
     }
     
     //method to get query builder
@@ -93,7 +107,7 @@ class EasyEntity extends Model{
     /*** Check for valid Entity ***/
     public function isValidEntity():bool{
         //If table name and key is not set, then entity is invalid
-        if(trim($this->table_name) == "" || trim($this->key) == "" || $this->table_name == "EasyEntity"){
+        if(trim($this->table_name) == "" || $this->table_name == "EasyEntity" || empty($this->keys) || trim($this->keys[0])===""){
             return false;//entity is invalid
         }
         return true;//entity is valid
@@ -118,10 +132,13 @@ class EasyEntity extends Model{
             try{
                 $this->removeUndefinedProperty();
                 $data = ($this->toArray());
-                $stmt = $this->queryBuilder->insert($this->table_name, $data)->execute();
-                if($this->{$this->getKey()}=="" || $this->{$this->getKey()}==null){
-                    $this->{$this->getKey()} = $this->queryBuilder::$conn->lastInsertId();
+                $this->queryBuilder->insert($this->table_name, $data)->execute();
+                
+                if(\sizeof($this->getKeys()) === 1 && ($this->{$this->getKeys()[0]} === "" || is_null($this->{$this->getKeys()[0]}))){                    
+                    $this->{$this->getKeys()[0]} = $this->queryBuilder::$conn->lastInsertId();                    
+                    
                 }
+                
                 $this->response->set([
                     "msg" => "Record created successfully.",
                     "status"=>true,
@@ -154,8 +171,8 @@ class EasyEntity extends Model{
     
     public function save():Response{
         $temp = $this->toArray();//current data to be saved will be lost and replaced
-        //if entity/record already exists, so we are temporarily storing current data
-        if(is_null($this->find($this->{$this->key}))){
+        //if entity/record already exists, so we are temporarily storing current data        
+        if(is_null($this->find($this->getKeyConditions()))){
             //go for adding/creating new record
             return $this->add();
         }
@@ -177,11 +194,11 @@ class EasyEntity extends Model{
             try{
                 $this->removeUndefinedProperty();
                 $data = ($this->toArray());
-                $cond = [
-                    //primary key attribute = value
-                    $this->key => ['=',$this->{$this->key}]
-                ];
-                unset($data[$this->key]);//key will not be updated
+                $cond = $this->getKeyConditions();
+                $keys = $this->getKeys();
+                foreach($keys as $key){
+                    unset($data[$key]);//key will not be updated
+                }
                 $stmt = $this->queryBuilder
                         ->update($this->table_name)
                         ->set($data)
@@ -218,10 +235,7 @@ class EasyEntity extends Model{
         }
         else{
             try{
-                $cond = [
-                    //primary key attribute = value
-                    $this->key => ['=',$this->{$this->key}]
-                ];
+                $cond = $this->getKeyConditions();
                 $stmt = $this->queryBuilder
                         ->delete($this->table_name)
                         ->where($cond)
@@ -252,15 +266,17 @@ class EasyEntity extends Model{
     
     
     /*** find an Entity ***/
-    public function find($id){
+    public function find($keyValuePairs = array()){
         //If Entity is not valid
         if(!$this->isValidEntity()) {
             throw new Exception(get_class($this)." is not a valid entity class, please make sure "
                     . "that you have set table name and primary key attribute of this entity.",500);
         }
-        $stmt = $this->queryBuilder->select($this->getReadableFields())->from($this->table_name)->where([
-            $this->key => ['=',$id]
-        ])->execute();
+        $cond = is_array($keyValuePairs)?$keyValuePairs:[$this->keys[0]=>['=',$keyValuePairs]];
+        
+        $stmt = $this->queryBuilder->select($this->getReadableFields())
+                ->from($this->table_name)
+                ->where($cond)->execute();
         if($stmt->rowCount()==0){
             return null;            
         }
@@ -373,15 +389,38 @@ class EasyEntity extends Model{
         $this->hiddenFields = [];
     }
     /*
-     * This method will set those properties which have been declared [Hidden] will be
-     * pushed into $hiddenFields variable. This method will be called from the constructor
+     * This method will push those properties which have been declared [Hidden] into 
+     * $hiddenFields variable. This method will be called from the constructor
      */
     protected function setHiddenFields(){
-        $reflection  = new \ReflectionClass($this);
-        foreach($reflection->getProperties() as $property){
+        $reflection  = new ReflectionClass($this);
+        foreach($reflection->getProperties(ReflectionProperty::IS_PUBLIC) as $property){
             foreach($property->getAttributes(Attributes\Hidden::class) as $attribute){
                 $attribute->newInstance()->hide($this,$property->getName());                
             }
         }
+    }
+    /*
+     * This method will push those properties which have been declared [Key] into 
+     * $keys variable. This method will be called from the constructor
+     */
+    protected function setKeyFields(){
+        $reflection  = new ReflectionClass($this);
+        foreach($reflection->getProperties(ReflectionProperty::IS_PUBLIC) as $property){
+            foreach($property->getAttributes(Key::class) as $attribute){
+                $this->addKey($property->getName());
+            }
+        }
+    }
+    
+    //function to make conditions on primary keys for updating, deleting, This is useful when 
+    //two or more attributes are combined to form primary key
+    public function getKeyConditions():array{
+        $keys = $this->getKeys();
+        $cond = [];//conditions to be returned
+        foreach($keys as $key){
+            $cond[$key] = $this->{$key};
+        }
+        return $cond;
     }
 }

@@ -30,10 +30,10 @@ class DoctrineEntityManager extends EntityManager{
             'driver' => "pdo_".$db_config['DB_DRIVER'],
             'port'=>$db_config['DB_PORT']??""
         );
-        $dev_mode = isset($_ENV['DEVELOPMENT_MODE'])&&$_ENV['DEVELOPMENT_MODE']==='ON'?true:false;
+        $isDevMode = isset($_ENV['DEVELOPMENT_MODE'])&&$_ENV['DEVELOPMENT_MODE']==='ON'?true:false;
         $config = Setup::createAnnotationMetadataConfiguration(
                 array(ENTITY_PATH), 
-                $dev_mode, 
+                $isDevMode, 
                 $proxyDir, 
                 $cache, 
                 $useSimpleAnnotationReader
@@ -41,12 +41,12 @@ class DoctrineEntityManager extends EntityManager{
         return self::create($db_param, $config);
     }
     
-    public static function create($connection, Configuration $config, EventManager $eventManager = null): DoctrineEntityManager {
+    public static function create($db_param, Configuration $config, EventManager $eventManager = null): DoctrineEntityManager {
         if ( ! $config->getMetadataDriverImpl()) {
             throw ORMException::missingMappingDriverImpl();
         }
 
-        $connection = static::createConnection($connection, $config, $eventManager);
+        $connection = static::createConnection($db_param, $config, $eventManager);
 
         return new DoctrineEntityManager($connection, $config, $connection->getEventManager());
     }

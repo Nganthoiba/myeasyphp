@@ -43,7 +43,7 @@ catch(MyEasyException $e){
 }
 catch(Exception $e){
     http_response_code(500);
-    $view = errorView(500, $e->getMessage(),'',$e->getFile(),$e->getLine());
+    $view = errorView(500, $e->getMessage()/*,'',$e->getFile(),$e->getLine()*/);
     echo $view;
     //dd($e);
 }

@@ -135,7 +135,7 @@ class Html {
     /****************** Form methods *******************/    
     //to begin a form
     public static function beginForm(string $action='',string $method='', string $class=''){
-        echo sprintf("<form action='%s' method='%s' class='%s'>\r\n",$action,$method,$class);
+        echo sprintf("<form action='%s' method='%s' class='%s'>\r\n",Config::get('host').'/'.$action,$method,$class);
     }
     
     //to end a form

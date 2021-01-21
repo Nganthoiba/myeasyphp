@@ -71,8 +71,8 @@ class PersonsController extends ApiController{
                 return $this->response->toJSON();
             }
             $person->setEntityData($data);
-            $person->{$person->getKey()} = $id;
-            $this->response = $this->em->update($person);            
+            $person->id = $id;
+            $this->response = $this->em->save($person);            
         }
         return $this->response->toJSON();
     }

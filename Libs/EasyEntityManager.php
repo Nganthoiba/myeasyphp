@@ -69,10 +69,12 @@ class EasyEntityManager {
                 $data = ($entity->toArray());
                 $stmt = self::$queryBuilder->insert($entity->getTable(), $data)->execute();
                 
-                if($entity->{$entity->getKey()}=="" || $entity->{$entity->getKey()}==null){                    
-                    $entity->{$entity->getKey()} = self::$queryBuilder::$conn->lastInsertId();
+                $keys = $entity->getKeys();
+                if(\sizeof($keys)===1){ 
+                    if($entity->{$keys[0]}=="" || $entity->{$keys[0]}==null){                    
+                        $entity->{$keys[0]} = EasyQueryBuilder::$conn->lastInsertId();
+                    }
                 }
-                
                 $this->response->set([
                     "data" => $entity,
                     "msg" => "Record inserted successfully.",
@@ -94,70 +96,13 @@ class EasyEntityManager {
     }
     
     //Method save will work for both insertion if record does not exist and updation if record already exist
-    public function save(EasyEntity $entity = null): Response{
-        if(is_null($entity) || !$entity->isValidEntity()) {
-            $this->response->set([
-                "msg" => "Invalid entity: either table name or key is not set or entity is null.",
-                "status"=>false,
-                "status_code"=>400
-            ]);          
+    public function save(EasyEntity $entity = null): Response{        
+        $entity = $this->removeUndefinedProperty($entity);
+        //check if entity already exist or not          
+        if(is_null($this->find($entity, $entity->getKeyConditions()))){                    
+           return $this->add($entity);
         }
-        else{
-            $entity = $this->removeUndefinedProperty($entity);
-            //check if entity already exist or not
-            $temp_entity = $this->find($entity, $entity->{$entity->getKey()});
-            $data = ($entity->toArray());
-            try{
-                if(is_null($temp_entity)){
-                    //then go for inserting new record
-                    $stmt = self::$queryBuilder->insert($entity->getTable(), $data)->execute();
-
-                    if($entity->{$entity->getKey()}=="" || $entity->{$entity->getKey()}==null){
-                        $entity->{$entity->getKey()} = self::$queryBuilder::$conn->lastInsertId();
-                    }
-
-                    $this->response->set([
-                        "data" => $entity,
-                        "msg" => "Record inserted successfully.",
-                        "status"=>true,
-                        "status_code"=>201,
-                        "rows_affected"=>$stmt->rowCount()
-                    ]);
-                }
-                else{
-                    //otherwise go for updating the entity
-                    unset($data[$entity->getKey()]);//key will not be updated
-                    $cond = [
-                        //primary key attribute = value
-                        $entity->getKey() => ['=',$entity->{$entity->getKey()}]
-                    ];
-                    $stmt = self::$queryBuilder
-                            ->update($entity->getTable())
-                            ->set($data)
-                            ->where($cond)
-                            ->execute();
-
-                    $this->response->set([
-                            "data" => $entity,
-                            "msg" => "Record saved successfully.",
-                            "status"=>true,
-                            "status_code"=>200,
-                            "rows_affected"=>$stmt->rowCount()
-                        ]);
-                }
-            }
-            catch (Exception $e){
-                $this->response->set([
-                        "msg" => "Sorry, an error occurs while updating the record.",
-                        "status"=>false,
-                        "status_code"=>500,
-                        "sqlErrorCode" => self::$queryBuilder->getsqlErrorCode(),
-                        "error"=>self::$queryBuilder->getErrorInfo()
-                    ]);
-            }
-            unset($temp_entity);
-        }
-        return $this->response;
+        return $this->update($entity);
     }
     
     //to update or save record
@@ -174,11 +119,11 @@ class EasyEntityManager {
             try{
                 $entity = $this->removeUndefinedProperty($entity);
                 $data = ($entity->toArray());
-                unset($data[$entity->getKey()]);//key will not be updated
-                $cond = [
-                    //primary key attribute = value
-                    $entity->getKey() => ['=',$entity->{$entity->getKey()}]
-                ];
+                $keys = $entity->getKeys();
+                foreach($keys as $key){
+                    unset($data[$key]);//key will not be updated
+                }
+                $cond = $entity->getKeyConditions();
                 $stmt = self::$queryBuilder
                         ->update($entity->getTable())
                         ->set($data)
@@ -220,10 +165,7 @@ class EasyEntityManager {
         }
         else{
             try{
-                $cond = [
-                    //primary key attribute = value
-                    $entity->getKey() => ['=',$entity->{$entity->getKey()}]
-                ];
+                $cond = $entity->getKeyConditions();
                 $stmt = self::$queryBuilder
                         ->delete($entity->getTable())
                         ->where($cond)
@@ -250,29 +192,35 @@ class EasyEntityManager {
     /********** END CRUD OPERATIONS *********/
     
     //Find an entity with primary key attribute
-    public function find(EasyEntity $entity,$id){
+    public function find(EasyEntity $entity,$keyValuePairs = array()){
+        $entityClass = get_class($entity);
+        $tempEntity = new $entityClass();
         //If Entity is not valid
         if(!$entity->isValidEntity()) {
             throw new Exception(get_class($entity)." is not a valid entity class, please make sure "
                     . "that you have set table name and primary key attribute of this entity.",500);
         }
-        $stmt = self::$queryBuilder->select($entity->getReadableFields())->from($entity->getTable())->where([
-            $entity->getKey() => ['=',$id]
-        ])->execute();
+        $cond = is_array($keyValuePairs)?$keyValuePairs:[
+            //only if $keyValuePairs is just a single value
+            $entity->getKeys()[0] => ['=',$keyValuePairs]
+        ];
+        $stmt = self::$queryBuilder->select($entity->getReadableFields())
+                ->from($entity->getTable())
+                ->where($cond)->execute();
         if($stmt->rowCount() == 0){
             return null;            
         }
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
         foreach ($res as $col_name=>$val){
-            $entity->{$col_name} = $val;
+            $tempEntity->{$col_name} = $val;
         }
         /***Removing hidden fields***/
         foreach ($entity->getHiddenFields() as $field){
             if(!isset($res[$field])){
-                unset($entity->{$field});
+                unset($tempEntity->{$field});
             }
         }
-        return $entity;
+        return $tempEntity;
     }
     
     //find maximum value of a column/field in a table, the column should be of integer data type preferrably
