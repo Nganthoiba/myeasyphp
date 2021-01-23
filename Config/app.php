@@ -21,7 +21,7 @@ Config::set('default_controller', 'Default');
 Config::set('default_action', 'index');
 
 //Domain configuration
-Config::set('host', '/MyEasyPHP');
+Config::set('host', '');
 //Assets Configuration
 Config::set('Assets', Config::get('host').'/Assets');
 

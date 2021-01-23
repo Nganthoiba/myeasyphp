@@ -15,7 +15,10 @@ declare(strict_types=1);
  */
 namespace MyEasyPHP\Libs;
 use MyEasyPHP\Libs\HttpStatus;
+use MyEasyPHP\Libs\XML\XMLEncoder;
 class Response {
+    private $contentType;
+    private $httpVersion;
     //data members compulsory for this response class
     public $data,$error,$status,$status_code,$msg,$sqlErrorCode;
     public function __construct() {
@@ -26,6 +29,7 @@ class Response {
         $this->status_code = 0;//http status code
         $this->sqlErrorCode=0;
         $this->msg = "";
+        $this->httpVersion = "HTTP/1.1";
     }
     public function set(array $data = []){
         foreach($data as $key=>$val){
@@ -33,14 +37,31 @@ class Response {
         }
         return $this;
     }
+    public function setContentType($contentType){
+        $this->contentType = $contentType;
+    }
+    public function setHttpVersion($httpVersion){
+        $this->httpVersion = $httpVersion;
+    }
     
     public function toJSON(){
         header("Content-Type: application/json");
-        header("HTTP/1.1 " . $this->status_code . " " . HttpStatus::getStatus($this->status_code));
+        header($this->httpVersion.' '. $this->status_code . ' ' . HttpStatus::getStatus($this->status_code));
         if(is_null($this->msg) || $this->msg == ""){
             $this->msg = HttpStatus::getStatus($this->status_code);
         }
         http_response_code($this->status_code);
         return json_encode($this);
     }
+    public function toXML(){
+        header("Content-Type: application/xml");
+        header($this->httpVersion.' '. $this->status_code . ' ' . HttpStatus::getStatus($this->status_code));
+        if(is_null($this->msg) || $this->msg == ""){
+            $this->msg = HttpStatus::getStatus($this->status_code);
+        }
+        http_response_code($this->status_code);
+        return XMLEncoder::encode($this);
+    }
+    
+    
 }
