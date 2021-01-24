@@ -15,6 +15,7 @@ use MyEasyPHP\Libs\Attributes\Validations\Numeric;
 use MyEasyPHP\Libs\Attributes\Validations\Email;
 use MyEasyPHP\Libs\Attributes\Validations\Matches;
 use MyEasyPHP\Libs\Attributes\Validations\Maxlength;
+use MyEasyPHP\Libs\Attributes\Validations\PhoneNumber;
 use MyEasyPHP\Libs\Attributes\Display;
 
 
@@ -33,10 +34,9 @@ class RegisterModel extends Model{
     #[Matches(PropertyName: 'Password')]
     public $ConfirmPassword;
     
-    #[Display(Name:'Contact number')]
+    #[Display(Name:'Your contact number')]
     #[Required]
-    #[Numeric]
-    #[Maxlength(Size:10)]
+    #[PhoneNumber]
     public $PhoneNumber;
     
     #[Display(Name:'Your full name')]

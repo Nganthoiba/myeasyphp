@@ -15,7 +15,7 @@ $student = $viewData->response->data;
 <div class="jumbotron">
     <div class="container">
         <h1 class="display-3">Are you sure to delete?</h1>
-        <form action="<?= getHtmlLink("Student", "delete", $student->student_id) ?>" method="GET">
+        <form action="<?= getHtmlLink("Student", "delete", $student->student_id) ?>" method="POST">
             <input type="hidden" value="<?= $student->student_id ?>" name="student_id" />
             <button type="submit" class="btn btn-primary">Yes</button>
             <a class="btn btn-info" href="<?= getHtmlLink("Student", "index") ?>">No</a>

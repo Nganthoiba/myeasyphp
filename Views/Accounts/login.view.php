@@ -69,7 +69,7 @@ Html::setContainer('_masterPage');
                         
                         <div>
                             <!-- Forgot password -->
-                            <a href="<?= Config::get('host') ?>/accounts/forgotPassword">Forgot password?</a>
+                            <a href="<?= Config::get('host') ?>/Accounts/forgotPassword">Forgot password?</a>
                         </div>
                     </div>
                     <!-- Sign in button -->
@@ -77,7 +77,7 @@ Html::setContainer('_masterPage');
                     <div class="text-center">
                         <!-- Register -->
                         <p>Not a member?
-                            <a href="<?= Config::get('host') ?>/accounts/register">Sign Up</a>
+                            <a href="<?= Config::get('host') ?>/Accounts/register">Sign Up</a>
                         </p>
                         <p style="color: red"></p>
                         <!-- Social login -->

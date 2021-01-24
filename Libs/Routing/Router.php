@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-namespace MyEasyPHP\Libs;
+namespace MyEasyPHP\Libs\Routing;
 /*
  * How do MVC routers work
  * A MVC Router class inspects the URL of an HTTP request and attempts to match individual URL 
@@ -37,7 +37,7 @@ namespace MyEasyPHP\Libs;
  * @author Nganthoiba
  * 19/06/2020
  */
-use MyEasyPHP\Libs\Route;
+use MyEasyPHP\Libs\Routing\Route;
 use MyEasyPHP\Libs\Config;
 use Exception;
 class Router {

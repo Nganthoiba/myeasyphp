@@ -25,6 +25,7 @@ use MyEasyPHP\Libs\MyEasyException;
 use MyEasyPHP\Libs\Authorization;
 use MyEasyPHP\Libs\Model;
 use MyEasyPHP\Libs\EasyEntity;
+use MyEasyPHP\Libs\Attributes\Http\Verbs\HttpMethod;
 
 use ReflectionMethod;
 use ReflectionFunction;
@@ -46,6 +47,9 @@ class Dispatcher {
         $http_methods = $router->getMethods();
         if(!in_array(self::$request->getMethod(), $http_methods/*getting HTTP verbs*/)){                    
             $exc = new MyEasyException("Method not allowed.",405);
+            $exc->httpCode = 405;
+            $exc->setFile('');
+            $exc->setLine(-1);
             $exc->setDetails("Methods allowed for the route '".$router->getRouteUrl()."' :- ".implode(', ',$http_methods).", but your request method is ".self::$request->getMethod());
             throw $exc;
         }
@@ -168,7 +172,10 @@ class Dispatcher {
         $action = is_null($router->getAction())?Config::get('default_action'):$router->getAction();//Action name
         self::initiateController($controller, $action);   
         
-        $reflectionMethod = new ReflectionMethod($controllerObj, $action);
+        $reflectionMethod = new ReflectionMethod($controllerObj, $action); 
+        if(!self::isMethodAllowed($reflectionMethod)){                    
+            exit();
+        }        
         $syncParams = self::synchroniseParameters($reflectionMethod->getParameters(),\array_values(self::$routeParams));
 
         $view = call_user_func_array([$controllerObj,$action], $syncParams);
@@ -188,15 +195,25 @@ class Dispatcher {
     //function to instantiate a controller object
     private static function initiateController(string $controller,string $action){
         global $controllerObj;
-        //*** creating Controller Object ***
+        //*** creating Controller Object ***/
         $controller_class = CONTROLLER_NAMESPACE.$controller;
         if(!class_exists($controller_class, TRUE)){
             $exception = new MyEasyException("Sorry, the page you are looking for is not found.",404);
-            $exception->setDetails("Please check whether the request url is registered in route configuration file Config/route.php."
-                    . "##**Or make sure that controller file ".$controller." exists in the directory ".CONTROLLERS_PATH);
+            $exception->setDetails("Please check whether the requested url is registered in route configuration file Config/route.php.");
+            $exception->httpCode = 404;
+            $exception->setFile('');
             throw $exception;
         }
         $controllerObj = new $controller_class();//instantiate a new controller object
+        
+        //Checking if action exist or not
+        if(!method_exists($controllerObj, $action)){
+            $exception = new MyEasyException("Sorry, the page you are looking for is not found.",404);
+            $exception->setDetails("Please check whether the requested url is registered in route configuration file Config/route.php.");
+            $exception->httpCode = 404;
+            $exception->setFile('');
+            throw $exception;
+        }
         $controllerObj->setRequest(self::$request);
         $controllerObj->setParams(self::$routeParams);//setting parameters
         //If the controller is not an api controller then check if the user is authorized
@@ -206,9 +223,37 @@ class Dispatcher {
             if(!Authorization::isAuthorized($controllerObj,$action)){
                 $msg = "Unauthorize access. You are not allowed to access the page. <a href='".Config::get('host')."/Accounts/login'>Login</a> with "
                         . "an authorized account. ";
-                $exc = new MyEasyException($msg,403);              
+                $exc = new MyEasyException($msg,403); 
+                $exc->setFile('');
+                $exc->setLine(-1);
                 throw $exc;
             }
         } 
+    }
+    
+    //function to get all the http methods set for the action method
+    private static function getAllowedHttpMethods(ReflectionMethod $reflectionMethod){
+        $httpMethods = [];
+        foreach($reflectionMethod->getAttributes() as $attribute){
+            $attributeInstance = $attribute->newInstance();
+            if($attributeInstance instanceof  HttpMethod){
+                $httpMethods = $attributeInstance->getMethod();
+                break;
+            }
+        }
+        return $httpMethods;
+    }
+    
+    private static function isMethodAllowed(ReflectionMethod $reflectionMethod){
+        global $router;
+        $httpMethods = self::getAllowedHttpMethods($reflectionMethod);
+        if(empty($httpMethods) || in_array(self::$request->getMethod(), $httpMethods)){
+            return true;
+        }
+        $exc = new MyEasyException("Method not allowed.",405);
+        $exc->httpCode = 405;
+        $exc->setFile('');
+        $exc->setDetails("Methods allowed for the route '".$router->getRouteUrl()."' :- ".implode(', ',$httpMethods).", but your request method is ".self::$request->getMethod());
+        throw $exc;
     }
 }

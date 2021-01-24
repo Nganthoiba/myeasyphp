@@ -1,5 +1,4 @@
 <?php
-
 namespace MyEasyPHP\Controllers;
 
 /**
@@ -11,6 +10,7 @@ namespace MyEasyPHP\Controllers;
 use MyEasyPHP\Libs\Controller;
 use MyEasyPHP\Libs\DoctrineEntityManager;
 use MyEasyPHP\Models\Entities\Students;
+
 class StudentController extends Controller{
     
     public function __construct(\MyEasyPHP\Libs\ViewData $viewData = null) {
@@ -28,7 +28,7 @@ class StudentController extends Controller{
         ]);
         return $this->view();        
     }
-    
+        
     public function add(Students $student){
        
         $request = $this->request;
@@ -65,6 +65,7 @@ class StudentController extends Controller{
             if($this->request->isMethod("POST")){                
                 try{                    
                     $student->setEntityData($this->request->getData());
+                    $student->student_id=$id;
                     $this->entityManager->persist($student);
                     $this->entityManager->flush();
                     redirect("Student");

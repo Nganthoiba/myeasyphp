@@ -29,7 +29,7 @@ if(Config::get("error_display")){
     //Beware that, when the code is in production server, it must be set
     //to false.
 ?>
-    <div style="border: 1px solid red; border-radius: 10px; padding: 5px; font-size: 11pt;">
+    <div class="alert alert-warning" style="border: 1px solid #dbd7d7; border-radius: 10px; padding: 5px; font-size: 11pt;">
         <p><b>Error:</b> <?= $viewData->ErrorMessage ?></p>
             <?php 
             if($viewData->ErrorDetail!=""){

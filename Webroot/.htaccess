@@ -19,4 +19,6 @@ ServerSignature Off
     #Session timeout
     php_value session.cookie_lifetime 1440
     php_value session.gc_maxlifetime 1440
+    #Session path
+    php_value session.save_path "/session/"
 </IfModule>

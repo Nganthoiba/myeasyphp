@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-use MyEasyPHP\Libs\Router;
+use MyEasyPHP\Libs\Routing\Router;
 use MyEasyPHP\Libs\Routing\RouteRegister;
 
 /*
@@ -52,7 +52,7 @@ $router->group("/Student",function(Router $router){
     ],'GET|POST');
     $router->addRoute("/delete/{id}", [
         "Controller" => "Student",
-        "Action" => "edit"
+        "Action" => "delete"
     ],'GET|POST');
 });
 

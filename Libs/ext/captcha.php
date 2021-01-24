@@ -25,9 +25,7 @@ class captcha {
                 $backgroundColor = imagecolorallocate($im, $backgroundColor['r'],$backgroundColor['g'],$backgroundColor['b']);
         }
 
-        imagefill($im,0,0,$backgroundColor);	
-        // list($x, $y) = $this->ImageTTFCenter($im, $text, $font, $fontSize);	
-        // imagettftext($im, $fontSize, 0, $x, $y, $textColor, $font, $text);
+        imagefill($im,0,0,$backgroundColor);
         imagestring($im, $fontSize, 10, 10, $text, $textColor);
         if(imagejpeg($im,$dir.$fileName,90)){/*save image as JPG*/
             return json_encode(array('status'=>TRUE,'image'=>$dir.$fileName));

@@ -15,10 +15,10 @@ use MyEasyPHP\Libs\UUID;
 use MyEasyPHP\Models\LoginViewModel;
 use MyEasyPHP\Models\Entities\PasswordResetLinks;
 use MyEasyPHP\Libs\ext\PHPMailer\PHPMailer;
-use MyEasyPHP\Libs\ext\PHPMailer\SMTP;
 use MyEasyPHP\Libs\ext\PHPMailer\Exception;
 use MyEasyPHP\Libs\Config;
 use MyEasyPHP\Libs\Response;
+use MyEasyPHP\Libs\Attributes\Http\Verbs\HttpPost;
 use SimpleRoleProvider\RoleProvider;
 class AccountsController extends Controller{
     private $em;//entity manager
@@ -190,7 +190,7 @@ class AccountsController extends Controller{
         $this->viewData->msg = "You have successfully logged out";
         return $this->view();
     }
-    
+    #[HttpPost]
     public function forgotPassword(){
         return $this->view();
     }

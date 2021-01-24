@@ -11,29 +11,36 @@ namespace MyEasyPHP\Libs\Routing;
 use ReflectionClass;
 use ReflectionMethod;
 use MyEasyPHP\Libs\Attributes\Route;
+
 class RouteRegister {
     public static function collectRoutesAndRegister(){
-        global $router;
         //first read all the controller file name from the Controllers directory
-        if ($dh = opendir(CONTROLLERS_PATH)){
+        $dh = opendir(CONTROLLERS_PATH);
+        if ($dh){
             while (($file = readdir($dh)) !== false){
                 if(strpos($file,"Controller.php")===false){
                     continue;
                 }                
                 $controllerName = str_replace("Controller.php","",$file); 
-                $controllerClass = CONTROLLER_NAMESPACE.$controllerName.'Controller';
-                $controller = new $controllerClass();
-                $reflectionClass = new ReflectionClass($controller);
-                foreach($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method){                    
-                    foreach($method->getAttributes(Route::class) as $attribute){                        
-                        $router->addRoute($attribute->newInstance()->url,[
-                            "Controller"=>$controllerName,
-                            "Action"=>$method->getName()
-                        ],$attribute->newInstance()->methods);
-                    }                    
-                }
+                self::setRoutes($controllerName);
             }
             closedir($dh);
         }
     }
+    
+    private static function setRoutes(string $controllerName){
+        global $router;
+        $controllerClass = CONTROLLER_NAMESPACE.$controllerName.'Controller';
+        $controller = new $controllerClass();
+        $reflectionClass = new ReflectionClass($controller);
+        foreach($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method){
+            foreach($method->getAttributes(Route::class) as $attribute){
+                $attributeInstance = $attribute->newInstance();
+                $router->addRoute($attributeInstance->url,[
+                    "Controller"=>$controllerName,
+                    "Action"=>$method->getName()
+                ],$attributeInstance->methods);
+            }
+        }
+    }    
 }

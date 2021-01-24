@@ -26,7 +26,7 @@ class View {
         if(!$router){
             return false;
         }
-        $controller = $router->getController();
+        $controller = ($router->getController());
         $template_name = $router->getAction().'.view.php';
         return VIEWS_PATH.$controller.DS.$template_name;
     }
@@ -40,7 +40,12 @@ class View {
             $this->path = $path;
         }
         if(!file_exists($this->path)){
-            throw new MyEasyException("View file is not found in the path: ".$this->path,404);
+            $excp = new MyEasyException("View file is not found in the path: ".$this->path,404);
+        
+            $excp->httpCode = 404;
+            $excp->setFile('');
+            $excp->setLine(-1);
+            throw $excp;
         }
         $this->viewData = $viewData;
     }

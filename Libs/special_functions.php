@@ -343,8 +343,10 @@ function errorView($httpCode,$errorMessage="",$errorDetails="",$filePath="", $li
     $viewData->httpStatus = HttpStatus::getStatus($httpCode);
     $viewData->ErrorMessage = $errorMessage;
     $viewData->ErrorDetail = $errorDetails;
+   
     $viewData->filePath = $filePath;
     $viewData->lineNo = $lineNo;
+    
     //path to error page
     $path = VIEWS_PATH."Shared".DS."error.view.php";
     $view = new View($path,$viewData);
