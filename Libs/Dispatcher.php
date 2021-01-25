@@ -173,7 +173,7 @@ class Dispatcher {
         self::initiateController($controller, $action);   
         
         $reflectionMethod = new ReflectionMethod($controllerObj, $action); 
-        if(!self::isMethodAllowed($reflectionMethod)){                    
+        if(!self::isHttpMethodAllowed($reflectionMethod)){                    
             exit();
         }        
         $syncParams = self::synchroniseParameters($reflectionMethod->getParameters(),\array_values(self::$routeParams));
@@ -244,13 +244,13 @@ class Dispatcher {
         return $httpMethods;
     }
     
-    private static function isMethodAllowed(ReflectionMethod $reflectionMethod){
+    private static function isHttpMethodAllowed(ReflectionMethod $reflectionMethod){
         global $router;
         $httpMethods = self::getAllowedHttpMethods($reflectionMethod);
         if(empty($httpMethods) || in_array(self::$request->getMethod(), $httpMethods)){
             return true;
         }
-        $exc = new MyEasyException("Method not allowed.",405);
+        $exc = new MyEasyException("Http method is not allowed.",405);
         $exc->httpCode = 405;
         $exc->setFile('');
         $exc->setDetails("Methods allowed for the route '".$router->getRouteUrl()."' :- ".implode(', ',$httpMethods).", but your request method is ".self::$request->getMethod());

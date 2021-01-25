@@ -39,9 +39,11 @@ class Response {
     }
     public function setContentType($contentType){
         $this->contentType = $contentType;
+        return $this;
     }
     public function setHttpVersion($httpVersion){
         $this->httpVersion = $httpVersion;
+        return $this;
     }
     
     public function toJSON(){
@@ -61,7 +63,5 @@ class Response {
         }
         http_response_code($this->status_code);
         return XMLEncoder::encode($this);
-    }
-    
-    
+    }    
 }
