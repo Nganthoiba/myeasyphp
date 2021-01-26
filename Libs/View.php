@@ -5,6 +5,7 @@ namespace MyEasyPHP\Libs;
 use MyEasyPHP\Libs\ViewData;
 use MyEasyPHP\Libs\MyEasyException;
 use MyEasyPHP\Libs\Html;
+use MyEasyPHP\Libs\EmptyClass;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -19,18 +20,8 @@ use MyEasyPHP\Libs\Html;
 class View {
     protected $path; //view path
     protected $viewData; //view data
-    protected $model;//Data Model, or an entity 
+    protected object|array $model;//Data Model, or an entity, or just an array
     
-    protected static function getDefaultViewPath(){
-        global $router;
-        if(!$router){
-            return false;
-        }
-        $controller = ($router->getController());
-        $template_name = $router->getAction().'.view.php';
-        return VIEWS_PATH.$controller.DS.$template_name;
-    }
-
     public function __construct($path, ViewData $viewData) {
         
         if(!$path || ($path==null) || trim($path)==""){
@@ -48,6 +39,16 @@ class View {
             throw $excp;
         }
         $this->viewData = $viewData;
+        $this->model = new EmptyClass();//by default
+    }
+    protected static function getDefaultViewPath(){
+        global $router;
+        if(!$router){
+            return false;
+        }
+        $controller = ($router->getController());
+        $template_name = $router->getAction().'.view.php';
+        return VIEWS_PATH.$controller.DS.$template_name;
     }
     
     public function setDataModel($model){
@@ -55,28 +56,52 @@ class View {
         return $this;
     }
     
-    //method for passing view data
-    public function withViewData($data = array()){
-        //$data must be an array of key and value pairs
-        foreach($data as $key=>$val){
-            $this->viewData->{$key} = $val;
+    //Convert all applicable characters to HTML entities recurssively, whether object
+    //or array
+    private function toHtmlEntities(?array $data=null):array{
+        if(is_null($data)){
+            return [];
+        }        
+        foreach ($data as $key=>$value){
+            if(is_array($value)){
+                $data[$key] = $this->toHtmlEntities($value);
+            }
+            else if(is_object($value)){
+                $tempObj = $value;
+                $m_arr = $this->toHtmlEntities(json_decode(json_encode($value),true));
+                if($tempObj instanceof Model){
+                    $tempObj->setModelData($m_arr);
+                }
+                else{
+                    $tempObj = (object)$m_arr;
+                }
+                $data[$key] = $tempObj;//$this->toHtmlEntities();
+            }
+            else if(is_string($value)){
+                $data[$key] = \htmlentities(''.$value);
+            }
         }
-        return $this;
+        return $data;
     }
-    //Randering view data
+    //Randering view
     public function render(){
-        ob_start();//turns on output buffering        
-        Html::$View_Data = $viewData = $this->viewData; 
-        Html::$Model_Object = $model = $this->model;
-        $data = is_object($model)?json_decode(json_encode($model),true):$model;        
+        ob_start();//turns on output buffering 
+        $data = is_object($this->model)?json_decode(json_encode($this->model),true):$this->model;         
         if(is_array($data)){
+            $data = $this->toHtmlEntities($data);
             foreach ($data as $key=>$value){
                 if(!is_numeric($key)){
                     //creating dynamic variables
                     ${$key} = $value;
                 }
+                if(is_object($this->model)){
+                    $this->model->{$key} = $value;
+                }
             }
         }
+        Html::$View_Data = $viewData = $this->viewData; 
+        Html::$Model_Object = $model = $this->model;
+        
         if(file_exists($this->path)){
             include_once($this->path);
         }
