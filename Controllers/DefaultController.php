@@ -16,6 +16,7 @@ class DefaultController extends Controller{
         $data = $this->request->getData();
         return $this->view($data);//returning view
     }
+    
     #[Route(url:'/about',methods:'GET')]
     public function about(){
         return view();

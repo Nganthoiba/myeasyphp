@@ -67,7 +67,7 @@ class Router {
         $this->controller = Config::get('default_controller');
         $this->action = Config::get('default_action');
         $this->params = [];
-        $this->methods = ['GET']; //by default
+        $this->methods = []; //by default
         $this->is_only_function = false;
         $this->function_name = "";
         $this->group_name = "";

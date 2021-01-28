@@ -12,7 +12,7 @@ class Route {
     /* $methods: represents http verbs */
     public string|array $methods;
     
-    public function __construct(string $url, string|array $methods=['GET']){
+    public function __construct(string $url, string|array $methods=[]){
         $this->url = '/'.ltrim($url,'/');
         $this->methods = $methods;
     }

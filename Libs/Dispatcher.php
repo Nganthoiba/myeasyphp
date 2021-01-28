@@ -4,8 +4,8 @@ namespace MyEasyPHP\Libs;
 
 /**
  * Description of Dispatcher
- * The main function of Dispatcher class is to get the controller, 
- * action and the parameters with the help of router, when the router found that 
+ * The main function of Dispatcher class is to get the right controller, 
+ * action and the parameters with the help of router, when the router finds that 
  * HTTP request's URL matches any of the registered route patterns in the route table 
  * then the router forwards the request to the appropriate handler (which can be 
  * Controller and Action or just a function) for that request. 
@@ -45,7 +45,8 @@ class Dispatcher {
         //senitising and filtering vulnerable and risky characters from all input values via GET or POST methods
         self::$routeParams = self::$request->cleanInputs($router->getParams());  
         $http_methods = $router->getMethods();
-        if(!in_array(self::$request->getMethod(), $http_methods/*getting HTTP verbs*/)){                    
+        
+        if(!empty($http_methods) && !in_array(self::$request->getMethod(), $http_methods/*getting HTTP verbs*/)){                    
             $exc = new MyEasyException("Method not allowed.",405);
             $exc->httpCode = 405;
             $exc->setFile('');
@@ -70,8 +71,7 @@ class Dispatcher {
          * $parameters are those defined in the action method of the controller
          * and the $arguments is the array of arguments that will be passed to that action method
          */
-        $limit = sizeof($parameters);
-        
+        $limit = sizeof($parameters);        
         for($i = 0; $i < $limit; $i++){  
             //break the iteration if the function or method is not accepting 
             //any further parameter
@@ -195,27 +195,20 @@ class Dispatcher {
     //function to instantiate a controller object
     private static function initiateController(string $controller,string $action){
         global $controllerObj;
+        //Checking if resource for the requested URI exist or not
+        if(!self::isResourceAvailable($controller, $action)){
+            $exception = new MyEasyException("Sorry, the page you are looking for is not found on this server.");
+            $exception->setDetails("Please check whether the requested url is registered in route configuration file Config/route.php.");
+            $exception->httpCode = HttpStatus::HTTP_NOT_FOUND;
+            $exception->setFile('');
+            throw $exception;
+        }        
         //*** creating Controller Object ***/
-        $controller_class = CONTROLLER_NAMESPACE.$controller;
-        if(!class_exists($controller_class, TRUE)){
-            $exception = new MyEasyException("Sorry, the page you are looking for is not found.",404);
-            $exception->setDetails("Please check whether the requested url is registered in route configuration file Config/route.php.");
-            $exception->httpCode = 404;
-            $exception->setFile('');
-            throw $exception;
-        }
+        $controller_class = CONTROLLER_NAMESPACE.$controller;        
         $controllerObj = new $controller_class();//instantiate a new controller object
-        
-        //Checking if action exist or not
-        if(!method_exists($controllerObj, $action)){
-            $exception = new MyEasyException("Sorry, the page you are looking for is not found.",404);
-            $exception->setDetails("Please check whether the requested url is registered in route configuration file Config/route.php.");
-            $exception->httpCode = 404;
-            $exception->setFile('');
-            throw $exception;
-        }
         $controllerObj->setRequest(self::$request);
         $controllerObj->setParams(self::$routeParams);//setting parameters
+        
         //If the controller is not an api controller then check if the user is authorized
         if($controllerObj instanceof Controller){
             startSecureSession();
@@ -223,7 +216,8 @@ class Dispatcher {
             if(!Authorization::isAuthorized($controllerObj,$action)){
                 $msg = "Unauthorize access. You are not allowed to access the page. <a href='".Config::get('host')."/Accounts/login'>Login</a> with "
                         . "an authorized account. ";
-                $exc = new MyEasyException($msg,403); 
+                $exc = new MyEasyException($msg); 
+                $exc->httpCode = HttpStatus::HTTP_FORBIDDEN;
                 $exc->setFile('');
                 $exc->setLine(-1);
                 throw $exc;
@@ -231,14 +225,13 @@ class Dispatcher {
         } 
     }
     
-    //function to get all the http methods set for the action method
+    //function to get all the http methods set for the action method using attribute
     private static function getAllowedHttpMethods(ReflectionMethod $reflectionMethod){
         $httpMethods = [];
         foreach($reflectionMethod->getAttributes() as $attribute){
             $attributeInstance = $attribute->newInstance();
             if($attributeInstance instanceof  HttpMethod){
-                $httpMethods = $attributeInstance->getMethod();
-                break;
+                $httpMethods = array_merge($httpMethods,$attributeInstance->getMethod());                
             }
         }
         return $httpMethods;
@@ -250,10 +243,22 @@ class Dispatcher {
         if(empty($httpMethods) || in_array(self::$request->getMethod(), $httpMethods)){
             return true;
         }
-        $exc = new MyEasyException("Http method is not allowed.",405);
-        $exc->httpCode = 405;
+        $exc = new MyEasyException("Http method is not allowed.");
+        $exc->httpCode = HttpStatus::HTTP_FORBIDDEN;
         $exc->setFile('');
         $exc->setDetails("Methods allowed for the route '".$router->getRouteUrl()."' :- ".implode(', ',$httpMethods).", but your request method is ".self::$request->getMethod());
         throw $exc;
+    }
+    
+    //This method checks if controller class or method exists or not
+    private static function isResourceAvailable(string $controller,string $action):bool{
+        $controller = CONTROLLER_NAMESPACE.$controller;
+        if(!class_exists($controller, TRUE)){
+            return false;
+        }
+        if(!method_exists($controller, $action)){
+            return false;
+        }
+        return true;
     }
 }

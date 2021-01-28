@@ -413,7 +413,13 @@ function handleMyEasyPHPError($errNo, $errMsg, $errFile, $errLine,$errTypes=null
         exit();
     }
 }
-
+/*----------------------------------------------------------------------------*/
+function env($key){
+    if(isset($_ENV[$key])){
+        return $_ENV[$key];
+    }
+    return '';
+}
 //display content and die
 function dd($anything){
     echo "<pre>";

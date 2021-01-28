@@ -15,8 +15,9 @@ set_error_handler("handleMyEasyPHPError");
 try{
     $env = Dotenv::createUnsafeImmutable(ROOT);
     $env->load();
+    //Loading configurations
     require_once CONFIG_PATH. 'app.php';// Application configuration file
-    require_once CONFIG_PATH. 'routes.php';//Route Configuration file 
+    require_once CONFIG_PATH. 'routes.php';//Route Configuration file
     date_default_timezone_set(Config::get('default_time_zone'));    
     Dispatcher::dispatch();
 }
