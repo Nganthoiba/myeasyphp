@@ -11,12 +11,13 @@ class DisplaySourceCode {
     private static function highlightText($text, $fileExt="")
     {
         if ($fileExt == "php")
-        {
+        {   
             ini_set("highlight.comment", "#008000");
-            ini_set("highlight.default", "#000000");
+            ini_set("highlight.default", "#664741");
             ini_set("highlight.html", "#808080");
             ini_set("highlight.keyword", "#0000BB; font-weight: bold");
             ini_set("highlight.string", "#DD0000");
+            
         }
         else if ($fileExt == "html")
         {
@@ -26,9 +27,7 @@ class DisplaySourceCode {
             ini_set("highlight.keyword", "black; font-weight: bold");
             ini_set("highlight.string", "#0000FF");
         }
-        // ...
-
-        $text = ($text);
+                
         $text = highlight_string("<?php " . $text, true);  // highlight_string() requires opening PHP tag or otherwise it will not colorize the text
         $text = trim($text);
         $text = preg_replace("|^\\<code\\>\\<span style\\=\"color\\: #[a-fA-F0-9]{0,6}\"\\>|", "", $text, 1);  // remove prefix
@@ -54,10 +53,13 @@ class DisplaySourceCode {
         //echo count($lines); //line 2
         $lineNoTo = ($lineNoTo > $totalLines)?$totalLines:$lineNoTo;
         $i = $lineNoFrom-1;
-        //foreach($lines as $line){
+        echo '<div style="border: 1px solid #dbd7d7; border-radius: 10px; padding: 5px; font-size: 11pt;background-color:#f2f2f2">';
+        echo "<code>";
         for($j=$i; $j < $lineNoTo; $j++) { 
-            $style = ($j===($markLineNo-1))?'style="background-color:#d2c5c8"':'';            
+            $style = ($j===($markLineNo-1))?'style="background-color:#d2c5c8"':'';
             echo '<div '.$style.'>'.(++$i).' '. self::highlightText($lines[$j],'php').'</div><span style="display:none;">\n\t</span>';
         }
+        echo "</code>";
+        echo "</div>";
     }
 }

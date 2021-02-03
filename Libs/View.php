@@ -6,6 +6,9 @@ use MyEasyPHP\Libs\ViewData;
 use MyEasyPHP\Libs\MyEasyException;
 use MyEasyPHP\Libs\Html;
 use MyEasyPHP\Libs\EmptyClass;
+use MyEasyPHP\Libs\EasyEntity as Entity;
+use MyEasyPHP\Libs\Model;
+use MyEasyPHP\Libs\Routing\Route;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -31,9 +34,9 @@ class View {
             $this->path = $path;
         }
         if(!file_exists($this->path)){
-            $excp = new MyEasyException("View file is not found in the path: ".$this->path,404);
-        
-            $excp->httpCode = 404;
+            $excp = new MyEasyException("Sorry, the page you are looking for is not found on this server.",404);        
+            $excp->httpCode = HttpStatus::HTTP_NOT_FOUND;
+            $excp->setDetails("View file {$this->path} is not found.");
             $excp->setFile('');
             $excp->setLine(-1);
             throw $excp;
@@ -56,6 +59,16 @@ class View {
         return $this;
     }
     
+    
+    private function objectHtmlEntities($object){
+        $tempObj = $object;        
+        if($tempObj instanceof Model or $tempObj instanceof Entity){
+            $m_arr = $this->toHtmlEntities(json_decode(json_encode($object),true));
+            $tempObj->setModelData($m_arr);
+        }
+        return $tempObj;
+    }
+    
     //Convert all applicable characters to HTML entities recurssively, whether object
     //or array
     private function toHtmlEntities(?array $data=null):array{
@@ -66,16 +79,8 @@ class View {
             if(is_array($value)){
                 $data[$key] = $this->toHtmlEntities($value);
             }
-            else if(is_object($value)){
-                $tempObj = $value;
-                $m_arr = $this->toHtmlEntities(json_decode(json_encode($value),true));
-                if($tempObj instanceof Model){
-                    $tempObj->setModelData($m_arr);
-                }
-                else{
-                    $tempObj = (object)$m_arr;
-                }
-                $data[$key] = $tempObj;//$this->toHtmlEntities();
+            else if(is_object($value)){                
+                $data[$key] = $this->objectHtmlEntities($value);
             }
             else if(is_string($value)){
                 $data[$key] = \htmlentities(''.$value);
@@ -94,10 +99,10 @@ class View {
                     //creating dynamic variables
                     ${$key} = $value;
                 }
-                if(is_object($this->model)){
-                    $this->model->{$key} = $value;
-                }
             }
+        }
+        if(is_object($this->model)){
+            $this->model = $this->objectHtmlEntities($this->model);
         }
         Html::$View_Data = $viewData = $this->viewData; 
         Html::$Model_Object = $model = $this->model;

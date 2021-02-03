@@ -19,6 +19,7 @@ use MyEasyPHP\Libs\ext\PHPMailer\Exception;
 use MyEasyPHP\Libs\Config;
 use MyEasyPHP\Libs\Response;
 use MyEasyPHP\Libs\Attributes\Http\Verbs\HttpPost;
+use MyEasyPHP\Libs\Attributes\Http\Verbs\HttpGet;
 use SimpleRoleProvider\RoleProvider;
 class AccountsController extends Controller{
     private $em;//entity manager
@@ -33,7 +34,7 @@ class AccountsController extends Controller{
             "msg"=>""
         ]);
         $this->viewData->response = $this->response;
-                
+        /**hdgd**/
         if($this->request->isMethod("POST")){            
             if($loginViewModel->isValidated()){
                 $this->authenticate($loginViewModel);            
@@ -191,6 +192,7 @@ class AccountsController extends Controller{
         return $this->view();
     }
     #[HttpPost]
+    #[HttpGet]
     public function forgotPassword(){
         return $this->view();
     }
@@ -285,7 +287,7 @@ class AccountsController extends Controller{
                 ]);
                 $_SESSION['reset_confirm_code'] = randId(10);
                 
-                $obj = new \MyEasyPHP\Libs\Model();
+                $obj = new \stdClass();
                 $obj->UserId = $resetLink->UserId;
                 $obj->reset_confirm_code = $_SESSION['reset_confirm_code'];
                 $obj->resetCode = $resetCode;

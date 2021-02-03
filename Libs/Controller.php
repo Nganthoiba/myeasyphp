@@ -40,7 +40,7 @@ class Controller {
     
     protected $entityManager,$easyEntityManager;
     
-    protected $_annonymousActions;//an array of actions which can be accessed 
+    protected $_anonymousActions;//an array of actions which can be accessed 
     //annonymously with or without authentication such as login page, registration page, forgot
     //password page etc
     
@@ -97,7 +97,7 @@ class Controller {
         
         $this->_authorize = false;//access granted for all kinds of users
         $this->_authorizeActions = [];//empty
-        $this->_annonymousActions = [];//
+        $this->_anonymousActions = [];//
        
         
     }
@@ -122,10 +122,10 @@ class Controller {
     }
     
     public function getAnnonymousActions():array{
-        for($i=0;$i<sizeof($this->_annonymousActions);$i++){
-            $this->_annonymousActions[$i] = strtolower($this->_annonymousActions[$i]);
+        for($i=0;$i<sizeof($this->_anonymousActions);$i++){
+            $this->_anonymousActions[$i] = strtolower($this->_anonymousActions[$i]);
         }
-        return $this->_annonymousActions;
+        return $this->_anonymousActions;
     }
     
     /** For sending response to client **/
@@ -271,11 +271,8 @@ class Controller {
                 break;            
         }
         
-        if($view_path !== ""){
-            $class_name = get_class($this);
-            $parts_class_name = explode("\\",$class_name);
-            $controller_name = $parts_class_name[sizeof($parts_class_name)-1];
-            $controller_name = str_replace("Controller","",$controller_name);
+        if($view_path !== ""){            
+            $controller_name = str_replace("Controller","",basename(get_class($this)));
             //all the view pages have file extension ".view.php" as a convension of this framework
             if(file_exists(VIEWS_PATH.$view_path.'.view.php')){
                 $view_path = VIEWS_PATH.$view_path.'.view.php';

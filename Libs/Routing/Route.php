@@ -36,7 +36,7 @@ class Route {
             $this->methods = preg_split("/[,|]/",$methods);           
         }
         else if(is_array($methods)){
-            $this->methods = sizeof($methods)==0?['GET']:$methods;//by default set to GET method
+            $this->methods = /*sizeof($methods)==0?['GET']:*/$methods;//by default set to GET method
         }
         //convert every methods in uppercase
         $limit = sizeof($this->methods);

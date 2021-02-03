@@ -239,7 +239,8 @@ class Dispatcher {
     
     private static function isHttpMethodAllowed(ReflectionMethod $reflectionMethod){
         global $router;
-        $httpMethods = self::getAllowedHttpMethods($reflectionMethod);
+        $routeMethods = $router->getMethods();//http methods if defined in the route configuration
+        $httpMethods = array_merge($routeMethods,self::getAllowedHttpMethods($reflectionMethod));
         if(empty($httpMethods) || in_array(self::$request->getMethod(), $httpMethods)){
             return true;
         }

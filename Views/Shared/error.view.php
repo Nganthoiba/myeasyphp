@@ -29,35 +29,34 @@ if(Config::get("error_display")){
     //Beware that, when the code is in production server, it must be set
     //to false.
 ?>
-    <div class="alert alert-warning" style="border: 1px solid #dbd7d7; border-radius: 10px; padding: 5px; font-size: 11pt;">
+    <div style="padding: 5px; font-size: 11pt;">
         <p><b>Error:</b> <?= $viewData->ErrorMessage ?></p>
-            <?php 
-            if($viewData->ErrorDetail!=""){
-            ?>
-        <p><h4>Details:</h4>
-            
-        
-            <ol>
-            <?php
-                $Errors = explode("#", $viewData->ErrorDetail);        
-                foreach($Errors as $error){            
-                    if(trim($error) == ""){
-                        continue;
-                    }
-                    echo "<li>".substr($error,2)."</li>";                    
+        <?php 
+        if($viewData->ErrorDetail!=""){
+        ?>        
+        <h4>Details:</h4>
+        <ol>
+        <?php
+            $Errors = explode("#", $viewData->ErrorDetail);        
+            foreach($Errors as $error){            
+                if(trim($error) == ""){
+                    continue;
                 }
+                echo "<li>".substr($error,2)."</li>";                    
             }
-            ?>
-            </ol>
-            <?php            
-            if(trim($viewData->filePath)!==""){
-                echo "<H5>Error Line:</H5>";
-                $startLine = ($viewData->lineNo-3)<1?1:$viewData->lineNo-3;
-                $endLine = ($viewData->lineNo+3);
-                DisplaySourceCode::display($viewData->filePath,$startLine,$endLine,$viewData->lineNo);
-            }
-            ?>
-        </p>
+            
+        ?>
+        </ol>
+        <?php 
+        }
+        if(trim($viewData->filePath)!==""){
+            echo "<H5>Error Line:</H5>";
+            $startLine = ($viewData->lineNo-4)<1?1:$viewData->lineNo-4;
+            $endLine = ($viewData->lineNo+4);
+            DisplaySourceCode::display($viewData->filePath,$startLine,$endLine,$viewData->lineNo);
+        }
+        ?>
+      
     </div>
 </div>
 <?php

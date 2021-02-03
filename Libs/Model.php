@@ -12,7 +12,7 @@ use ReflectionProperty;
 use MyEasyPHP\Libs\Attributes\Validations\Validator;
 use MyEasyPHP\Libs\Attributes\Display;
 
-abstract class Model {
+class Model {
        
     protected $errors = [];//set of error for different attributes
     protected $propertyDisplayNames = [];//How data members (properties) will be displayed in the View File (Form)
