@@ -17,8 +17,10 @@ class MyEasyException extends Excp{
     protected $file;
     protected $line;
     public int $httpCode;
-    public function __construct(string $message = "", int $code = 0, \Throwable $previous = NULL) {
-        parent::__construct($message, $code, $previous);
+    public function __construct(string $message = "",  $code = 0, \Throwable $previous = NULL) {
+        if(is_integer($code)){
+            parent::__construct($message, $code, $previous);
+        }
         $this->details="";
         $this->httpCode = $code==0?200:500;
     }
