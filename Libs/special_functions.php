@@ -414,9 +414,13 @@ function handleMyEasyPHPError($errNo, $errMsg, $errFile, $errLine,$errTypes=null
     }
 }
 /*----------------------------------------------------------------------------*/
-function env($key){
-    if(isset($_ENV[$key])){
-        return $_ENV[$key];
+function env(string $key=""){
+    $env_var = $_ENV;//environment variables
+    if($key === ""){
+        return $env_var;
+    }
+    if(isset($env_var[$key])){
+        return $env_var[$key];
     }
     return '';
 }

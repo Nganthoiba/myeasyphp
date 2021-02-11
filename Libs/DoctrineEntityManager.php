@@ -20,7 +20,7 @@ class DoctrineEntityManager extends EntityManager{
         $proxyDir = null;
         $cache = null;
         $useSimpleAnnotationReader = false;
-        $db_config = $_ENV;
+        $db_config = env();
         /*Database Configuration set up*/
         $db_param = array(
             'dbname' => $db_config['DB_NAME'],
