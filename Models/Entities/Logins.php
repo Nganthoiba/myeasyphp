@@ -15,18 +15,36 @@ namespace MyEasyPHP\Models\Entities;
  */
 use MyEasyPHP\Libs\EasyEntity as Entity;
 use MyEasyPHP\Libs\Response;
+use MyEasyPHP\Libs\Attributes\Key;
+use Doctrine\ORM\Mapping as ORM;
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="Logins")
+ */
 class Logins extends Entity{
-    public  $login_id,/*primary key*/
-            $login_time,
-            $logout_time,
-            $expiry,   
-            $source_ip,
-            $device,//user_agent, 
-            $user_id;
-    public function __construct() {
-        parent::__construct();
-        $this->setKey("login_id")->setTable("logins");
-    }
+    /** @ORM\Id @ORM\Column(type="string",length=255) */
+    #[Key]
+    public  $login_id;/*primary key*/
+    
+    /** @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"}) */
+    public  $login_time;
+    
+    /** @ORM\Column(type="datetime", nullable=true) */
+    public  $logout_time;   
+    
+    /** @ORM\Column(type="datetime", nullable=true) */
+    public  $expiry;
+    
+    /** @ORM\Column(type="string", length=15) */
+    public  $source_ip;
+    
+    /** @ORM\Column(type="string", length=255) */
+    public  $device;//user_agent, 
+    
+    /** @ORM\Column(type="string", length=36) */
+    public  $user_id;
+    
+    
     //Adding user login details
     public function add():Response{
         //$this->login_id = randId(60);

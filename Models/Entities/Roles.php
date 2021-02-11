@@ -14,11 +14,21 @@ namespace MyEasyPHP\Models\Entities;
  * @author Nganthoiba
  */
 use MyEasyPHP\Libs\EasyEntity as Entity;
+use MyEasyPHP\Libs\Attributes\Key;
+use Doctrine\ORM\Mapping as ORM;
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="Roles")
+ */
 class Roles extends Entity{
+    /**
+     * @ORM\Id 
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue **/
+    #[Key]
     public $role_id;
+    /** 
+     * @ORM\Column(type="string",length=100) 
+     * **/
     public $role_name;
-    public function __construct() {
-        parent::__construct();
-        $this->setKey("role_id");
-    }
 }

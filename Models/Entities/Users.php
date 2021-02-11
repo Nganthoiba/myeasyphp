@@ -1,6 +1,5 @@
 <?php
 namespace MyEasyPHP\Models\Entities;
-
 /**
  * Description of Users
  *
@@ -9,27 +8,44 @@ namespace MyEasyPHP\Models\Entities;
 use MyEasyPHP\Libs\EasyEntity as Entity;
 use MyEasyPHP\Libs\UUID;
 use MyEasyPHP\Libs\Attributes\Hidden;
+use MyEasyPHP\Libs\Attributes\Key;
+use Doctrine\ORM\Mapping as ORM;
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="Users")
+ */
 class Users extends Entity{
     /*** data structures for user***/
-    public  $user_id , 
-            $full_name ,     
-            $email,    
-            $phone_number,
-            $role_id, 
-            $verify,//email verification         
-            $create_at,     
-            $update_at,      
-            $delete_at,      
-            $profile_image,  
-            $aadhaar,        
-            $update_by;
+    /** @ORM\Id @ORM\Column(type="string",length=36) */
+    #[Key]
+    public  $user_id;
+    /** @ORM\Column(type="string",length=160) */
+    public  $full_name;  
+    /** @ORM\Column(type="string",length=100) */        
+    public  $email;
+    /** @ORM\Column(type="string",length=10) */
+    public $phone_number;
+    /** @ORM\Column(type="integer") */
+    public $role_id;    
+    /** @ORM\Column(type="boolean", options={"default": "false"}) */    
+    public $verify;//email verification     
+    /** @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"}) */
+    public $create_at;
+    /** @ORM\Column(type="datetime", nullable=true) */
+    public $update_at;
+    /** @ORM\Column(type="datetime", nullable=true) */
+    public $delete_at;
+    /** @ORM\Column(type="string",length=160, nullable=true) */
+    public $profile_image;
+    /** @ORM\Column(type="string",length=36, nullable=true) */
+    public $update_by;    
+    /** @ORM\Column(type="string",length=255) */
     #[Hidden]
-    public $user_password,$security_stamp;//salt
+    public $user_password;
+    /** @ORM\Column(type="string",length=255) */
+    #[Hidden]
+    public $security_stamp;//salt
     
-    public function __construct() {
-        parent::__construct();
-        $this->setKey("user_id");
-    }
     
     public function setEntityData(array $data) {
         parent::setEntityData($data);

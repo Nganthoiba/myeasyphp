@@ -7,6 +7,7 @@ namespace MyEasyPHP\Models\Entities;
  */
 use Doctrine\ORM\Mapping as ORM;
 use MyEasyPHP\Libs\EasyEntity;
+use MyEasyPHP\Libs\Attributes\Key;
 /**
  * @ORM\Entity
  * @ORM\Table(name="Students",
@@ -16,15 +17,11 @@ use MyEasyPHP\Libs\EasyEntity;
  */
 class Students extends EasyEntity{
     
-    public function __construct() {
-        parent::__construct();
-        $this->setTable("Students");
-        $this->setKey("student_id");
-    }
     /**
      * @ORM\Id @ORM\Column(type="integer")
      * @ORM\GeneratedValue **/
-    public $student_id;
+    #[Key]
+    public $Student_id;
     /** 
      * @ORM\Column(type="string",length=100) 
      * **/
@@ -36,9 +33,14 @@ class Students extends EasyEntity{
     /** 
      * @ORM\Column(type="integer") 
      * **/
-    public $roll_number;
+    public int $Roll_Number;
+    
     /** @ORM\Column(type="string",length=255) **/
-    public $school_name;
+    public $School_Name;
+    
     /** @ORM\Column(type="string",length=2) **/
     public $section;
+    
+    /** @ORM\Column(type="string",length=150) **/
+    public $FatherName;
 }
