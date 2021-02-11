@@ -23,6 +23,14 @@ Html::setContainer("_masterPage");
             </div>
             <div class="row">
                 <div class="col-sm-3">
+                    <label>Father Name:</label>
+                </div>
+                <div class="col-sm-4">
+                    <input type="text" name="fathername" class="form-control" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
                     <label>Class:</label>
                 </div>
                 <div class="col-sm-4">

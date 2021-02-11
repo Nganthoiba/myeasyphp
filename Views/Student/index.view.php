@@ -15,6 +15,7 @@ $resp = $viewData->response;
                 <tr>
                     <th>ID</th>
                     <th>Student Name</th>
+                    <th>Father Name</th>
                     <th>Class</th>
                     <th>Roll Number</th>
                     <th>Section</th>
@@ -36,15 +37,16 @@ $resp = $viewData->response;
                     foreach ($students as $student){
                 ?>
                 <tr>
-                    <td><?= $student->student_id ?></td>
+                    <td><?= $student->Student_id ?></td>
                     <td><?= $student->student_name ?></td>
+                    <td><?= $student->fathername ?></td>
                     <td><?= $student->class ?></td>
-                    <td><?= $student->roll_number ?></td>
+                    <td><?= $student->Roll_Number ?></td>
                     <td><?= $student->section ?></td>
-                    <td><?= $student->school_name ?></td>
+                    <td><?= $student->School_Name ?></td>
                     <td>
-                        <a class="btn btn-link btn-sm" href="<?= getHtmlLink("Student", "edit", $student->student_id) ?>">Edit</a> | 
-                        <a class="btn btn-link btn-sm" href="<?= getHtmlLink("Student", "confirmDelete", $student->student_id) ?>">Delete</a>
+                        <a class="btn btn-link btn-sm" href="<?= getHtmlLink("Student", "edit", $student->Student_id) ?>">Edit</a> | 
+                        <a class="btn btn-link btn-sm" href="<?= getHtmlLink("Student", "confirmDelete", $student->Student_id) ?>">Delete</a>
                         
                     </td>
                 </tr>

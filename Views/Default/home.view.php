@@ -1,6 +1,5 @@
 <?php 
 use MyEasyPHP\Libs\Html;
-use MyEasyPHP\Libs\Debugging\DisplaySourceCode;
 Html::setContainer("_masterPage");
 ?>
 <div class="container">

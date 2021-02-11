@@ -27,6 +27,14 @@ $student = $model;
             </div>
             <div class="row">
                 <div class="col-sm-3">
+                    <label>Father Name:</label>
+                </div>
+                <div class="col-sm-4">
+                    <input type="text" name="FatherName" value="<?= $student->FatherName ?>" class="form-control" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
                     <label>Class:</label>
                 </div>
                 <div class="col-sm-4">
@@ -38,7 +46,7 @@ $student = $model;
                     <label>Roll Number:</label>
                 </div>
                 <div class="col-sm-4">
-                    <input type="text" name="roll_number" value="<?= $student->roll_number ?>" class="form-control" />
+                    <input type="text" name="Roll_Number" value="<?= $student->Roll_Number ?>" class="form-control" />
                 </div>
             </div>
             <div class="row">
@@ -54,7 +62,7 @@ $student = $model;
                     <label>School name:</label>
                 </div>
                 <div class="col-sm-4">
-                    <input type="text" name="school_name" value="<?= $student->school_name ?>" class="form-control" />
+                    <input type="text" name="School_Name" value="<?= $student->School_Name ?>" class="form-control" />
                 </div>
             </div>
             <div class="row">
