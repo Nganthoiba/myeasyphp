@@ -47,7 +47,7 @@ class Database {
                     $DSN, 
                     $db_username, 
                     $db_password,
-                    [PDO::ATTR_PERSISTENT => $persistent]
+                    /*[PDO::ATTR_PERSISTENT => $persistent]*/
                     );
             if(!$conn){
                 self::$conn_error = "Database connection failed.";
