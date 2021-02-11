@@ -30,24 +30,42 @@ class Model {
         $reflectionClass = new ReflectionClass($this);
         $reflectionProperties = $reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC);
         foreach ($reflectionProperties as $property){
-            $propertyName = $property->getName();            
+            $propertyName = $property->getName();
+            $dataValue = $this->getDataValue($data, $propertyName);
+            if($dataValue === "NOT_EXIST"){
+                continue;
+            }            
             switch ($property->getType()){
                 case 'int':
-                    $this->{$propertyName} = (int)($data[$propertyName]);
+                    $this->{$propertyName} = intval($dataValue);//(int)($data[$propertyName]);
                     break;
                 case 'float':
-                    $this->{$propertyName} = (float)$data[$propertyName];
+                    $this->{$propertyName} = floatval($dataValue);//$data[$propertyName];
                     break;
                 case 'bool':
-                    $this->{$propertyName} = (isset($data[$propertyName]) && $data[$propertyName]==='true')?true:false;
+                    $this->{$propertyName} = (strtolower($dataValue)==='true')?true:false;
                     break;
-                default:
-                    $this->{$propertyName} = $data[$propertyName]??"";
+                default:                    
+                    $this->{$propertyName} = $dataValue;
             }
             
         }
         
     }
+    
+    private function getDataValue(array $data, string|int $key){
+        if(is_integer($key)){
+            return $data[$key]??"NOT_EXIST";
+        }
+        $keys = array_keys($data);
+        foreach($keys as $k){
+            if(strtolower($k) === strtolower($key)){
+                return $data[$k];
+            }
+        }
+        return "NOT_EXIST";
+    }
+    
     public function isValidated():bool{
         $reflectionClass = new ReflectionClass($this);
         $memberData = $reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC);
@@ -93,10 +111,10 @@ class Model {
      * can not be set dynamically.
     */ 
     public function __get($name) {
-        if(!property_exists($this, $name)){
-            return null;
+        if(property_exists($this, $name)){
+            return $this->{$name};
         }
-        return $this->{$name};
+        return null;
     }
     public function __set($key, $value) {
         if(property_exists($this, $key)){

@@ -31,7 +31,7 @@ use ReflectionClass;
 use ReflectionProperty;
 
 class EasyEntity extends Model{
-    private $table_name;//name of the table in the database
+    protected $table_name;//name of the table in the database
     protected $keys = [];//it can be one primary key or compound primary keys, i.e. two or more 
     //attributes together forming  primary key
     private $queryBuilder;
@@ -86,10 +86,12 @@ class EasyEntity extends Model{
     public function getTable(){
         return $this->table_name;
     }
-    //method to get key of the entity
+    //method to get keys of the entity
     public function getKeys():array{
         return $this->keys;
     }
+    
+    //this method will be called only when entity has single key
     public function getKey(){
         return $this->keys[0]??"";
     }
@@ -184,77 +186,62 @@ class EasyEntity extends Model{
     
     public function update(): Response{
         if(!$this->isValidEntity()) {
-            $this->response->set([
+            return $this->response->set([
                 "msg" => "Invalid entity: either table name or key is not set.",
                 "status"=>false,
                 "status_code"=>400
-            ]);          
+            ]); 
         }
-        else{
-            try{
-                $this->removeUndefinedProperty();
-                $data = ($this->toArray());
-                $cond = $this->getKeyConditions();
-                $keys = $this->getKeys();
-                foreach($keys as $key){
-                    unset($data[$key]);//key will not be updated
-                }
-                $stmt = $this->queryBuilder
-                        ->update($this->table_name)
-                        ->set($data)
-                        ->where($cond)
-                        ->execute();
-                
-                $this->response->set([
-                        "msg" => "Record updated successfully.",
-                        "status"=>true,
-                        "status_code"=>200,
-                        "data"=>$data
-                    ]);
-                $this->queryBuilder->clear();
-            }catch(Exception $e){
-                $this->response->set([
-                        "msg" => "Sorry, an error occurs while updating the record. ".$e->getMessage(),
-                        "status"=>false,
-                        "status_code"=>500,
-                        "error"=>$this->queryBuilder->getErrorInfo()
-                    ]);
+        try{
+            $this->removeUndefinedProperty();
+            $data = ($this->toArray());
+            $cond = $this->getKeyConditions();
+            foreach($this->keys as $key){
+                unset($data[$key]);//key will not be updated
             }
+            $this->queryBuilder->update($this->table_name)->set($data)->where($cond)->execute();
+            $this->queryBuilder->clear();
+            return $this->response->set([
+                    "msg" => "Record updated successfully.",
+                    "status"=>true,
+                    "status_code"=>200,
+                    "data"=>$data
+                ]);            
+        }catch(Exception $e){
+            return $this->response->set([
+                    "msg" => "Sorry, an error occurs while updating the record. ".$e->getMessage(),
+                    "status"=>false,
+                    "status_code"=>500,
+                    "error"=>$this->queryBuilder->getErrorInfo()
+                ]);
         }
-        return $this->response;
     }
     
     //to delete record
     public function remove(): Response{
         if(!$this->isValidEntity()) {
-            $this->response->set([
+            return $this->response->set([
                 "msg" => "Invalid entity: either table name or key is not set.",
                 "status"=>false,
                 "status_code"=>400
             ]);            
         }
-        else{
-            try{
-                $cond = $this->getKeyConditions();
-                $stmt = $this->queryBuilder
-                        ->delete($this->table_name)
-                        ->where($cond)
-                        ->execute();
-                $this->response->set([
-                        "msg" => "Record removed successfully.",
-                        "status"=>true,
-                        "status_code"=>200
-                    ]);
-            }catch(Exception $e){
-                $this->response->set([
-                        "msg" => "Sorry, an error occurs while removing the record. ".$e->getMessage(),
-                        "status"=>false,
-                        "status_code"=>500,
-                        "error"=>$this->queryBuilder->getErrorInfo()
-                    ]);
-            }
+        try{
+            $cond = $this->getKeyConditions();
+            $stmt = $this->queryBuilder->delete($this->table_name)->where($cond)->execute();
+            return $this->response->set([
+                    "msg" => "Record removed successfully.",
+                    "status"=>true,
+                    "status_code"=>200
+                ]);
+        }catch(Exception $e){
+            return $this->response->set([
+                    "msg" => "Sorry, an error occurs while removing the record. ".$e->getMessage(),
+                    "status"=>false,
+                    "status_code"=>500,
+                    "error"=>$this->queryBuilder->getErrorInfo()
+                ]);
         }
-        return $this->response;
     }
     
     /*** Entity Data Validation ***/
@@ -316,8 +303,8 @@ class EasyEntity extends Model{
      * 
      */
     private function removeUndefinedProperty(){
-        $data = $this->toArray();
-        foreach ($data as $key=>$value){
+        $array_keys = array_keys($this->toArray());
+        foreach ($array_keys as $key){
             if(!property_exists(get_class($this), $key)){
                 //unsetting unwanted properties from the entity object
                 unset($this->{$key});
@@ -332,14 +319,40 @@ class EasyEntity extends Model{
      */
     public function __get($name) {
         if(!property_exists($this, $name)){
+            $fields = $this->getFields();
+            foreach ($fields as $field){
+                if(strtolower($field) === strtolower($name)){
+                    return $this->{$field};
+                }
+            }
             return null;
         }
         return $this->{$name};
     }
+    
     public function __set($name, $value) {
         if(property_exists($this, $name)){
             $this->{$name} = $value;
         }
+        else{
+            $fields = $this->getFields();
+            foreach ($fields as $field){
+                if(strtolower($field) === strtolower($name)){
+                    $this->{$field} = $value;
+                    break;
+                }
+            }
+        }
+    }
+    
+    public function getFields():array{
+        $reflection = new ReflectionClass($this);
+        $properties = $reflection->getProperties(\ReflectionProperty::IS_PUBLIC);
+        $fields = [];
+        foreach ($properties as $property){
+            $fields[] = $property->getName();
+        }
+        return $fields;
     }
     
     /*
@@ -351,7 +364,7 @@ class EasyEntity extends Model{
      * Readable Fields: are those whose values are allowed for retrieving. 
      */
     public function getReadableFields(){
-        $fields = array_keys($this->toArray());
+        $fields = $this->getFields();
         $readableFields = array_diff($fields, $this->hiddenFields);
         return $readableFields;
     }
@@ -364,13 +377,12 @@ class EasyEntity extends Model{
         }
     }
     /*
-     *
      * Method to get hidden fields     */
     public function getHiddenFields():array{
         return $this->hiddenFields;
     }
+    
     /*
-     *
      * Method to remove hidden fields     */
     public function removeHiddenField(array|string $field_name=[]){
         if(is_string($field_name)){
@@ -416,9 +428,8 @@ class EasyEntity extends Model{
     //function to make conditions on primary keys for updating, deleting, This is useful when 
     //two or more attributes are combined to form primary key
     public function getKeyConditions():array{
-        $keys = $this->getKeys();
         $cond = [];//conditions to be returned
-        foreach($keys as $key){
+        foreach($this->keys as $key){
             $cond[$key] = $this->{$key};
         }
         return $cond;
