@@ -58,8 +58,10 @@ class View {
         $this->model = $model;
         return $this;
     }
-    
-    
+    //----------------------------------------------------------------------------------/
+    //
+    //Convert all applicable characters to HTML entities recurssively, whether object
+    //or array
     private function objectHtmlEntities($object){
         $tempObj = $object;        
         if($tempObj instanceof Model or $tempObj instanceof Entity){
@@ -67,10 +69,8 @@ class View {
             $tempObj->setModelData($m_arr);
         }
         return $tempObj;
-    }
+    }  
     
-    //Convert all applicable characters to HTML entities recurssively, whether object
-    //or array
     private function toHtmlEntities(?array $data=null):array{
         if(is_null($data)){
             return [];
@@ -88,6 +88,7 @@ class View {
         }
         return $data;
     }
+    //-------------------------------------------------------------------------------/
     //Randering view
     public function render(){
         ob_start();//turns on output buffering 
