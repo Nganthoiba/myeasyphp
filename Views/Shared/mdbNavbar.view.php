@@ -32,6 +32,10 @@ $user_info = getLoginInfo();
                     <span class="fa fa-angle-down"></span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item" href="<?= Config::get('host')?>/">
+                        <span class="fa fa-home"></span>
+                        Home
+                    </a>
                     <a class="dropdown-item" href="<?= Config::get('host')?>/Accounts/manageAccount">
                         <span class="fa fa-cog"></span>
                         Manage Profile
