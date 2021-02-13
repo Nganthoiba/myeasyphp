@@ -1,6 +1,5 @@
 <?php
 use MyEasyPHP\Libs\Config;
-
 error_reporting(E_ALL);
 
 /***
@@ -25,39 +24,6 @@ Config::set('host', '');
 //Assets Configuration
 Config::set('Assets', Config::get('host').'/Assets');
 
-
-/*** Database Configuration ***/
-
-/*
-    For setting database driver (DB_DRIVER). Use the followings:
-*   1. mysql     :-  for MySql Database Server
-*   2. pgsql     :-  for Postgres Database Server
-*   3. sqlsrv    :-  for Microsoft SQL Database Server
-*/
-
-//For connectin gto postgres database server
-Config::set('DB_CONFIG', [
-    "DB_HOST" => "localhost",
-    "DB_PORT" => 5432,
-    "DB_DRIVER"=>"pgsql", //Database driver
-    "DB_NAME" => "myeasyphp",
-    "DB_USERNAME" => "postgres",
-    "DB_PASSWORD" => "postgresew",//postgres
-    "PERSISTENT" => false
-]);
-
-//
-//For connecting to Microsoft SQL database server
-//
-//Config::set('DB_CONFIG', [
-//    "DB_HOST" => "localhost",
-//    "DB_PORT" => 1433,
-//    "DB_DRIVER"=>"sqlsrv", //Database driver
-//    "DB_NAME" => "MyEasyPHP",
-//    "DB_USERNAME" => "sa",
-//    "DB_PASSWORD" => "sa",//postgres
-//    "PERSISTENT" => false
-//]);
 //error Details display either true or false
 //set it true during development time
 //Debugging is granted only if error_display is set to true.

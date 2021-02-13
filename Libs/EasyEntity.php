@@ -47,6 +47,8 @@ class EasyEntity extends Model{
      * in the form of array.
      */
     protected $hiddenFields = [];
+    protected $dbConnectionName = "Default";/*Database connection name*/
+    /* You can change to another database in the derived entity class. */
     
     public function __construct() {
         /*By convention, an entity class name should be same as the table name 
@@ -55,7 +57,7 @@ class EasyEntity extends Model{
         $class_name = get_class($this);//class name contains namespaces        
         $this->table_name = basename($class_name);//by default, the table name is set 
         //same as that of the entity class name
-        $this->queryBuilder = new EasyQueryBuilder();
+        $this->queryBuilder = new EasyQueryBuilder($this->dbConnectionName);
         $this->queryBuilder->setEntityClassName($class_name);//by default
         $this->response = new Response();
         
@@ -64,6 +66,21 @@ class EasyEntity extends Model{
         //setting keys of the table
         $this->setKeyFields();
         parent::__construct();
+    }
+    
+    public function useConnection($dbConnectionName){
+        try{
+            $this->queryBuilder->useConnection($dbConnectionName);
+        }
+        catch(MyEasyPHP\Libs\MyEasyException $exception){
+            $backtrace = debug_backtrace();
+            $caller = array_shift($backtrace);
+            
+            //dd($caller);
+            $exception->setFile($caller['file']);
+            $exception->setLine($caller['line']);
+            throw $exception;
+        }
     }
     //method to set table name of the enity
     protected function setTable($table_name){

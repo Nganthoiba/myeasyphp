@@ -17,6 +17,7 @@ try{
     $env->load();
     //Loading configurations
     require_once CONFIG_PATH. 'app.php';// Application configuration file
+    require_once CONFIG_PATH. 'database.php';// Database configuration file
     require_once CONFIG_PATH. 'routes.php';//Route Configuration file
     date_default_timezone_set(Config::get('default_time_zone'));    
     Dispatcher::dispatch();
@@ -39,7 +40,7 @@ catch(TypeError $error){
 }
 catch(MyEasyException $e){
     http_response_code($e->httpCode);
-    $view = errorView($e->httpCode, $e->getMessage(),$e->getDetails(),$e->getFile(),$e->getLine());
+    $view = errorView($e->httpCode, $e->getMessage(),$e->getDetails(),$e->getErrorFile(),$e->getErrorLine());
     echo $view->render();
 }
 catch(Exception $e){

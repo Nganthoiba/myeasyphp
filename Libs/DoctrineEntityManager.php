@@ -7,6 +7,7 @@ use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Configuration;
 use Doctrine\Common\EventManager;
+use MyEasyPHP\Libs\Database\DbConnectionStore;
 /**
  * Description of DoctrineEntityManager
  * 
@@ -15,13 +16,17 @@ use Doctrine\Common\EventManager;
  */
 class DoctrineEntityManager extends EntityManager{
     /***Method to get Entity Manager for Doctrine ****/
-    public static function getEntityManager(): DoctrineEntityManager{
+    public static function getEntityManager($dbConnectionName='Default'): DoctrineEntityManager{
         //$isDevMode = Config::get('development_mode');
         $proxyDir = null;
         $cache = null;
         $useSimpleAnnotationReader = false;
-        $db_config = env();
-        /*Database Configuration set up*/
+        /*
+         *Database Configuration set up
+        
+         */
+        
+        $db_config = DbConnectionStore::getConnectionParameters($dbConnectionName);//getting default database connection parameters
         $db_param = array(
             'dbname' => $db_config['DB_NAME'],
             'user' => $db_config['DB_USERNAME'],
@@ -30,6 +35,7 @@ class DoctrineEntityManager extends EntityManager{
             'driver' => "pdo_".$db_config['DB_DRIVER'],
             'port'=>$db_config['DB_PORT']??""
         );
+        
         $isDevMode = isset($_ENV['DEVELOPMENT_MODE'])&&$_ENV['DEVELOPMENT_MODE']==='ON'?true:false;
         $config = Setup::createAnnotationMetadataConfiguration(
                 array(ENTITY_PATH), 

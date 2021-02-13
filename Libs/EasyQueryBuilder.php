@@ -16,7 +16,7 @@ namespace MyEasyPHP\Libs;
  */
 use PDO;
 use PDOStatement;
-use MyEasyPHP\Libs\Database;
+use MyEasyPHP\Libs\Database\DbConnectionStore;
 use MyEasyPHP\Libs\EmptyClass;
 use MyEasyPHP\Libs\Config;
 use Exception;
@@ -32,7 +32,7 @@ class EasyQueryBuilder {
     private $errorCode;
     
     private $db_config;//db configuration
-    public static $conn;//database connection
+    public  $conn;//database connection
     
     private $limit_rows; //limit to how many rows will be selected 
     
@@ -43,18 +43,50 @@ class EasyQueryBuilder {
 
     private $entiy_class_name;
     
-    public function __construct() {
+    public function __construct($dbConnectionName='Default'/*Database connection name*/) {
         $this->qry = "";
         $this->last_executed_query = "";//This variable stores SQL query statement which was executed last time
         
         $this->values = [];
         $this->last_executed_values = [];//This variable stores parameterised values which was executed last time
         
-        $this->db_config = Config::get('DB_CONFIG');
-        self::$conn = (self::$conn==null)?Database::connect():self::$conn;//connecting database
+        $this->db_config = env('DB_CONFIG');
+        /*By default a query builder object will connect to default database connection defined in Config/database.php*/
+        if(is_null($dbConnectionName) || trim($dbConnectionName)===""){
+            $dbConnectionName = 'Default';
+        }        
+        //getting database connection
+        try{
+            $this->conn = DbConnectionStore::getConnection($dbConnectionName);
+        }
+        catch(MyEasyPHP\Libs\MyEasyException $exception){
+            $backtrace = debug_backtrace();
+            $caller = array_shift($backtrace);
+            
+            //dd($caller);
+            $exception->setFile($caller['file']);
+            $exception->setLine($caller['line']);
+            throw $exception;
+        }
         $this->limit_rows = -1;
         $this->data_list = [];
         $this->entiy_class_name = "";
+    }
+    
+    //to use other Database connection
+    public function useConnection($dbConnectionName/*Database connection name*/){
+        try{
+            $this->conn = DbConnectionStore::getConnection($dbConnectionName);
+        }
+        catch(MyEasyPHP\Libs\MyEasyException $exception){
+            $backtrace = debug_backtrace();
+            $caller = array_shift($backtrace);
+            
+            //dd($caller);
+            $exception->setFile($caller['file']);
+            $exception->setLine($caller['line']);
+            throw $exception;
+        }
     }
     
     public function setEntityClassName($class_name):void{
@@ -77,7 +109,7 @@ class EasyQueryBuilder {
             return null;
         }
         
-        $stmt = self::$conn->prepare($this->qry);       
+        $stmt = $this->conn->prepare($this->qry);       
         try{
             $res = $stmt->execute($this->values);            
             $this->sqlErrorCode = $stmt->errorCode();
@@ -601,16 +633,16 @@ class EasyQueryBuilder {
     
     /**** TRANSACTIONS METHODS ****/
     public function beginTransaction(){
-        return self::$conn->beginTransaction();
+        return $this->conn->beginTransaction();
     }
     public function rollbackTransaction(){
-        return self::$conn->rollBack();
+        return $this->conn->rollBack();
     }
     public function commitTransaction(){
-        return self::$conn->commit();
+        return $this->conn->commit();
     }
     public function getConnection(){
-        return self::$conn;
+        return $this->conn;
     }    
     /**** Unset hidden fields of an entity, we have to filter those hidden fields from showing
      * to users. We don't want to disclose sensitive information like password, security stamps

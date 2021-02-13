@@ -53,9 +53,12 @@ class Model {
         
     }
     
-    private function getDataValue(array $data, string|int $key){
+    private function getDataValue(array $data, $key){
         if(is_integer($key)){
             return $data[$key]??"NOT_EXIST";
+        }
+        if(isset($data[$key])){
+            return $data[$key];
         }
         $keys = array_keys($data);
         foreach($keys as $k){
@@ -107,8 +110,7 @@ class Model {
         
     /*
      * For security reason, restriction is made from accessing non-existing
-     * properties of the class. With this feature, any non-existing property 
-     * can not be set dynamically.
+     * properties of the class.
     */ 
     public function __get($name) {
         if(property_exists($this, $name)){

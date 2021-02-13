@@ -26,14 +26,25 @@ class MyEasyException extends Excp{
     }
     public function setLine($lineNo){
         $this->line = $lineNo;
+        return $this;
     }
     public function setFile($file){
         $this->file = $file;
+        return $this;
     }
     public function setDetails(string $details){
         $this->details = $details;
+        return $this;
     }
     public function getDetails() : string{
         return "##**".$this->details;
+    }
+    
+    public function getErrorLine(){
+        return $this->line;
+    }
+    
+    public function getErrorFile(){
+        return $this->file;
     }
 }

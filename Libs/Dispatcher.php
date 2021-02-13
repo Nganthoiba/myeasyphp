@@ -49,9 +49,8 @@ class Dispatcher {
         if(!empty($http_methods) && !in_array(self::$request->getMethod(), $http_methods/*getting HTTP verbs*/)){                    
             $exc = new MyEasyException("Method not allowed.",405);
             $exc->httpCode = 405;
-            $exc->setFile('');
-            $exc->setLine(-1);
-            $exc->setDetails("Methods allowed for the route '".$router->getRouteUrl()."' :- ".implode(', ',$http_methods).", but your request method is ".self::$request->getMethod());
+            $exc->setFile('')->setLine(-1)->setDetails("Methods allowed for the route '".$router->getRouteUrl().
+                    "' :- ".implode(', ',$http_methods).", but your request method is ".self::$request->getMethod());
             throw $exc;
         }
         //If route is mapped to only a function

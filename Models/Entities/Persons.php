@@ -24,20 +24,20 @@ class Persons extends Entity{
     
     /**
      * @ORM\Id 
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer") 
      * @ORM\GeneratedValue **/
     #[Key]
-    public  $id ;
+    public $Id ;
     /** 
      * @ORM\Column(type="string",length=10) 
      * **/
-    public  $phone_no;
+    public  $Phone_no;
     /** 
      * @ORM\Column(type="string",length=255) 
      * **/
-    public  $address;
+    public  $Address;
     /** 
      * @ORM\Column(type="string",length=65) 
      * **/
-    public  $person_name;
+    public  $Name;
 }

@@ -97,4 +97,10 @@ class PersonsController extends ApiController{
         return $this->response->toJSON();
     }
     
+    public function get_env(){
+        $this->response->status = true;
+        $this->response->status_code = 200;
+        $this->response->data = env();
+        return $this->response->toJSON();
+    }
 }

@@ -4,7 +4,7 @@
  *  This Database class is to connect database
  * @author Nganthoiba
  */
-namespace MyEasyPHP\Libs;
+namespace MyEasyPHP\Libs\Database;
 use MyEasyPHP\Libs\Config;
 use PDO;
 use Exception;
@@ -17,7 +17,7 @@ class Database {
         self::$conn_error = "";
         /***** Retrieving Database Configurations *****/
         if($db_config == null){
-            $db_config = $_ENV;//Config::get("DB_CONFIG");
+            $db_config = env();//$_ENV;//Config::get("DB_CONFIG");
         }
         self::$db_server = $db_driver = $db_config["DB_DRIVER"];
         $db_host = $db_config["DB_HOST"];
@@ -25,7 +25,7 @@ class Database {
         $db_name = $db_config["DB_NAME"];
         $db_username = $db_config["DB_USERNAME"];
         $db_password = $db_config["DB_PASSWORD"];
-        $persistent = $db_config["PERSISTENT"]??false;
+        //$persistent = $db_config["PERSISTENT"]??false;
         
         /*Data Source Name, database connection string*/
         
@@ -61,12 +61,14 @@ class Database {
             self::$conn_error = $e->getMessage();
             $easyExcp = new MyEasyException("Unable to connect database. Please check your database configuration.", $e->getCode());
             $easyExcp->setDetails($e->getMessage());
-            $easyExcp->setLine(0);
-            $easyExcp->setFile("");
+            $backtrace = debug_backtrace();
+            $caller = array_shift($backtrace);
+            
+            $easyExcp->setFile($caller['file']);
+            $easyExcp->setLine($caller['line']);
             $easyExcp->httpCode = 503;
             throw $easyExcp;
         }
-        return null;
     }
     //closing connection
     public static function close(){

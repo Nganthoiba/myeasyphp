@@ -67,7 +67,7 @@ Config::set('page_title',$viewData->httpStatus);
                 <?php 
                 }
                 if(trim($viewData->filePath)!==""){
-                    echo "<H5>Error Line:</H5>";
+                    echo "<H5>Error Line:</H5>({$viewData->filePath})";
                     $startLine = ($viewData->lineNo-4)<1?1:$viewData->lineNo-4;
                     $endLine = ($viewData->lineNo+4);
                     DisplaySourceCode::display($viewData->filePath,$startLine,$endLine,$viewData->lineNo);
