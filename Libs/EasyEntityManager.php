@@ -35,7 +35,17 @@ class EasyEntityManager {
         if(is_null($dbConnectionName) || trim($dbConnectionName)===""){
             $dbConnectionName = 'Default';
         }
-        $this->queryBuilder = new EasyQueryBuilder($dbConnectionName);
+        try{
+            $this->queryBuilder = new EasyQueryBuilder($dbConnectionName);
+        }
+        catch(MyEasyException $exception){
+            $backtrace = debug_backtrace();
+            $caller = array_shift($backtrace);            
+            //dd($caller);
+            $exception->setFile($caller['file']);
+            $exception->setLine($caller['line']);
+            throw $exception;
+        }
         $this->response = new Response();
     }
     
