@@ -64,7 +64,7 @@ class DbConnectionStore {
         $db_port = $params["DB_PORT"]??"";
         $db_name = $params["DB_NAME"];
         $db_username = $params["DB_USERNAME"];
-        $db_password = $params["DB_PASSWORD"];
+        $db_password = $params["DB_PASSWORD"]??"";
         
         self::$dbConnections[$connectionName] = new DbConnection($db_driver, $db_name, $db_host, $db_username, $db_password, $db_port);        
         
@@ -102,7 +102,7 @@ class DbConnectionStore {
         if(!isset($params['DB_USERNAME']) || trim($params['DB_USERNAME']) === ""){
             $missingParams[] = 'DB_USERNAME';
         }
-        if(!isset($params['DB_PASSWORD']) || trim($params['DB_PASSWORD']) === ""){
+        if(!isset($params['DB_PASSWORD'])){
             $missingParams[] = 'DB_PASSWORD';
         }
         return $missingParams;
