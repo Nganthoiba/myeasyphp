@@ -18,7 +18,7 @@ class PersonsController extends ApiController{
     private $em;
     public function __construct() {
         parent::__construct();
-        $this->em = new EntityManager();
+        $this->em = new EntityManager('Postgres');
     }    
     
     //Overriding
@@ -97,10 +97,4 @@ class PersonsController extends ApiController{
         return $this->response->toJSON();
     }
     
-    public function get_env(){
-        $this->response->status = true;
-        $this->response->status_code = 200;
-        $this->response->data = env();
-        return $this->response->toJSON();
-    }
 }

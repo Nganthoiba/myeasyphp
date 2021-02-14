@@ -106,6 +106,7 @@ class ApiController {
     protected function POST($data=null){
         //Override the body 
         $this->response->status_code = 201;
+        $this->response->data = $data;
         $this->response->msg = "POST request, you can override method to create resource.";
         return $this->response->toJSON(); 
     }

@@ -13,7 +13,7 @@ use MyEasyPHP\Libs\MyEasyException;
 class Database {
     public static $conn_error;//Database connection error
     public static $db_server; //Database server name
-    public static function connect($db_config = null){
+    public static function connect($db_config = null): \PDO{
         self::$conn_error = "";
         /***** Retrieving Database Configurations *****/
         if($db_config == null){
@@ -59,7 +59,7 @@ class Database {
             return $conn;
         }catch(Exception $e){
             self::$conn_error = $e->getMessage();
-            $easyExcp = new MyEasyException("Unable to connect database. Please check your database configuration.", $e->getCode());
+            $easyExcp = new MyEasyException("Database connection failed.", $e->getCode());
             $easyExcp->setDetails($e->getMessage());
             $backtrace = debug_backtrace();
             $caller = array_shift($backtrace);

@@ -10,26 +10,35 @@ use MyEasyPHP\Libs\MyEasyException;
 
 class DbConnectionStore {
     public static $dbConnections = [];
-    public static function getConnection($connectionName){
+    public static function getConnection($connectionName):\PDO{
         if(!isset(self::$dbConnections[$connectionName])){
             $exception = new MyEasyException("Database connection name {$connectionName} does not exist.");
-            $exception->setDetails("Make sure that you have set the database configuration for that connection name.");
+            $exception->setDetails("Make sure that you have set the database configuration for the connection name '{$connectionName}'.");
             $exception->httpCode = 500;
             $backtrace = debug_backtrace();
             $caller = array_shift($backtrace);
             
-            $exception->setFile($caller['file']);
-            $exception->setLine($caller['line']);
+            $exception->setFile($caller['file'])->setLine($caller['line']);
+            throw $exception;
+        }
+        try{
+            $conn = self::$dbConnections[$connectionName];
+            return $conn->getConnection();
+        }catch(MyEasyException $exception){
+            $exception->addDetail("Please check database configuration for {$connectionName}");
+            $backtrace = debug_backtrace();
+            $caller = array_shift($backtrace);
+            
+            $exception->setFile($caller['file'])->setLine($caller['line']);
             throw $exception;
         }
         
-        $conn = self::$dbConnections[$connectionName];
-        return $conn->getConnection();
     }
     public static function getConnectionParameters($connectionName){
         if(!isset(self::$dbConnections[$connectionName])){
             $exception = new MyEasyException("Database connection name {$connectionName} does not exist.");
-            $exception->setDetails("Make sure that you have set the database configuration for that connection name.");
+            $exception->setDetails("Make sure that you have set the database configuration for "
+                    . "the connection name '{$connectionName}'.");
             $exception->httpCode = 500;
             $backtrace = debug_backtrace();
             $caller = array_shift($backtrace);
@@ -46,10 +55,14 @@ class DbConnectionStore {
     public static function addConnection($connectionName, $params=array()){
         $missingParams = self::getMissingParameters($params);
         if(sizeof($missingParams)!==0){ 
-            $details = "Missing parameter(s) : ".implode(', ', $missingParams);
-            $exception = new MyEasyException("Missing database connection parmeters for the connection name {$connectionName}. ".$details);
+            $details = "Following parameter(s) are required: ".implode(', ', $missingParams);
+            $exception = new MyEasyException("Some database connection parmeters are either missing or "
+                    . "have empty string or blank for the connection name {$connectionName}. ");
             
             $exception->setDetails($details);
+            $exception->addDetail("Make sure that those parameters are set in the database configuration files "
+                    . "both in the config/database.php as well as .env file, and there "
+                    . "values must not be empty string.");
             $exception->httpCode = 500;
             
             $backtrace = debug_backtrace();

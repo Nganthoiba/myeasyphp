@@ -33,13 +33,15 @@ class MyEasyException extends Excp{
         return $this;
     }
     public function setDetails(string $details){
-        $this->details = $details;
+        $this->details = "##**".$details;
         return $this;
     }
     public function getDetails() : string{
-        return "##**".$this->details;
+        return $this->details;
     }
-    
+    public function addDetail($msg){
+        $this->details .= "##**".$msg;
+    }
     public function getErrorLine(){
         return $this->line;
     }

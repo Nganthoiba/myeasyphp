@@ -10,7 +10,7 @@ use MyEasyPHP\Libs\Database\DbConnectionStore;
  * 
  * Make sure that all your database connection parameters including credentials are set in the .env file.
 */
-
+//This is the default database configuration, "Default" is the name of the connection, please don't change it.
 DbConnectionStore::addConnection('Default', [
     "DB_HOST" => env("DB_HOST"),
     "DB_PORT" => env("DB_PORT"),
@@ -19,7 +19,19 @@ DbConnectionStore::addConnection('Default', [
     "DB_USERNAME" => env("DB_USERNAME"),
     "DB_PASSWORD" => env("DB_PASSWORD")
 ]);
-DbConnectionStore::addConnection('DbServer1', [
+/*-----------------------------------------------------------------------------------------------------------------
+Additional database configutations
+-----------------------------------------------------------------------------------------------------------------*/
+DbConnectionStore::addConnection('Mssql', [
+    "DB_HOST" => env("DB_HOST"),
+    "DB_PORT" => env("DB_PORT"),
+    "DB_DRIVER"=>env("DB_DRIVER"), //Database driver
+    "DB_NAME" => env("DB_NAME"),
+    "DB_USERNAME" => env("DB_USERNAME"),
+    "DB_PASSWORD" => env("DB_PASSWORD")
+]);
+
+DbConnectionStore::addConnection('Postgres', [
     "DB_HOST" => env("DB1_HOST"),
     "DB_PORT" => env("DB1_PORT"),
     "DB_DRIVER"=>env("DB1_DRIVER"), //Database driver
@@ -28,7 +40,7 @@ DbConnectionStore::addConnection('DbServer1', [
     "DB_PASSWORD" => env("DB1_PASSWORD")
 ]);
 
-DbConnectionStore::addConnection('DbServer2', [
+DbConnectionStore::addConnection('Mysql', [
     "DB_HOST" => env("DB2_HOST"),
     "DB_PORT" => env("DB2_PORT"),
     "DB_DRIVER"=>env("DB2_DRIVER"), //Database driver

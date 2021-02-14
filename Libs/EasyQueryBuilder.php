@@ -63,7 +63,6 @@ class EasyQueryBuilder {
             $backtrace = debug_backtrace();
             $caller = array_shift($backtrace);
             
-            //dd($caller);
             $exception->setFile($caller['file']);
             $exception->setLine($caller['line']);
             throw $exception;
