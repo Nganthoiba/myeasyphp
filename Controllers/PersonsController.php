@@ -18,7 +18,8 @@ class PersonsController extends ApiController{
     private $em;
     public function __construct() {
         parent::__construct();
-        $this->em = new EntityManager();
+        $this->em = new EntityManager('Default');
+        //$this->em = new EntityManager();
     }    
     
     //Overriding

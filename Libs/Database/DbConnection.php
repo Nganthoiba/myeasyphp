@@ -15,7 +15,7 @@ class DbConnection {
     private $db_username;
     private $db_password;
 
-    public function __construct($dbDriver,$dbName, $host, $username, $password, $port=""){
+    public function __construct($dbDriver,$dbName, $host, $username, $password="", $port=""){
         $this->conn = null;
         $this->db_name = $dbName;
         $this->db_driver = $dbDriver;

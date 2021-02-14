@@ -31,8 +31,7 @@ class RouteRegister {
     private static function setRoutes(string $controllerName){
         global $router;
         $controllerClass = CONTROLLER_NAMESPACE.$controllerName.'Controller';
-        $controller = new $controllerClass();
-        $reflectionClass = new ReflectionClass($controller);
+        $reflectionClass = new ReflectionClass($controllerClass);
         foreach($reflectionClass->getMethods(ReflectionMethod::IS_PUBLIC) as $method){
             foreach($method->getAttributes(Route::class) as $attribute){
                 $attributeInstance = $attribute->newInstance();
