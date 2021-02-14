@@ -27,7 +27,7 @@ class Users extends Entity{
     public $phone_number;
     /** @ORM\Column(type="integer") */
     public $role_id;    
-    /** @ORM\Column(type="boolean", options={"default": "false"}) */    
+    /** @ORM\Column(type="boolean", options={"default": false}) */    
     public $verify;//email verification     
     /** @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"}) */
     public $create_at;

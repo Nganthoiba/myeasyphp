@@ -17,22 +17,36 @@ use MyEasyPHP\Libs\Database\DbConnectionStore;
 class DoctrineEntityManager extends EntityManager{
     /***Method to get Entity Manager for Doctrine ****/
     public static function getEntityManager($dbConnectionName='Default'): DoctrineEntityManager{
-        //$isDevMode = Config::get('development_mode');
+        
         $proxyDir = null;
         $cache = null;
         $useSimpleAnnotationReader = false;
-        /*
-         *Database Configuration set up
-        
-         */
+        //Database Configuration set up
         
         $db_config = DbConnectionStore::getConnectionParameters($dbConnectionName);//getting default database connection parameters
+        /*
+         * driver supported by doctrine
+         * pdo_mysql, pdo_sqlite, pdo_pgsql, pdo_oci, oci8, ibm_db2, pdo_sqlsrv, mysqli, drizzle_pdo_mysql, sqlanywhere, sqlsrv
+         */
+        //getting doctrine database driver
+        switch($db_config['DB_DRIVER']){
+            case 'mysql':
+            case 'pgsql':
+            case 'sqlsrv':
+            case 'oci':
+                $db_driver = "pdo_".$db_config['DB_DRIVER'];
+                break;
+            default:
+                $db_driver = $db_config['DB_DRIVER'];
+                
+        }
+        
         $db_param = array(
             'dbname' => $db_config['DB_NAME'],
             'user' => $db_config['DB_USERNAME'],
             'password' => $db_config['DB_PASSWORD'],
             'host' => $db_config['DB_HOST'],
-            'driver' => "pdo_".$db_config['DB_DRIVER'],
+            'driver' => $db_driver,
             'port'=>$db_config['DB_PORT']??""
         );
         

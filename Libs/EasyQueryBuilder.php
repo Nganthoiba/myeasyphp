@@ -19,6 +19,7 @@ use PDOStatement;
 use MyEasyPHP\Libs\Database\DbConnectionStore;
 use MyEasyPHP\Libs\EmptyClass;
 use MyEasyPHP\Libs\Config;
+use MyEasyPHP\Libs\MyEasyException;
 use Exception;
 use TypeError;
 
@@ -59,7 +60,7 @@ class EasyQueryBuilder {
         try{
             $this->conn = DbConnectionStore::getConnection($dbConnectionName);
         }
-        catch(MyEasyPHP\Libs\MyEasyException $exception){
+        catch(MyEasyException $exception){
             $backtrace = debug_backtrace();
             $caller = array_shift($backtrace);
             
