@@ -49,7 +49,7 @@ class Dispatcher {
         if(!empty($http_methods) && !in_array(self::$request->getMethod(), $http_methods/*getting HTTP verbs*/)){                    
             $exc = new MyEasyException("Method not allowed.",405);
             $exc->httpCode = 405;
-            $exc->setFile('')->setLine(-1)->setDetails("Methods allowed for the route '".$router->getRouteUrl().
+            $exc->setErrorFile('')->setErrorLine(-1)->setDetails("Methods allowed for the route '".$router->getRouteUrl().
                     "' :- ".implode(', ',$http_methods).", but your request method is ".self::$request->getMethod());
             throw $exc;
         }
@@ -199,7 +199,7 @@ class Dispatcher {
             $exception = new MyEasyException("Sorry, the page you are looking for is not found on this server.");
             $exception->setDetails("Please check whether the requested url is registered in route configuration file Config/route.php.");
             $exception->httpCode = HttpStatus::HTTP_NOT_FOUND;
-            $exception->setFile('');
+            $exception->setErrorFile('');
             throw $exception;
         }        
         //*** creating Controller Object ***/
@@ -217,8 +217,8 @@ class Dispatcher {
                         . "an authorized account. ";
                 $exc = new MyEasyException($msg); 
                 $exc->httpCode = HttpStatus::HTTP_FORBIDDEN;
-                $exc->setFile('');
-                $exc->setLine(-1);
+                $exc->setErrorFile('');
+                $exc->setErrorLine(-1);
                 throw $exc;
             }
         } 
@@ -245,7 +245,7 @@ class Dispatcher {
         }
         $exc = new MyEasyException("Http method is not allowed.");
         $exc->httpCode = HttpStatus::HTTP_FORBIDDEN;
-        $exc->setFile('');
+        $exc->setErrorFile('');
         $exc->setDetails("Methods allowed for the route '".$router->getRouteUrl()."' :- ".implode(', ',$httpMethods).", but your request method is ".self::$request->getMethod());
         throw $exc;
     }

@@ -42,8 +42,8 @@ class EasyEntityManager {
             $backtrace = debug_backtrace();
             $caller = array_shift($backtrace);            
             //dd($caller);
-            $exception->setFile($caller['file']);
-            $exception->setLine($caller['line']);
+            $exception->setErrorFile($caller['file']);
+            $exception->setErrorLine($caller['line']);
             throw $exception;
         }
         $this->response = new Response();

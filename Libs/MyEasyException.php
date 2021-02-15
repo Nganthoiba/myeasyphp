@@ -24,11 +24,11 @@ class MyEasyException extends Excp{
         $this->details="";
         $this->httpCode = $code==0?200:500;
     }
-    public function setLine($lineNo){
+    public function setErrorLine($lineNo){
         $this->line = $lineNo;
         return $this;
     }
-    public function setFile($file){
+    public function setErrorFile($file){
         $this->file = $file;
         return $this;
     }

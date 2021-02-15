@@ -37,8 +37,8 @@ class View {
             $excp = new MyEasyException("Sorry, the page you are looking for is not found on this server.",404);        
             $excp->httpCode = HttpStatus::HTTP_NOT_FOUND;
             $excp->setDetails("View file {$this->path} is not found.");
-            $excp->setFile('');
-            $excp->setLine(-1);
+            $excp->setErrorFile('');
+            $excp->setErrorLine(-1);
             throw $excp;
         }
         $this->viewData = $viewData;

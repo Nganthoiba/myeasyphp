@@ -77,8 +77,8 @@ class EasyEntity extends Model{
             $caller = array_shift($backtrace);
             
             //dd($caller);
-            $exception->setFile($caller['file']);
-            $exception->setLine($caller['line']);
+            $exception->setErrorFile($caller['file']);
+            $exception->setErrorLine($caller['line']);
             throw $exception;
         }
     }
@@ -334,39 +334,29 @@ class EasyEntity extends Model{
      * properties of the class. With this feature, any non-existing property 
      * can not be set dynamically.
      */
-    public function __get($name) {
-        if(!property_exists($this, $name)){
-            $fields = $this->getFields();
-            foreach ($fields as $field){
-                if(strtolower($field) === strtolower($name)){
-                    return $this->{$field};
-                }
+    public function __get($name) {        
+        $fields = $this->getFields();
+        foreach ($fields as $field){
+            if(strtolower($field) === strtolower($name)){
+                return $this->{$field};
             }
-            return null;
         }
-        return $this->{$name};
+        return null;
     }
     
-    public function __set($name, $value) {
-        if(property_exists($this, $name)){
-            $this->{$name} = $value;
-        }
-        else{
-            $fields = $this->getFields();
-            foreach ($fields as $field){
-                if(strtolower($field) === strtolower($name)){
-                    $this->{$field} = $value;
-                    break;
-                }
+    public function __set($name, $value) {        
+        $fields = $this->getFields();
+        foreach ($fields as $field){
+            if(strtolower($field) === strtolower($name)){
+                $this->{$field} = $value;
+                break;
             }
         }
     }
     
     public function getFields():array{
-        $reflection = new ReflectionClass($this);
-        $properties = $reflection->getProperties(\ReflectionProperty::IS_PUBLIC);
         $fields = [];
-        foreach ($properties as $property){
+        foreach ($this->reflectionProperties as $property){
             $fields[] = $property->getName();
         }
         return $fields;
@@ -421,9 +411,8 @@ class EasyEntity extends Model{
      * This method will push those properties which have been declared [Hidden] into 
      * $hiddenFields variable. This method will be called from the constructor
      */
-    protected function setHiddenFields(){
-        $reflection  = new ReflectionClass($this);
-        foreach($reflection->getProperties(ReflectionProperty::IS_PUBLIC) as $property){
+    protected function setHiddenFields(){        
+        foreach($this->reflectionProperties as $property){
             foreach($property->getAttributes(Attributes\Hidden::class) as $attribute){
                 $attribute->newInstance()->hide($this,$property->getName());                
             }
@@ -433,9 +422,8 @@ class EasyEntity extends Model{
      * This method will push those properties which have been declared [Key] into 
      * $keys variable. This method will be called from the constructor
      */
-    protected function setKeyFields(){
-        $reflection  = new ReflectionClass($this);
-        foreach($reflection->getProperties(ReflectionProperty::IS_PUBLIC) as $property){
+    protected function setKeyFields(){        
+        foreach($this->reflectionProperties as $property){
             foreach($property->getAttributes(Key::class) as $attribute){
                 $this->addKey($property->getName());
             }

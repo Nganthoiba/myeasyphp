@@ -18,7 +18,7 @@ class DbConnectionStore {
             $backtrace = debug_backtrace();
             $caller = array_shift($backtrace);
             
-            $exception->setFile($caller['file'])->setLine($caller['line']);
+            $exception->setErrorFile($caller['file'])->setErrorLine($caller['line']);
             throw $exception;
         }
         try{
@@ -29,7 +29,7 @@ class DbConnectionStore {
             $backtrace = debug_backtrace();
             $caller = array_shift($backtrace);
             
-            $exception->setFile($caller['file'])->setLine($caller['line']);
+            $exception->setErrorFile($caller['file'])->setErrorLine($caller['line']);
             throw $exception;
         }
         
@@ -43,8 +43,8 @@ class DbConnectionStore {
             $backtrace = debug_backtrace();
             $caller = array_shift($backtrace);
             
-            $exception->setFile($caller['file']);
-            $exception->setLine($caller['line']);
+            $exception->setErrorFile($caller['file']);
+            $exception->setErrorLine($caller['line']);
             throw $exception;
         }
         
@@ -61,14 +61,14 @@ class DbConnectionStore {
             
             $exception->setDetails($details);
             $exception->addDetail("Make sure that those parameters are set in the database configuration files "
-                    . "both in the config/database.php as well as .env file, and there "
+                    . "both in the config/database.php as well as .env file, and their "
                     . "values must not be empty string.");
             $exception->httpCode = 500;
             
             $backtrace = debug_backtrace();
             $caller = array_shift($backtrace);
-            $exception->setFile($caller['file']);
-            $exception->setLine($caller['line']);
+            $exception->setErrorFile($caller['file']);
+            $exception->setErrorLine($caller['line']);
             
             throw $exception;
         }
@@ -91,8 +91,7 @@ class DbConnectionStore {
             $backtrace = debug_backtrace();
             $caller = array_shift($backtrace);
             
-            $exception->setFile($caller['file']);
-            $exception->setLine($caller['line']);
+            $exception->setErrorFile($caller['file'])->setErrorLine($caller['line']);
             throw $exception;
         }
         

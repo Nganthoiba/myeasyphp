@@ -63,8 +63,8 @@ class EasyQueryBuilder {
             $backtrace = debug_backtrace();
             $caller = array_shift($backtrace);
             
-            $exception->setFile($caller['file']);
-            $exception->setLine($caller['line']);
+            $exception->setErrorFile($caller['file']);
+            $exception->setErrorLine($caller['line']);
             throw $exception;
         }
         $this->limit_rows = -1;
@@ -82,8 +82,8 @@ class EasyQueryBuilder {
             $caller = array_shift($backtrace);
             
             //dd($caller);
-            $exception->setFile($caller['file']);
-            $exception->setLine($caller['line']);
+            $exception->setErrorFile($caller['file']);
+            $exception->setErrorLine($caller['line']);
             throw $exception;
         }
     }

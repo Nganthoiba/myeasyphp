@@ -64,8 +64,8 @@ class Database {
             $backtrace = debug_backtrace();
             $caller = array_shift($backtrace);
             
-            $easyExcp->setFile($caller['file']);
-            $easyExcp->setLine($caller['line']);
+            $easyExcp->setErrorFile($caller['file']);
+            $easyExcp->setErrorLine($caller['line']);
             $easyExcp->httpCode = 503;
             throw $easyExcp;
         }
