@@ -16,8 +16,13 @@ class Model {
        
     protected $errors = [];//set of error for different attributes
     protected $propertyDisplayNames = [];//How data members (properties) will be displayed in the View File (Form)
+    protected $reflectionclass;//reflection class
+    protected $reflectionProperties = [];//properties in the class only for public
+    
     
     public function __construct() {
+        $this->reflectionclass = new \ReflectionClass($this);
+        $this->reflectionProperties = $this->reflectionclass->getProperties(ReflectionProperty::IS_PUBLIC);
         $this->setPropertyDisplayNames();
     }
     /*Convert self object to array*/
@@ -26,15 +31,15 @@ class Model {
     }
     
     /*** method to set data to a model ***/
-    public function setModelData(array $data) {        
-        $reflectionClass = new ReflectionClass($this);
-        $reflectionProperties = $reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC);
-        foreach ($reflectionProperties as $property){
+    public function setModelData(array $data) {       
+        
+        foreach ($this->reflectionProperties as $property){
             $propertyName = $property->getName();
-            $dataValue = $this->getDataValue($data, $propertyName);
-            if($dataValue === "NOT_EXIST"){
+            $dataValue = $this->getDataValue($data, $propertyName);            
+            if($dataValue === "NOT_EXIST"){  
+                $this->setDefaultValue($property);
                 continue;
-            }            
+            } 
             switch ($property->getType()){
                 case 'int':
                     $this->{$propertyName} = intval($dataValue);//(int)($data[$propertyName]);
@@ -66,13 +71,11 @@ class Model {
                 return $data[$k];
             }
         }
-        return "NOT_EXIST";
+        return "NOT_EXIST";//means data doest not exist
     }
     
     public function isValidated():bool{
-        $reflectionClass = new ReflectionClass($this);
-        $memberData = $reflectionClass->getProperties(ReflectionProperty::IS_PUBLIC);
-        foreach ($memberData as $property){
+        foreach ($this->reflectionProperties as $property){
             foreach($property->getAttributes() as $attribute){ 
                 $validator = $attribute->newInstance();
                 if($validator instanceof Validator){
@@ -107,22 +110,6 @@ class Model {
     public function getAllErrors():array{
         return $this->errors;
     }    
-        
-    /*
-     * For security reason, restriction is made from accessing non-existing
-     * properties of the class.
-    */ 
-    public function __get($name) {
-        if(property_exists($this, $name)){
-            return $this->{$name};
-        }
-        return null;
-    }
-    public function __set($key, $value) {
-        if(property_exists($this, $key)){
-            $this->{$key} = $value;
-        }
-    }
     
     //Method to read and set display names for all the public properties in the class
     protected function setPropertyDisplayNames(){
@@ -134,5 +121,29 @@ class Model {
                         $attribute->newInstance()->Name);  
             }
         }
-    }    
+    }  
+    
+    //method to set default value when property is not initialised
+    protected function setDefaultValue($property){
+        if($property->isInitialized($this)){
+            return;
+        }
+        switch ($property->getType()){
+            case 'int':
+                $property->setValue($this,0);//(int)($data[$propertyName]);
+                break;
+            case 'float':
+                $property->setValue($this,0.0);//$data[$propertyName];
+                break;
+            case 'bool':
+                $property->setValue($this,false);
+                break;
+            case 'string':
+                $property->setValue($this,'');
+                break;
+            default:                    
+                $property->setValue($this,null);
+        }
+    }
+    
 }
