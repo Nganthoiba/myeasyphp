@@ -6,7 +6,7 @@ Html::setContainer('_masterPage');
 <div class="container">
     <h2>Contact us.</h2>
     <div>
-        <?php Html::beginForm(Config::get('host').'/Contact','POST'); ?>
+        <?php Html::beginForm('/Contact','POST'); ?>
         <div class="form-group">
             <?php Html::label($model, 'Name') ?>
             <?php Html::textField($model, 'Name',['class'=>'form-control']); ?>

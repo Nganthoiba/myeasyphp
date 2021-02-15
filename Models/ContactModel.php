@@ -14,17 +14,17 @@ use MyEasyPHP\Libs\Attributes\Validations\Required;
 class ContactModel extends Model{
     #[Display(Name: 'Your Name')]
     #[Required]
-    public $Name;
+    public string $Name;
     
     #[Display(Name: 'Your Email')]  
     #[Required]
     #[Email]
-    public $Email;
+    public string $Email;
     
     #[Display(Name: 'Body Content')]
     #[Required]
     #[Minlength(Size:35)]
-    public $Body; 
+    public string $Body; 
     #[Required('Please choose an option')]
     public string $Sex;
 }

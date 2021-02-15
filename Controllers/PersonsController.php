@@ -17,7 +17,7 @@ use MyEasyPHP\Libs\EasyEntityManager as EntityManager;
 class PersonsController extends ApiController{
     private $em;
     public function __construct() {
-        parent::__construct();
+        parent::__construct();//important
         $this->em = new EntityManager('Postgres');
     }    
     
