@@ -135,7 +135,9 @@ class Html {
     /****************** Form methods *******************/    
     //to begin a form
     public static function beginForm(string $action='',string $method='', string $class=''){
-        echo sprintf("<form action='%s' method='%s' class='%s'>\r\n",Config::get('host').'/'.$action,$method,$class);
+        $action_url = ltrim($action, '/');
+        echo sprintf("<form action='%s' method='%s' class='%s'>\r\n",
+                Config::get('host').'/'.$action_url,$method,$class);
     }
     
     //to end a form
@@ -153,22 +155,24 @@ class Html {
     //output a text field
     public static function textField(Model $model,string $property,array $htmlAttributes = []){
         $attr = self::stringifyAttributes($htmlAttributes);
+        $value = $model->{$property}??"";
         echo sprintf("<input type='text' name='%s' id='%s' value='%s' {$attr} />\r\n"
                 . "<div class='validation-error-msg'>%s</div>\r\n",
                 $property, 
                 $property, 
-                $model->{$property},
+                $value,
                 $model->getError($property));
     }
     
     
     public static function passwordField(Model $model,string $property, array $htmlAttributes = []){
-        $attr = self::stringifyAttributes($htmlAttributes);        
+        $attr = self::stringifyAttributes($htmlAttributes);  
+        $value = $model->{$property}??"";
         echo sprintf("<input type='password' name='%s' id='%s' value='%s' {$attr}/>\r\n"
                 . "<div class='validation-error-msg'>%s</div>\r\n",
                 $property, 
                 $property, 
-                $model->{$property},
+                $value,
                 $model->getError($property));
     }
     private static function stringifyAttributes(array $htmlAttributes):string{
@@ -185,9 +189,9 @@ class Html {
     }
     
     public static function textareaField(Model $model,string $property, array $htmlAttributes = []){
-        $model->{$property} = is_null($model->{$property})?"":$model->{$property};
+        //$model->{$property} = is_null($model->{$property})?"":$model->{$property};
         $attr = self::stringifyAttributes($htmlAttributes);
-        $content = is_null($model->{$property})?"":htmlspecialchars_decode($model->{$property});
+        $content = (!isset($model->{$property}) || is_null($model->{$property}))?"":htmlspecialchars_decode($model->{$property});
         echo sprintf("<textarea name='%s' id='%s' {$attr}>%s</textarea>\r\n"
                 ."<div class='validation-error-msg'>%s</div>\r\n",
                 $property,
@@ -200,7 +204,7 @@ class Html {
         $attr = self::stringifyAttributes($htmlAttributes);
         $options = "<select name='%s' {$attr}>\r\n";
         foreach ($list as $item){
-            $selected = ($model->{$name_attribute} == $item['value'])?"selected":"";
+            $selected = (isset($model->{$name_attribute}) && $model->{$name_attribute} == $item['value'])?"selected":"";
             $option .= "<option value='".$item['value']."' $selected>".$item['name']."</option>\r\n";
         }
         $options .= "</select>"; 
@@ -215,7 +219,7 @@ class Html {
         foreach($list as $item){
             $name = $item['name'];
             $value = $item['value'];
-            $checked = ($model->{$name_attribute} == $value)?"checked":"";
+            $checked = (isset($model->{$name_attribute}) && $model->{$name_attribute} == $value)?"checked":"";
             $btnList .= " <input type='radio' id='$name' name='$name_attribute' value='".$item['value']."' $checked /> "."<label for='$name'>".$name."</label>";
         }
         unset($name);
