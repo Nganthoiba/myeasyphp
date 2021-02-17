@@ -380,7 +380,7 @@ class AccountsController extends Controller{
                     else{
                         $this->response = $res;
                         $this->em->rollbackTransaction();
-                        $this->response->msg = "Oops! Failed to change password, something went wrong";                               
+                        //$this->response->msg = "Oops! Failed to change password, something went wrong";                               
                     }
                 }
             }
@@ -410,14 +410,14 @@ class AccountsController extends Controller{
             $mail->Port       = env('SMTP_PORT');                                // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
 
             //Recipients
-            $mail->setFrom($sender_email, 'MyEAsyPHP');
-            $mail->addAddress($recipent->Email, $recipent->UserName);     // Add a recipient
+            $mail->setFrom($sender_email, 'MyEasyPHP');
+            $mail->addAddress($recipent->email, $recipent->full_name);     // Add a recipient
             
             // Content
             $mail->isHTML(true);                                  // Set email format to HTML
             $mail->Subject = 'Password Reset Link';
-            $mail->Body    = "<b>Dear ".$recipent->UserName."</b> ".$message;
-            $mail->AltBody = 'Dear '.$recipent->UserName.' '.$message;
+            $mail->Body    = "<b>Dear ".$recipent->full_name."</b> ".$message;
+            $mail->AltBody = 'Dear '.$recipent->full_name.' '.$message;
             
             if($mail->send()){
                 $resp->set([

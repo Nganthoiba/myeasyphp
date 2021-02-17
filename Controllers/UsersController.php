@@ -73,7 +73,8 @@ class UsersController extends ApiController{
                 return $this->response->toJSON();
             }
             $user->setEntityData($data);
-            $this->response = $this->em->update($user);            
+            $user->user_id = $id;
+            $this->response = $this->em->update($user);
         }
         return $this->response->toJSON();
     }

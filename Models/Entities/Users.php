@@ -18,9 +18,9 @@ class Users extends Entity{
     /*** data structures for user***/
     /** @ORM\Id @ORM\Column(type="string",length=36) */
     #[Key]
-    public  $user_id;
+    public $user_id;
     /** @ORM\Column(type="string",length=160) */
-    public  $full_name;  
+    public $full_name;  
     /** @ORM\Column(type="string",length=100) */        
     public  $email;
     /** @ORM\Column(type="string",length=10) */
@@ -28,7 +28,7 @@ class Users extends Entity{
     /** @ORM\Column(type="integer") */
     public $role_id;    
     /** @ORM\Column(type="boolean", options={"default": false}) */    
-    public $verify;//email verification     
+    public bool $verify;//email verification     
     /** @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"}) */
     public $create_at;
     /** @ORM\Column(type="datetime", nullable=true) */

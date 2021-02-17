@@ -176,8 +176,8 @@ class EasyQueryBuilder {
                 }
             }
             $columns .= $column.",";
-            $param .= "?,";
-            $this->values[] = $value;
+            $param .= "?,"; 
+            $this->values[] = $this->getCorrectValue($value);
         }
         $this->qry = "insert into ".$table_name."(".rtrim($columns,',').") values(".rtrim($param,',').")";
         return $this;
@@ -212,10 +212,9 @@ class EasyQueryBuilder {
                 $class_name = ENTITY_NAMESPACE.$this->entiy_class_name;
                 $temp_obj = class_exists($class_name)?new $class_name(): new EmptyClass(); 
             }
-            foreach($row as $col_name=>$value){
-                $temp_obj->{$col_name} = $value;
-            }
-            $temp_obj = $this->unsetHiddenFields($temp_obj,$row);
+            
+            $this->putDataToObject($temp_obj, $row);
+            $this->unsetHiddenFields($temp_obj,$row);
             return $temp_obj;
         }
         return null;
@@ -234,10 +233,9 @@ class EasyQueryBuilder {
                 $class_name = ENTITY_NAMESPACE.$this->entiy_class_name;
                 $temp_obj = class_exists($class_name)?new $class_name(): new EmptyClass(); 
             }
-            foreach($row as $col_name=>$value){
-                $temp_obj->{$col_name} = $value;
-            }
-            $temp_obj = $this->unsetHiddenFields($temp_obj,$row);
+            
+            $this->putDataToObject($temp_obj, $row);
+            $this->unsetHiddenFields($temp_obj,$row);
             return $temp_obj;
         }
         return null;
@@ -264,10 +262,9 @@ class EasyQueryBuilder {
                     $class_name = ENTITY_NAMESPACE.$this->entiy_class_name;
                     $temp_obj = class_exists($class_name,TRUE)?new $class_name(): new EmptyClass(); 
                 }
-                foreach($row as $col_name=>$value){
-                    $temp_obj->{$col_name} = $value;
-                }
-                $temp_obj = $this->unsetHiddenFields($temp_obj,$row);
+                
+                $this->putDataToObject($temp_obj, $row);
+                $this->unsetHiddenFields($temp_obj,$row);
                 array_push($entity_array,$temp_obj);
             }
             return $entity_array;
@@ -315,8 +312,9 @@ class EasyQueryBuilder {
         //and value represent the value to be set to the column while updating the table
         $this->qry .= " set ";
         foreach ($params as $key => $value) {
-            $this->qry .= $key." = ? ,";
-            array_push($this->values,$value);
+            $this->qry .= $key." = ? ,"; 
+            $val = $this->getCorrectValue($value);
+            array_push($this->values,$val);
         }
         $this->qry = rtrim($this->qry,',');
         return $this;
@@ -640,5 +638,64 @@ class EasyQueryBuilder {
             }
         }
         return $entity;
+    }
+    
+    /*
+     * While executing parameterised query php boolean values are not supported , so we need to convert those 
+     * values to corresponding string values i.e. php boolean value true is to be converted to 'true' and 
+     * value false is to be converted to 'false'.
+     * */
+    private function getCorrectValue($value){        
+        if(gettype($value)==='boolean'){
+            switch($this->db_config['DB_DRIVER']){
+                case 'pgsql':
+                case 'sqlsrv':
+                    $value = ($value === true)?'true':'false';
+                    break;
+                case 'mysql':
+                    $value = ($value === true)?1:0;
+                    break;
+            }            
+        }
+        //if the value is not a boolean then return the original data
+        return $value;
+    }
+    
+    /*
+     * Function to put data(array) to object.
+     * returns the final object or null
+     *      */
+    private function putDataToObject($temp_obj, array $data=[]){
+        foreach($data as $col_name=>$value){
+            if(!property_exists(get_class($temp_obj), $col_name)){
+                $temp_obj->{$col_name} = $value; 
+                continue;
+            }               
+                
+            $property = new \ReflectionProperty($temp_obj, $col_name);
+            switch ($property->getType().""){
+                case 'int':
+                    $temp_obj->{$col_name} = intval($value);//(int)($data[$propertyName]);
+                    break;
+                case 'float':
+                    $temp_obj->{$col_name} = floatval($value);//$data[$propertyName];
+                    break;
+                case 'bool':
+                    if($value === "1" || $value === 'true' || $value === true){
+                        $temp_obj->{$col_name} = true;
+                    }
+                    else{
+                        $temp_obj->{$col_name} = false;
+                    }
+                    break;
+                case 'string':
+                    $temp_obj->{$col_name} = is_null($value)?'':$value;
+                    break;
+                default:                    
+                    $temp_obj->{$col_name} = $value;
+            }
+            
+        }
+        return $temp_obj;
     }
 }

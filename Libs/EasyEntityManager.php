@@ -141,7 +141,6 @@ class EasyEntityManager {
                         ->execute();
                 
                 $this->response->set([
-                        "data" => $entity,
                         "msg" => "Record updated successfully.",
                         "status"=>true,
                         "status_code"=>200,
@@ -155,8 +154,8 @@ class EasyEntityManager {
                         "status_code"=>500,
                         "sqlErrorCode" => $this->queryBuilder->getsqlErrorCode(),
                         "error"=>[
-                            $e->getMessage(),
-                            $this->queryBuilder->getErrorInfo()]
+                            $e->getMessage()
+                            ]
                     ]);
             }
         }
@@ -214,22 +213,11 @@ class EasyEntityManager {
             //only if $keyValuePairs is just a single value
             $entity->getKeys()[0] => ['=',$keyValuePairs]
         ];
-        $stmt = $this->queryBuilder->select($entity->getReadableFields())
+                
+        $this->queryBuilder->setEntityClassName($entityClass);
+        $tempEntity = $this->queryBuilder->select($entity->getReadableFields())
                 ->from($entity->getTable())
-                ->where($cond)->execute();
-        if($stmt->rowCount() == 0){
-            return null;            
-        }
-        $res = $stmt->fetch(PDO::FETCH_ASSOC);
-        foreach ($res as $col_name=>$val){
-            $tempEntity->{$col_name} = $val;
-        }
-        /***Removing hidden fields***/
-        foreach ($entity->getHiddenFields() as $field){
-            if(!isset($res[$field])){
-                unset($tempEntity->{$field});
-            }
-        }
+                ->where($cond)->getFirst();
         return $tempEntity;
     }
     
