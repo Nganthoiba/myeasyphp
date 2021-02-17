@@ -32,12 +32,12 @@ class LoginModel {
             $loginInfo = json_decode($_COOKIE['login_information']);
             $login = new Logins();
             $currentDatetime = date('Y-m-d H:i:s');
-            $count = $login->read()->where([
+            $login = $login->find([
                 "login_id" => $loginInfo->login_id,
                 "logout_time"=>['IS','NULL'],
                 "expiry" => ['>',$currentDatetime]
-            ])->count();            
-            return ($count>0);
+            ]);            
+            return (!is_null($login));
         }
         return false;
     }

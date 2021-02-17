@@ -131,7 +131,13 @@ class Request {
         $isHttps = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443);
         $protocol = ($isHttps)?"https://":"http://";
         $headers = $this->getRequestHeaders();
-        return isset($headers['Host'])?$protocol.$headers['Host'].Config::get('host'):null;
+        if(isset($headers['Host'])){
+            if(trim($protocol.$headers['Host']) === trim(Config::get('host'))){
+                return $protocol.$headers['Host'];
+            }
+            return $protocol.$headers['Host'].Config::get('host');
+        }
+        return Config::get('host');
     }
     
     public function getDevice(){

@@ -39,11 +39,8 @@ class EasyEntityManager {
             $this->queryBuilder = new EasyQueryBuilder($dbConnectionName);
         }
         catch(MyEasyException $exception){
-            $backtrace = debug_backtrace();
-            $caller = array_shift($backtrace);            
-            //dd($caller);
-            $exception->setErrorFile($caller['file']);
-            $exception->setErrorLine($caller['line']);
+            $caller = array_shift(debug_backtrace());       
+            $exception->setErrorFile($caller['file'])->setErrorLine($caller['line']);
             throw $exception;
         }
         $this->response = new Response();
@@ -129,7 +126,7 @@ class EasyEntityManager {
             ]);          
         }
         else{
-            //$this->queryBuilder->setEntityClassName($entity->getTable());
+            
             try{
                 $entity = $this->removeUndefinedProperty($entity);
                 $data = ($entity->toArray());
@@ -139,8 +136,7 @@ class EasyEntityManager {
                 }
                 $cond = $entity->getKeyConditions();
                 $stmt = $this->queryBuilder
-                        ->update($entity->getTable())
-                        ->set($data)
+                        ->update($entity->getTable(),$data)
                         ->where($cond)
                         ->execute();
                 

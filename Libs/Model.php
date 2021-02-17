@@ -32,7 +32,9 @@ class Model {
     
     /*** method to set data to a model ***/
     public function setModelData(array $data) {       
-        
+        if(sizeof($data) === 0){
+            return;
+        }
         foreach ($this->reflectionProperties as $property){
             $propertyName = $property->getName();
             $dataValue = $this->getDataValue($data, $propertyName);            

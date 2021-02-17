@@ -34,8 +34,8 @@ class EasyEntity extends Model{
     protected $table_name;//name of the table in the database
     protected $keys = [];//it can be one primary key or compound primary keys, i.e. two or more 
     //attributes together forming  primary key
-    private $queryBuilder;
-    private $response;
+    protected $queryBuilder;
+    protected $response;
     /*
      * $hiddenFields is an array or set of attributes/fields in the database table which will be excluded
      * from retrieving records from the database table. Empty array will mean that all records 
@@ -51,6 +51,7 @@ class EasyEntity extends Model{
     /* You can change to another database in the derived entity class. */
     
     public function __construct() {
+        parent::__construct();
         /*By convention, an entity class name should be same as the table name 
          * that exists in database, otherwise you have to override the constructor and 
          * use $this->setTable() method to set table name */
@@ -65,7 +66,7 @@ class EasyEntity extends Model{
         $this->setHiddenFields();
         //setting keys of the table
         $this->setKeyFields();
-        parent::__construct();
+        
     }
     
     public function useConnection($dbConnectionName){

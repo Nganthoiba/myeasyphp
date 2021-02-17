@@ -12,5 +12,5 @@ $env = Dotenv::createUnsafeImmutable(ROOT);
 $env->load();
 require_once dirname(__DIR__).'../Config/database.php';
 // setup for Doctrine Entity Manager
-$entityManager = DoctrineEntityManager::getEntityManager('DbServer2');
+$entityManager = DoctrineEntityManager::getEntityManager('Default');
 

@@ -26,7 +26,7 @@ class AccountsController extends Controller{
     
     public function login(LoginViewModel $loginViewModel){
         if(LoginModel::isAuthenticated()){
-            $this->redirect("Dashboard", "index");
+            $this->redirect("Default", "home");
         }
         $this->response->set([
             "status"=>true,
@@ -45,7 +45,7 @@ class AccountsController extends Controller{
     
     public function register(RegisterModel $reg_model){
         if(LoginModel::isAuthenticated()){
-            $this->redirect("Dashboard", "index");
+            $this->redirect("Default", "home");
         }
         
         $this->response->set([
@@ -224,8 +224,7 @@ class AccountsController extends Controller{
             //find user id for the email
             $this->em = new EntityManager();
             $user = $this->em->read(new Users())->where(["email"=>$email])->getFirst();
-            
-            $passReset->generate($user->Id);
+            $passReset->generate($user->user_id);
             try{
                 $this->response = $this->em->save($passReset);
                 if($this->response->status){
@@ -256,7 +255,12 @@ class AccountsController extends Controller{
     public function resetPassword(string $resetCode="null"){
         $this->em = new EntityManager();
         //first check if password reset code is valid
-        $resetLink = $this->em->find(new PasswordResetLinks(),$resetCode);
+        $currentDatetime = date('Y-m-d H:i:s');
+        $resetLink = $this->em->find(new PasswordResetLinks(),[
+            'resetcode'=>$resetCode,
+            'expiry' => ['>',$currentDatetime],
+            'deletedat'=>['IS','NULL']
+        ]);
         //echo json_encode($resetLink);
         if(is_null($resetLink)){
             $this->response->set([
@@ -342,11 +346,12 @@ class AccountsController extends Controller{
                 $this->em = new EntityManager();
                 $userId = $data['UserId'];
                 $resetCode = $data['resetCode'];
-                
-                $resetLink = $this->em->read(new PasswordResetLinks())->where([
-                    "UserId" => $userId,
-                    "ResetCode" =>$resetCode
-                ])->getFirst();
+                $currentDatetime = date('Y-m-d H:i:s');
+                $resetLink = $this->em->find(new PasswordResetLinks(),[
+                    'deletedat'=>['IS','NULL'],
+                    'expiry' => ['>',$currentDatetime],
+                    "resetcode" =>$resetCode
+                ]);
                 
                 $user = $this->em->find(new Users(), $userId);
                 
@@ -359,11 +364,13 @@ class AccountsController extends Controller{
                     ]);
                 }
                 else{
+                    
                     $this->em->beginTransaction();
-                    $res = $this->em->remove($resetLink);
+                    $resetLink->deletedat = $currentDatetime;
+                    $res = $this->em->update($resetLink);
                     $user->security_stamp = \MyEasyPHP\Libs\UUID::v4();
                     $new_password = hash('sha256',$data['password'].$user->security_stamp);
-                    $user->PasswordHash = $new_password;
+                    $user->user_password = $new_password;
                     $this->response = $this->em->update($user);
                     
                     if($this->response->status){
@@ -375,7 +382,6 @@ class AccountsController extends Controller{
                         $this->em->rollbackTransaction();
                         $this->response->msg = "Oops! Failed to change password, something went wrong";                               
                     }
-                    
                 }
             }
         }
@@ -386,24 +392,25 @@ class AccountsController extends Controller{
     //function to send email
     private function sendEmail($message,Users $recipent/*recipent email*/):Response{
         $resp = new \MyEasyPHP\Libs\Response();
-        $email_config = Config::get('email_config');
+        //$email_config = Config::get('email_config');
         // Instantiation and passing `true` enables exceptions
         $mail = new PHPMailer(true);
-        $sender_email = $email_config['Email'];                    
-	$password = $email_config['Password'];
+        $sender_email = env('SMTP_USER');                    
+	$password = env('SMTP_PASSWORD');
+        
         try {
             //Server settings
             //$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      // Enable verbose debug output
             $mail->isSMTP();                                            // Send using SMTP
-            $mail->Host       = $email_config['Host'];                     // Set the SMTP server to send through
+            $mail->Host       = env('SMTP_HOST');                     // Set the SMTP server to send through
             $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
             $mail->Username   = $sender_email;                          // SMTP username
             $mail->Password   = $password;                              // SMTP password
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
-            $mail->Port       = $email_config['Port'];                                // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
+            $mail->Port       = env('SMTP_PORT');                                // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
 
             //Recipients
-            $mail->setFrom($sender_email, 'PPTTC');
+            $mail->setFrom($sender_email, 'MyEAsyPHP');
             $mail->addAddress($recipent->Email, $recipent->UserName);     // Add a recipient
             
             // Content
@@ -416,21 +423,21 @@ class AccountsController extends Controller{
                 $resp->set([
                     "status"=>true,
                     "status_code"=>200,
-                    "msg"=>'Message has been sent'
+                    "msg"=>'Email has been sent'
                 ]);
             }
             else{
                 $resp->set([
                     "status"=>false,
                     "status_code"=>500,
-                    "msg"=>'Message has not been sent'
+                    "msg"=>'Email has not been sent'
                 ]);
             }
         } catch (Exception $e) {
             $resp->set([
                     "status"=>false,
                     "status_code"=>500,
-                    "msg"=>'Message could not be sent.',
+                    "msg"=>'Email could not be sent. '.$e->getMessage(),
                     "error"=>[
                         "exception"=>$e,
                         "MailError"=>$mail->ErrorInfo
@@ -438,5 +445,15 @@ class AccountsController extends Controller{
                 ]);
         }
         return $resp;
+    }
+    
+    //manage account
+    public function manageAccount(){
+        return view();
+    }
+    
+    //change password
+    public function changePassword(){
+        return view();
     }
 }

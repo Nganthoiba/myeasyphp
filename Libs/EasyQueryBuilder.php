@@ -48,9 +48,8 @@ class EasyQueryBuilder {
         $this->last_executed_query = "";//This variable stores SQL query statement which was executed last time
         
         $this->values = [];
-        $this->last_executed_values = [];//This variable stores parameterised values which was executed last time
+        $this->last_executed_values = [];//This variable stores parameterised values which was executed last time        
         
-        $this->db_config = env('DB_CONFIG');
         /*By default a query builder object will connect to default database connection defined in Config/database.php*/
         if(is_null($dbConnectionName) || trim($dbConnectionName)===""){
             $dbConnectionName = 'Default';
@@ -58,13 +57,12 @@ class EasyQueryBuilder {
         //getting database connection
         try{
             $this->conn = DbConnectionStore::getConnection($dbConnectionName);
+            //get db configuration parameters
+            $this->db_config = DbConnectionStore::getConnectionParameters($dbConnectionName);            
         }
         catch(MyEasyPHP\Libs\MyEasyException $exception){
-            $backtrace = debug_backtrace();
-            $caller = array_shift($backtrace);
-            
-            $exception->setErrorFile($caller['file']);
-            $exception->setErrorLine($caller['line']);
+            $caller = array_shift(debug_backtrace());            
+            $exception->setErrorFile($caller['file'])->setErrorLine($caller['line']);
             throw $exception;
         }
         $this->limit_rows = -1;
@@ -76,14 +74,12 @@ class EasyQueryBuilder {
     public function useConnection($dbConnectionName/*Database connection name*/){
         try{
             $this->conn = DbConnectionStore::getConnection($dbConnectionName);
+            //get db configuration parameters
+            $this->db_config = DbConnectionStore::getConnectionParameters($dbConnectionName);
         }
         catch(MyEasyPHP\Libs\MyEasyException $exception){
-            $backtrace = debug_backtrace();
-            $caller = array_shift($backtrace);
-            
-            //dd($caller);
-            $exception->setErrorFile($caller['file']);
-            $exception->setErrorLine($caller['line']);
+            $caller = array_shift(debug_backtrace());            
+            $exception->setErrorFile($caller['file'])->setErrorLine($caller['line']);
             throw $exception;
         }
     }
@@ -301,9 +297,12 @@ class EasyQueryBuilder {
     }
     
     /** method for update clause **/
-    public function update($table_name):EasyQueryBuilder{
+    public function update($table_name, $parameters = array()):EasyQueryBuilder{
         $this->values = [];//reset values, because new values will be set by setValues() method
         $this->qry = "update ".$table_name;
+        if(sizeof($parameters) > 0){
+            return $this->set($parameters);
+        }
         return $this;
     }
     /*** Set parameter values and get those values ***/
@@ -428,20 +427,6 @@ class EasyQueryBuilder {
     public function groupBy(array $columns=array()):EasyQueryBuilder{
         $group_by = $this->getStringifiedColumns($columns);
         $this->qry .= trim($group_by)===""?"":" group by ".$group_by;
-        return $this;
-    }
-    
-    //To limit upto some number of rows while getting data from table
-    public function take($no_of_rows):EasyQueryBuilder{
-        $db_driver = $this->db_config['DB_DRIVER'];
-        switch($db_driver){
-            case 'pgsql':
-            case 'mysql':
-                $this->qry .= " limit ".$no_of_rows; 
-                break;
-            case 'sqlsrv':
-                $this->qry .= " top ".$no_of_rows; 
-        }
         return $this;
     }
     
