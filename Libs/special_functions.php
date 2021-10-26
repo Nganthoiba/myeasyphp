@@ -400,17 +400,19 @@ function getLoginInfo(){
 
 /*----------------------- ERROR HANDLING FUNCTION -------------------------*/
 function handleMyEasyPHPError($errNo, $errMsg, $errFile, $errLine,$errTypes=null) {
-    if($errNo!=E_NOTICE){
-        http_response_code(500);
-        $errDetails = "#**Please check line no. ".$errLine." of the file ".$errFile;
-        try{
-            $view = errorView(500, "[{$errNo}]".$errMsg.'.',$errDetails,$errFile,$errLine);
-            echo $view->render();
+    if(Config::get('development_mode')==true){
+        if($errNo!=E_NOTICE){
+            http_response_code(500);
+            $errDetails = "#**Please check line no. ".$errLine." of the file ".$errFile;
+            try{
+                $view = errorView(500, "[{$errNo}]".$errMsg.'.',$errDetails,$errFile,$errLine);
+                echo $view->render();
+            }
+            catch(Exception $e){
+                echo $e->getMessage();
+            }
+            exit();
         }
-        catch(Exception $e){
-            echo $e->getMessage();
-        }
-        exit();
     }
 }
 /*----------------------------------------------------------------------------*/
