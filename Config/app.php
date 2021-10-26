@@ -1,6 +1,6 @@
 <?php
 use MyEasyPHP\Libs\Config;
-error_reporting(E_ALL);
+//error_reporting(E_ALL);
 
 /***
  * WARNING:
