@@ -10,6 +10,8 @@ use MyEasyPHP\Libs\MyEasyException;
 
 class DbConnectionStore {
     public static $dbConnections = [];
+    
+    //This function returns PDO connection, so that it can be used normally for row sql query execution 
     public static function getConnection($connectionName):\PDO{
         if(!isset(self::$dbConnections[$connectionName])){
             $exception = new MyEasyException("Database connection name {$connectionName} does not exist.");

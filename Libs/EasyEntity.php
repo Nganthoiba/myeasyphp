@@ -311,7 +311,7 @@ class EasyEntity extends Model{
     /*
      * Security Feature:
      * 
-     * Each property of an entity which has been declared public corresponds to the attribute
+     * Each property of an entity which has been declared public corresponds to the attributes or fields
      * of the database table. So, if an unknown new property which is not an attribute of the 
      * table has been set at runtime accidentally by mistake or intensionally, then there might
      * be an error while updating record or populalting a new record, because that property 
